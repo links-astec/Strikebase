@@ -69,7 +69,7 @@ export default function OpportunityDetail() {
               <Link href="/app/scan"><button className="btn btn-ghost">Start new scan</button></Link>
             </div>
           ) : data ? (
-            <div className="stack" style={{ maxWidth: 760 }}>
+            <div className="stack">
               {/* Hero card */}
               <div className="card card-p" style={{ borderLeft: `3px solid ${vColor}` }}>
                 <div style={{ display: "flex", alignItems: "flex-start", gap: 24, marginBottom: 20 }}>
@@ -82,11 +82,6 @@ export default function OpportunityDetail() {
                       <span style={{ background: "rgba(255,255,255,0.05)", color: "var(--text-2)", border: "1px solid var(--border)", borderRadius: "var(--radius)", padding: "3px 10px", fontSize: 11, fontWeight: 500 }}>
                         {data.opp.platform}
                       </span>
-                      {data.opp.is_demo && (
-                        <span style={{ background: "var(--gold-muted)", color: "var(--gold)", border: "1px solid var(--gold-border)", borderRadius: "var(--radius)", padding: "3px 10px", fontSize: 10, fontWeight: 600, letterSpacing: "0.08em" }}>
-                          DEMO
-                        </span>
-                      )}
                     </div>
                     <h1 style={{ fontFamily: "Space Grotesk, Inter, sans-serif", fontWeight: 600, fontSize: 22, color: "var(--text-1)", lineHeight: 1.35, marginBottom: 12 }}>
                       {data.opp.title}
@@ -178,10 +173,14 @@ export default function OpportunityDetail() {
               )}
 
               {/* Market rates + client */}
-              <div className="col-2" style={{ alignItems: "flex-start" }}>
-                {data.market && <MarketRates rates={data.market} />}
-                {data.client && <ClientProfile profile={data.client} />}
-              </div>
+              {data.market && data.client ? (
+                <div className="col-2" style={{ alignItems: "flex-start" }}>
+                  <MarketRates rates={data.market} />
+                  <ClientProfile profile={data.client} />
+                </div>
+              ) : data.market ? (
+                <MarketRates rates={data.market} />
+              ) : null}
             </div>
           ) : null}
         </div>

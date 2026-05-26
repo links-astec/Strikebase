@@ -24,7 +24,7 @@ async def run_pipeline(scan_id: str, req: ScanRequest, user_id: str | None = Non
         serp_results = await search_job_listings(req.skills, num_results=MAX_LISTINGS)
 
         if not serp_results:
-            db.update_scan_status(scan_id, "error", "No listings found. Try different skills.")
+            db.update_scan_status(scan_id, "error", "Could not retrieve listings — Bright Data connection issue. Please try again in a moment.")
             return
 
         db.update_scan_status(scan_id, "processing", f"Found {len(serp_results)} listings, extracting details...")
