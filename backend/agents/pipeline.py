@@ -17,6 +17,25 @@ MAX_CONCURRENT_SCRAPES = 5
 MAX_LISTINGS = 20
 
 
+def _is_usable(listing: dict) -> bool:
+    """Drop listings that are too old or have almost no extractable data."""
+    # Drop if posted more than 60 days ago
+    if listing.get("posted_at"):
+        try:
+            posted = datetime.fromisoformat(listing["posted_at"].replace("Z", "+00:00"))
+            if (datetime.now(timezone.utc) - posted).days > 60:
+                return False
+        except Exception:
+            pass
+    # Drop if no title AND no budget AND no description
+    has_title = bool(listing.get("title") and listing["title"] != "Untitled")
+    has_budget = listing.get("budget_max") is not None
+    has_desc = bool((listing.get("description") or "").strip())
+    if not has_title and not has_budget and not has_desc:
+        return False
+    return True
+
+
 async def run_pipeline(scan_id: str, req: ScanRequest, user_id: str | None = None) -> None:
     """Full pipeline: SERP → Scrape → Client profiles → AI score → Save."""
     try:
@@ -39,9 +58,10 @@ async def run_pipeline(scan_id: str, req: ScanRequest, user_id: str | None = Non
             return_exceptions=True,
         )
         listings = [r for r in listing_results if isinstance(r, dict) and r]
+        listings = [l for l in listings if _is_usable(l)]
 
         if not listings:
-            db.update_scan_status(scan_id, "error", "Failed to extract listing details.")
+            db.update_scan_status(scan_id, "error", "All listings were filtered out (stale or missing data). Try again — SERP results vary.")
             return
 
         db.update_scan_status(

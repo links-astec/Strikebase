@@ -128,7 +128,7 @@ def _classify_platform(url: str) -> str:
 
 async def _search_platform(platform_prefix: str, skills: list[str], num_results: int) -> list[dict]:
     query = f'{platform_prefix} {" ".join(skills)}'
-    google_url = "https://www.google.com/search?" + urllib.parse.urlencode({"q": query, "num": num_results})
+    google_url = "https://www.google.com/search?" + urllib.parse.urlencode({"q": query, "num": num_results, "tbs": "qdr:m"})
 
     # ── Try 1: SERP zone (structured JSON) ──────────────────────────────────
     if settings.bright_data_serp_zone:
