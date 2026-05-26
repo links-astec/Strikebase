@@ -24,7 +24,7 @@ export default function LoadingState({ message }: { message: string }) {
         <div className="spinner" />
       </div>
 
-      <p style={{ textAlign: "center", fontFamily: "Cormorant Garamond, serif", fontWeight: 600, fontSize: 18, color: "var(--text-1)", marginBottom: 4 }}>
+      <p style={{ textAlign: "center", fontFamily: "Space Grotesk, Inter, sans-serif", fontWeight: 600, fontSize: 18, color: "var(--text-1)", marginBottom: 4 }}>
         {message || "Processing..."}
       </p>
       <p style={{ textAlign: "center", fontSize: 12, color: "var(--text-3)", marginBottom: 28 }}>

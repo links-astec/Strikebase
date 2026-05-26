@@ -90,7 +90,7 @@ export default function SettingsPage() {
       <AppShell>
         <div className="page-header">
           <div>
-            <h1 style={{ fontFamily: "Cormorant Garamond, serif", fontSize: 26, fontWeight: 600, color: "var(--text-1)", marginBottom: 4 }}>
+            <h1 style={{ fontFamily: "Space Grotesk, Inter, sans-serif", fontSize: 26, fontWeight: 600, color: "var(--text-1)", marginBottom: 4 }}>
               Settings
             </h1>
             <p style={{ fontSize: 13, color: "var(--text-3)", fontWeight: 300 }}>

@@ -2,7 +2,7 @@ import { useState, FormEvent } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Link from "next/link";
-import { Zap, Loader2, Eye, EyeOff } from "lucide-react";
+import { Zap, Loader2, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -34,6 +34,11 @@ export default function Login() {
     <>
       <Head><title>Sign in — Strikebase</title></Head>
       <div className="auth-page">
+        <Link href="/" style={{ position: "absolute", top: 16, left: 16, zIndex: 2, display: "flex", alignItems: "center", gap: 5, fontSize: 13, color: "var(--text-3)", transition: "color 0.15s" }}
+          onMouseEnter={e => (e.currentTarget.style.color = "var(--text-1)")}
+          onMouseLeave={e => (e.currentTarget.style.color = "var(--text-3)")}>
+          <ArrowLeft size={14} /> Back
+        </Link>
         <div style={{ position: "absolute", top: 16, right: 16, zIndex: 2 }}><ThemeToggle /></div>
         <div className="auth-glow" />
         <div className="auth-card">

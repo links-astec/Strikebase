@@ -115,7 +115,7 @@ export default function Onboarding() {
             ))}
           </div>
 
-          <h2 style={{ fontFamily: "Cormorant Garamond, serif", fontSize: 24, fontWeight: 600, marginBottom: 6, color: "var(--text-1)" }}>
+          <h2 style={{ fontFamily: "Space Grotesk, Inter, sans-serif", fontSize: 24, fontWeight: 600, marginBottom: 6, color: "var(--text-1)" }}>
             {s.title}
           </h2>
           <p style={{ fontSize: 13, color: "var(--text-3)", fontWeight: 300, marginBottom: 24 }}>{s.sub}</p>

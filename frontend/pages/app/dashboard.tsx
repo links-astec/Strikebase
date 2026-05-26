@@ -52,7 +52,7 @@ export default function Dashboard() {
       <AppShell>
         <div className="page-header">
           <div>
-            <h1 style={{ fontFamily: "Cormorant Garamond, serif", fontSize: 26, fontWeight: 600, color: "var(--text-1)", marginBottom: 4 }}>
+            <h1 style={{ fontFamily: "Space Grotesk, Inter, sans-serif", fontSize: 26, fontWeight: 600, color: "var(--text-1)", marginBottom: 4 }}>
               {greeting()}, {name}
             </h1>
             <p style={{ fontSize: 13, color: "var(--text-3)", fontWeight: 300 }}>
@@ -164,7 +164,7 @@ export default function Dashboard() {
           {!profile?.skills?.length && (
             <div className="card card-p" style={{ marginTop: 20, borderLeft: "3px solid var(--gold)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
               <div>
-                <p style={{ fontFamily: "Cormorant Garamond, serif", fontSize: 16, fontWeight: 600, color: "var(--text-1)", marginBottom: 4 }}>
+                <p style={{ fontFamily: "Space Grotesk, Inter, sans-serif", fontSize: 16, fontWeight: 600, color: "var(--text-1)", marginBottom: 4 }}>
                   Complete your profile
                 </p>
                 <p style={{ fontSize: 12, color: "var(--text-3)", fontWeight: 300 }}>
@@ -213,7 +213,7 @@ function SuggCard({ s }: { s: Suggestion }) {
   return (
     <div className="card card-p suggestion-card">
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 8 }}>
-        <p style={{ fontFamily: "Cormorant Garamond, serif", fontSize: 15, fontWeight: 600, color: "var(--text-1)", lineHeight: 1.3, flex: 1 }}>
+        <p style={{ fontFamily: "Space Grotesk, Inter, sans-serif", fontSize: 15, fontWeight: 600, color: "var(--text-1)", lineHeight: 1.3, flex: 1 }}>
           {s.title}
         </p>
         <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: diffColor, background: `${diffColor}18`, border: `1px solid ${diffColor}44`, borderRadius: "var(--radius)", padding: "2px 7px", flexShrink: 0 }}>

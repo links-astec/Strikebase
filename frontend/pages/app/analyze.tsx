@@ -52,7 +52,7 @@ export default function AnalyzePage() {
       <AppShell>
         <div className="page-header">
           <div>
-            <h1 style={{ fontFamily: "Cormorant Garamond, serif", fontSize: 26, fontWeight: 600, color: "var(--text-1)", marginBottom: 4 }}>
+            <h1 style={{ fontFamily: "Space Grotesk, Inter, sans-serif", fontSize: 26, fontWeight: 600, color: "var(--text-1)", marginBottom: 4 }}>
               Analyze a Job
             </h1>
             <p style={{ fontSize: 13, color: "var(--text-3)", fontWeight: 300 }}>
@@ -164,7 +164,7 @@ function AnalysisResult({ r }: { r: AnalysisResponse }) {
                 {r.opportunity.platform}
               </span>
             </div>
-            <h2 style={{ fontFamily: "Cormorant Garamond, serif", fontWeight: 600, fontSize: 20, color: "var(--text-1)", lineHeight: 1.3, marginBottom: 8 }}>
+            <h2 style={{ fontFamily: "Space Grotesk, Inter, sans-serif", fontWeight: 600, fontSize: 20, color: "var(--text-1)", lineHeight: 1.3, marginBottom: 8 }}>
               {r.opportunity.title || "Analyzed opportunity"}
             </h2>
             {r.opportunity.url && (

@@ -1,56 +1,61 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 /* ─────────────────────────────────────────────
-   DESIGN TOKENS  (bels-haven inspired, adapted for dark analytics SaaS)
+   DESIGN TOKENS — techy dark mode
 ───────────────────────────────────────────── */
 :root {
-  --gold:        #c9a040;
-  --gold-light:  #e0b84a;
-  --gold-dark:   #a07830;
-  --gold-muted:  rgba(201, 160, 64, 0.12);
-  --gold-border: rgba(201, 160, 64, 0.22);
-  --gold-sh:     0 4px 28px rgba(201, 160, 64, 0.28);
+  /* Primary accent: electric blue */
+  --gold:        #3b82f6;
+  --gold-light:  #60a5fa;
+  --gold-dark:   #1d4ed8;
+  --gold-muted:  rgba(59, 130, 246, 0.10);
+  --gold-border: rgba(59, 130, 246, 0.22);
+  --gold-sh:     0 4px 28px rgba(59, 130, 246, 0.30);
 
-  --bg:          #0a0806;
-  --bg-soft:     #0e0c08;
-  --bg-card:     #161208;
-  --bg-sidebar:  #0c0b07;
-  --bg-hover:    #1e1810;
-  --border:      #2a2018;
-  --border-2:    #3a3020;
+  /* Backgrounds */
+  --bg:          #07090e;
+  --bg-soft:     #0b0e16;
+  --bg-card:     #0f1320;
+  --bg-sidebar:  #090c15;
+  --bg-hover:    #141929;
+  --border:      #1a2035;
+  --border-2:    #252f4a;
 
-  --cream:        #faf8f4;
-  --cream-soft:   #f4f0e8;
+  /* Legacy cream vars kept for compatibility */
+  --cream:        #f8fafc;
+  --cream-soft:   #f1f5f9;
   --cream-card:   #ffffff;
-  --cream-border: #e8e0d0;
-  --cream-hover:  #f0ebe0;
-  --cream-dark:   #1a1208;
-  --cream-dark-2: #4a3f2f;
-  --cream-muted:  #8a7d6a;
+  --cream-border: #e2e8f0;
+  --cream-hover:  #e8edf5;
+  --cream-dark:   #0f172a;
+  --cream-dark-2: #334155;
+  --cream-muted:  #64748b;
 
-  --text-1: #f5ede0;
-  --text-2: #c4b190;
-  --text-3: #8a7d6a;
+  /* Text */
+  --text-1: #e8eef8;
+  --text-2: #8892a4;
+  --text-3: #4a5568;
 
-  --go:           #3dab78;
-  --go-bg:        rgba(61,171,120,0.12);
-  --go-border:    rgba(61,171,120,0.25);
-  --warn:         #e8a23d;
-  --warn-bg:      rgba(232,162,61,0.12);
-  --warn-border:  rgba(232,162,61,0.25);
-  --danger:       #e04f3c;
-  --danger-bg:    rgba(224,79,60,0.12);
-  --danger-border:rgba(224,79,60,0.25);
+  /* Status */
+  --go:           #10b981;
+  --go-bg:        rgba(16,185,129,0.10);
+  --go-border:    rgba(16,185,129,0.25);
+  --warn:         #f59e0b;
+  --warn-bg:      rgba(245,158,11,0.10);
+  --warn-border:  rgba(245,158,11,0.25);
+  --danger:       #ef4444;
+  --danger-bg:    rgba(239,68,68,0.10);
+  --danger-border:rgba(239,68,68,0.25);
 
-  --radius:    2px;
-  --radius-md: 4px;
-  --radius-lg: 8px;
-  --tr:     all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --tr-fast:all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  --sh-sm:  0 2px 8px rgba(10,8,6,0.5);
-  --sh:     0 4px 20px rgba(10,8,6,0.6);
-  --sh-md:  0 8px 40px rgba(10,8,6,0.7);
+  --radius:    4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --tr:     all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --tr-fast:all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+  --sh-sm:  0 1px 6px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.03);
+  --sh:     0 4px 20px rgba(0,0,0,0.6);
+  --sh-md:  0 8px 40px rgba(0,0,0,0.7);
   --sidebar-w: 240px;
 }
 
@@ -58,35 +63,35 @@
    LIGHT MODE TOKENS
 ───────────────────────────────────────────── */
 [data-theme="light"] {
-  --bg:          #faf8f4;
-  --bg-soft:     #f4f0e8;
+  --bg:          #f8fafc;
+  --bg-soft:     #f1f5f9;
   --bg-card:     #ffffff;
-  --bg-sidebar:  #f7f4ee;
-  --bg-hover:    #ede8dc;
-  --border:      #e2d9c8;
-  --border-2:    #d0c5b0;
+  --bg-sidebar:  #f0f4ff;
+  --bg-hover:    #e4ebfa;
+  --border:      #dde4f0;
+  --border-2:    #c6d0e8;
 
-  --text-1: #1a1208;
-  --text-2: #4a3f2f;
-  --text-3: #8a7d6a;
+  --text-1: #0f172a;
+  --text-2: #334155;
+  --text-3: #64748b;
 
-  --gold:        #a07830;
-  --gold-light:  #c9a040;
-  --gold-dark:   #7a5c20;
-  --gold-muted:  rgba(160, 120, 48, 0.1);
-  --gold-border: rgba(160, 120, 48, 0.25);
-  --gold-sh:     0 4px 28px rgba(160, 120, 48, 0.22);
+  --gold:        #2563eb;
+  --gold-light:  #3b82f6;
+  --gold-dark:   #1d4ed8;
+  --gold-muted:  rgba(37, 99, 235, 0.08);
+  --gold-border: rgba(37, 99, 235, 0.22);
+  --gold-sh:     0 4px 28px rgba(37, 99, 235, 0.20);
 
-  --go-bg:        rgba(40,160,100,0.10);
-  --go-border:    rgba(40,160,100,0.25);
-  --warn-bg:      rgba(200,140,40,0.10);
-  --warn-border:  rgba(200,140,40,0.25);
-  --danger-bg:    rgba(200,60,50,0.10);
-  --danger-border:rgba(200,60,50,0.25);
+  --go-bg:        rgba(16,185,129,0.08);
+  --go-border:    rgba(16,185,129,0.22);
+  --warn-bg:      rgba(245,158,11,0.08);
+  --warn-border:  rgba(245,158,11,0.22);
+  --danger-bg:    rgba(239,68,68,0.08);
+  --danger-border:rgba(239,68,68,0.22);
 
-  --sh-sm:  0 2px 8px rgba(26,18,8,0.07);
-  --sh:     0 4px 20px rgba(26,18,8,0.09);
-  --sh-md:  0 8px 40px rgba(26,18,8,0.12);
+  --sh-sm:  0 1px 4px rgba(15,23,42,0.06), 0 0 0 1px rgba(15,23,42,0.04);
+  --sh:     0 4px 16px rgba(15,23,42,0.08);
+  --sh-md:  0 8px 32px rgba(15,23,42,0.12);
 }
 
 /* ─────────────────────────────────────────────
@@ -98,18 +103,18 @@ html { scroll-behavior: smooth; }
 body {
   background: var(--bg);
   color: var(--text-1);
-  font-family: "Jost", system-ui, sans-serif;
+  font-family: "Inter", system-ui, sans-serif;
   font-size: 14px;
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4, h5 {
-  font-family: "Cormorant Garamond", serif;
+  font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
   font-weight: 600;
-  letter-spacing: 0.01em;
-  line-height: 1.15;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
   color: var(--text-1);
 }
 
@@ -174,8 +179,8 @@ img { display: block; max-width: 100%; }
 }
 
 .sidebar-wordmark {
-  font-family: "Cormorant Garamond", serif;
-  font-size: 18px; font-weight: 700; letter-spacing: 0.08em;
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-size: 16px; font-weight: 700; letter-spacing: 0.06em;
   text-transform: uppercase; color: var(--text-1);
 }
 .sidebar-accent { color: var(--gold); }
@@ -280,8 +285,8 @@ img { display: block; max-width: 100%; }
   background: var(--gold); display: flex; align-items: center; justify-content: center;
 }
 .nav-logo-text {
-  font-family: "Cormorant Garamond", serif;
-  font-size: 18px; font-weight: 700; letter-spacing: 0.08em;
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-size: 16px; font-weight: 700; letter-spacing: 0.06em;
   text-transform: uppercase; color: var(--text-1);
 }
 .nav-logo-accent { color: var(--gold); }
@@ -730,7 +735,7 @@ img { display: block; max-width: 100%; }
   position: absolute; top: -120px; left: 50%;
   transform: translateX(-50%);
   width: 600px; height: 600px; border-radius: 50%; pointer-events: none;
-  background: radial-gradient(circle, rgba(201,160,64,0.08) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 65%);
 }
 .auth-card {
   width: 100%; max-width: 420px;
@@ -749,12 +754,13 @@ img { display: block; max-width: 100%; }
   box-shadow: var(--gold-sh);
 }
 .auth-logo-text {
-  font-family: "Cormorant Garamond", serif;
-  font-size: 22px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-size: 20px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
 }
 .auth-title {
-  font-family: "Cormorant Garamond", serif;
-  font-size: 26px; font-weight: 600; text-align: center; margin-bottom: 6px;
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-size: 22px; font-weight: 600; text-align: center; margin-bottom: 6px;
+  letter-spacing: -0.02em;
 }
 .auth-sub { font-size: 13px; font-weight: 300; color: var(--text-3); text-align: center; margin-bottom: 28px; }
 .auth-divider {
@@ -839,62 +845,40 @@ img { display: block; max-width: 100%; }
 }
 
 /* ─────────────────────────────────────────────
-   LIGHT MODE OVERRIDES (hardcoded-color fixes)
+   LIGHT MODE OVERRIDES
 ───────────────────────────────────────────── */
-[data-theme="light"] body {
-  background: var(--bg);
-  color: var(--text-1);
-}
-
 [data-theme="light"] .nav-public {
-  background: rgba(250,248,244,0.96);
+  background: rgba(248,250,252,0.96);
   border-bottom: 1px solid var(--border);
 }
-
-[data-theme="light"] .hero {
-  background: var(--bg-soft);
-}
+[data-theme="light"] .hero { background: var(--bg-soft); }
 [data-theme="light"] .hero-dots {
-  background-image: radial-gradient(circle at 1px 1px, rgba(26,18,8,0.06) 1px, transparent 0);
+  background-image: radial-gradient(circle at 1px 1px, rgba(15,23,42,0.06) 1px, transparent 0);
 }
 [data-theme="light"] .hero-glow-a {
-  background: radial-gradient(circle, rgba(160,120,48,0.12) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(37,99,235,0.10) 0%, transparent 65%);
 }
 [data-theme="light"] .hero-glow-b {
-  background: radial-gradient(circle, rgba(40,160,100,0.07) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(16,185,129,0.07) 0%, transparent 65%);
 }
 [data-theme="light"] .mock-card {
-  background: rgba(26,18,8,0.03);
-  border: 1px solid rgba(26,18,8,0.1);
+  background: rgba(15,23,42,0.03);
+  border: 1px solid rgba(15,23,42,0.08);
 }
-
 [data-theme="light"] .sec-dark { background: var(--bg-soft); }
 [data-theme="light"] .sec-card { background: var(--bg-card); }
 [data-theme="light"] .sec-foot { background: var(--bg-soft); }
-
 [data-theme="light"] .auth-glow {
-  background: radial-gradient(circle, rgba(160,120,48,0.08) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(37,99,235,0.07) 0%, transparent 65%);
 }
-
 [data-theme="light"] .tag-platform {
-  background: rgba(26,18,8,0.05);
+  background: rgba(15,23,42,0.04);
   border-color: var(--border);
 }
-
-[data-theme="light"] .btn-outline-light {
-  color: var(--text-2);
-  border-color: var(--border);
-}
-[data-theme="light"] .btn-outline-light:hover {
-  border-color: var(--border-2);
-  color: var(--text-1);
-}
-
 [data-theme="light"] .spinner-sm {
-  border-color: rgba(26,18,8,0.15);
+  border-color: rgba(15,23,42,0.12);
   border-top-color: var(--gold);
 }
-
 [data-theme="light"] ::-webkit-scrollbar-track { background: var(--bg); }
 [data-theme="light"] ::-webkit-scrollbar-thumb { background: var(--border-2); }
 

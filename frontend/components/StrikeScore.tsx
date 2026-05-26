@@ -42,7 +42,7 @@ export default function StrikeScore({ score, size = "md" }: { score: number; siz
       />
       <text x={c} y={c - 1} textAnchor="middle" dominantBaseline="middle"
         fill={v.text} fontSize={fs}
-        style={{ fontFamily: "Cormorant Garamond, serif", fontWeight: 600 }}>
+        style={{ fontFamily: "Space Grotesk, Inter, sans-serif", fontWeight: 600 }}>
         {score}
       </text>
       <text x={c} y={c + fs * 0.82} textAnchor="middle" dominantBaseline="middle"

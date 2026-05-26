@@ -29,7 +29,7 @@ export default function MarketRatesChart({ rates, userRate }: { rates: MarketRat
               <span style={{ fontSize: 11, font: "300 11px/1 Jost, sans-serif", color: "var(--text-2)" }}>
                 <span style={{ fontWeight: 600, color: "var(--text-1)", marginRight: 4 }}>{b.label}</span>{b.sub}
               </span>
-              <span style={{ fontFamily: "Cormorant Garamond, serif", fontSize: 16, fontWeight: 600, color: b.color }}>
+              <span style={{ fontFamily: "Space Grotesk, Inter, sans-serif", fontSize: 16, fontWeight: 600, color: b.color }}>
                 ${b.value}<span style={{ fontFamily: "Jost", fontSize: 10, fontWeight: 300, color: "var(--text-3)" }}>/hr</span>
               </span>
             </div>

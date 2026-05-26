@@ -88,7 +88,7 @@ export default function OpportunityDetail() {
                         </span>
                       )}
                     </div>
-                    <h1 style={{ fontFamily: "Cormorant Garamond, serif", fontWeight: 600, fontSize: 22, color: "var(--text-1)", lineHeight: 1.35, marginBottom: 12 }}>
+                    <h1 style={{ fontFamily: "Space Grotesk, Inter, sans-serif", fontWeight: 600, fontSize: 22, color: "var(--text-1)", lineHeight: 1.35, marginBottom: 12 }}>
                       {data.opp.title}
                     </h1>
 
