@@ -1699,20 +1699,58 @@ img { display: block; max-width: 100%; }
   pointer-events: none;
   animation: lp-orb-b 9s ease-in-out infinite 2s;
 }
+.lp-cta-h2 {
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-size: clamp(28px, 4vw, 48px); font-weight: 700;
+  letter-spacing: -0.02em; color: #fff; margin-bottom: 14px;
+}
+.lp-cta-p {
+  font-size: 16px; font-weight: 300; color: rgba(255,255,255,0.60);
+  line-height: 1.75; max-width: 460px; margin: 0 auto 36px;
+}
 .lp-cta-primary-lg { padding: 16px 32px; font-size: 15px; }
-.lp-cta-ghost-dark {
+.lp-cta-btn-ghost {
   display: inline-flex; align-items: center; gap: 8px;
   background: rgba(255,255,255,0.06);
-  color: rgba(255,255,255,0.7);
+  color: rgba(255,255,255,0.70);
   border: 1px solid rgba(255,255,255,0.15);
   border-radius: var(--radius);
   padding: 14px 28px; font-size: 14px; font-weight: 400;
   text-decoration: none; transition: var(--tr-fast);
 }
-.lp-cta-ghost-dark:hover {
-  background: rgba(255,255,255,0.10);
+.lp-cta-btn-ghost:hover {
+  background: rgba(255,255,255,0.11);
   color: #fff;
-  border-color: rgba(255,255,255,0.25);
+  border-color: rgba(255,255,255,0.28);
+}
+
+/* Light mode overrides for CTA */
+[data-theme="light"] .lp-cta-section {
+  background: linear-gradient(135deg, #f0f4ff 0%, #e8eeff 50%, #f0f4ff 100%);
+  border-top-color: var(--border);
+}
+[data-theme="light"] .lp-cta-mesh {
+  background-image:
+    linear-gradient(rgba(37,99,235,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37,99,235,0.06) 1px, transparent 1px);
+}
+[data-theme="light"] .lp-cta-glow-a {
+  background: radial-gradient(ellipse, rgba(99,102,241,0.12) 0%, transparent 60%);
+}
+[data-theme="light"] .lp-cta-glow-b {
+  background: radial-gradient(circle, rgba(59,130,246,0.10) 0%, transparent 60%);
+}
+[data-theme="light"] .lp-cta-h2 { color: var(--text-1); }
+[data-theme="light"] .lp-cta-p  { color: var(--text-2); }
+[data-theme="light"] .lp-cta-btn-ghost {
+  background: rgba(15,23,42,0.04);
+  color: var(--text-2);
+  border-color: var(--border-2);
+}
+[data-theme="light"] .lp-cta-btn-ghost:hover {
+  background: rgba(15,23,42,0.08);
+  color: var(--text-1);
+  border-color: var(--border-2);
 }
 
 /* ─────────────────────────────────────────────

@@ -383,17 +383,17 @@ export default function Landing() {
         <div className="lp-cta-glow-b" />
         <div className="lp-wrap" style={{ position: "relative", zIndex: 1, textAlign: "center", padding: "100px 24px" }}>
           <div className="lp-cta-icon lp-reveal"><Zap size={22} color="#fff" /></div>
-          <h2 className="lp-sec-h2 lp-reveal" data-delay="1" style={{ color: "#fff", fontSize: "clamp(28px,4vw,48px)" }}>
+          <h2 className="lp-cta-h2 lp-reveal" data-delay="1">
             Ready to stop guessing?
           </h2>
-          <p className="lp-reveal" data-delay="2" style={{ fontSize: 16, fontWeight: 300, color: "rgba(255,255,255,0.6)", lineHeight: 1.75, maxWidth: 460, margin: "0 auto 36px" }}>
+          <p className="lp-cta-p lp-reveal" data-delay="2">
             Create your free account and scan live listings across 5 platforms in under 30 seconds.
           </p>
           <div className="lp-hero-ctas lp-reveal" data-delay="3" style={{ justifyContent: "center" }}>
             <Link href="/register" className="lp-cta-primary lp-cta-primary-lg">
               Create free account <ArrowRight size={15} />
             </Link>
-            <Link href="/login" className="lp-cta-ghost lp-cta-ghost-dark">I have an account</Link>
+            <Link href="/login" className="lp-cta-btn-ghost">I have an account</Link>
           </div>
         </div>
       </section>
