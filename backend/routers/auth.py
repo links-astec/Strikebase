@@ -49,19 +49,21 @@ async def register(req: AuthRequest):
             access_token = data.get("access_token")
 
             # Email confirmation is enabled on the Supabase free tier by default.
-            # Auto-confirm the user via the admin API so they can log in immediately.
+            # Auto-confirm via admin API so the user can log in immediately.
             if user_id and not access_token:
-                await client.put(
+                confirm_r = await client.put(
                     f"{_SUPABASE}/auth/v1/admin/users/{user_id}",
                     headers={**_HEADERS, "Authorization": f"Bearer {_KEY}"},
                     json={"email_confirm": True},
                 )
-                # Now get a real session token by logging in with the credentials.
+                print(f"[AUTH] admin confirm status={confirm_r.status_code} body={confirm_r.text[:200]}")
+                # Now get a real session token.
                 login_r = await client.post(
                     f"{_SUPABASE}/auth/v1/token?grant_type=password",
                     headers=_HEADERS,
                     json={"email": req.email, "password": req.password},
                 )
+                print(f"[AUTH] post-confirm login status={login_r.status_code} body={login_r.text[:200]}")
                 if login_r.status_code == 200:
                     login_data = login_r.json()
                     access_token = login_data.get("access_token")
