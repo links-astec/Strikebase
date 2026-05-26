@@ -1,157 +1,166 @@
-# Strikebase — Master Plan
+# Strikebase — Master Plan (Updated)
 
-> Freelance bid intelligence platform. Tells you which jobs to bid on — and why — before you write a single word.
-
-**Team:** Gabriel Nii Attoh Quaye (Co-founder · Full-stack Engineer) · Prince Edwin Nyarko (Co-founder · Full-stack Developer)
-
----
-
-## Vision
-
-Give every freelancer the same intelligence advantage that top agencies have: live market data, client due diligence, and AI-ranked opportunities — in under 30 seconds per scan.
+> **Hackathon:** Web Data UNLOCKED · May 25–31, 2026  
+> **Track:** GTM Intelligence (Track 1) · secondary angle on Track 2 (Finance/market rates)  
+> **Prize:** $5K grand prize  
+> **Team:** Gabriel Nii Attoh Quaye (Co-founder · Full-stack Engineer) · Prince Edwin Nyarko (Co-founder · Full-stack Developer)  
+> **Tagline:** *"Freelancers waste hours bidding on jobs they won't win. We're fixing that."*
 
 ---
 
-## What We've Built ✅
+## Original Plan vs What We Actually Built
 
-### Backend (FastAPI + Supabase)
+### What the plan called for (MVP)
 
-| Feature | Status | Notes |
+| Planned | Status |
+|---|---|
+| Landing page (hero + demo card + how it works + 1 CTA) | ✅ Built — and far exceeded: Linear-inspired, product preview, stats strip, 6-feature grid, About section, fully responsive |
+| Dashboard `/dashboard` (scan form + ranked feed) | ✅ Built at `/app/dashboard` + `/app/scan` |
+| Detail page `/opportunity/[id]` (score, client, rates, proposal) | ✅ Built at `/app/opportunity/[id]` |
+| Strike Score (0–100, GO/RISKY/SKIP) | ✅ Built with animated ring component |
+| Client deep dive (spend, hire rate, disputes) | ✅ Built — ClientProfile component |
+| Live market rates (P25/P50/P75) | ✅ Built — MarketRates component + backend aggregation |
+| Proposal angle (AI opening line) | ✅ Built — stored per opportunity, shown on detail page |
+| Bright Data SERP API | ✅ Integrated |
+| Bright Data Web Scraper API | ✅ Integrated |
+| Bright Data Web Unlocker | ✅ Integrated |
+| Bright Data MCP Server | ❌ NOT built — using direct Anthropic API instead |
+| Async background pipeline (non-blocking scan) | ✅ Built — `BackgroundTasks` in FastAPI |
+| Polling every 3s during scan | ✅ Built |
+| Supabase (4 tables) | ✅ Built — scans, opportunities, client_profiles, market_rates + user_profiles (5th table added) |
+| Cache client profiles (24hr TTL) | ✅ Built in `database.py` |
+| Demo mode `?demo=true` | ❌ NOT built — critical gap for hackathon presentation |
+| Deployment (Vercel + Railway) | ❌ NOT deployed — running locally only |
+
+---
+
+### Features We Added Beyond the Plan
+
+| Added Feature | Why |
+|---|---|
+| **Full auth flow** (register, login, forgot password, reset password) | Users need persistent profiles across sessions |
+| **Email auto-confirm on register** (Supabase admin API) | Removes the confirmation email step — instant login after signup |
+| **User profiles** (skills, rate, experience, bio, GitHub) | Personalises scoring; profile persists between scans |
+| **3-step onboarding flow** | Collects profile data smoothly on first visit |
+| **Scan history page** | Users can revisit past scan results |
+| **Single job URL analyzer** (`/app/analyze`) | Analyze any job link directly without a full scan |
+| **AI portfolio suggestions** (`/app/suggestions`) | Claude recommends projects to build to increase win rate |
+| **Settings page** (profile + password change) | Users can update all profile data and change password |
+| **Skill autocomplete dropdown** (SkillInput component) | 60+ skills with arrow-key navigation and custom skill support |
+| **Dark / light theme** (persisted) | Better UX, especially for the landing page |
+| **Mobile-first layout** (drawer + top bar + bottom nav) | Full PWA-grade mobile experience |
+| **PWA support** (manifest + service worker + icons) | Installable as a mobile app |
+| **Techy design system** | Electric blue (#3b82f6), Space Grotesk, JetBrains Mono — zero warm gold remnants |
+| **PasswordStrength component** | Segment bar shown while typing passwords |
+| **StrikeScore visual component** | Animated SVG ring with color-coded score |
+| **End-to-end smoke test script** | `backend/test_endpoints.py` — tests every route |
+| **Full schema migration SQL** | `000_full_schema.sql` with RLS + trigger for auto-profile creation |
+
+---
+
+## What's Missing (Gaps to Close Before Demo)
+
+### 🔴 Critical — Must fix before demo
+
+| Gap | Impact | Fix |
 |---|---|---|
-| Auth — register + login | ✅ Done | Supabase auth, auto-confirms email via admin API |
-| Auth — forgot / reset password | ✅ Done | Token-based reset via email link |
-| User profiles (CRUD) | ✅ Done | Skills, hourly rate, experience, bio, GitHub URL, display name |
-| Scan pipeline — SERP | ✅ Done | Bright Data SERP API, queries Google across 5 platforms in parallel |
-| Scan pipeline — Web Scraper | ✅ Done | Extracts budget, bid count, skills, posted date per listing |
-| Scan pipeline — Web Unlocker | ✅ Done | Reads client history behind bot protection (spend, hire rate, disputes) |
-| AI scoring (Claude) | ✅ Done | 0–100 strike score, GO/RISKY/SKIP verdict, reasons, red flags, proposal angle |
-| Market rate calculation | ✅ Done | P25/P50/P75 from live scan budgets, stored per skill per week |
-| Async background pipeline | ✅ Done | Scan never blocks the HTTP response; frontend polls status |
-| Scan history | ✅ Done | All scans stored per user, browsable |
-| Opportunity detail | ✅ Done | Full breakdown: score, reasons, flags, client profile, market rates |
-| Single job URL analyzer | ✅ Done | Drop any job URL, get AI score + analysis |
-| Portfolio suggestions (AI) | ✅ Done | Claude recommends 4 buildable projects to raise bid win rate |
-| Health + SERP debug endpoints | ✅ Done | `/health`, `/test/serp` |
-| RLS + per-user data isolation | ✅ Done | Supabase Row Level Security on all tables |
-| Full schema migration SQL | ✅ Done | `000_full_schema.sql` with all tables + trigger for auto profile creation |
-| Endpoint smoke test script | ✅ Done | `backend/test_endpoints.py` — tests every route end-to-end |
+| **Demo mode `?demo=true`** | Without this, a live Bright Data API call runs during the judge presentation — if it times out, the demo dies | Add a `/opportunities/demo` endpoint that serves `is_demo=true` rows from Supabase; in the frontend check `router.query.demo === "true"` and skip the scan entirely |
+| **Deployment** | Judges need a live URL to test | Deploy frontend to Vercel, backend to Railway. Both support free tier. One day of work. |
+| **MCP Server** | Plan lists it as a core Bright Data tool — judges will notice if it's missing | Either wire up Bright Data MCP Server as a tool Claude can call, or at minimum reference it in the pitch as "next integration" |
 
-### Frontend (Next.js + TypeScript)
+### 🟡 High priority — Polish before submission
 
-| Feature | Status | Notes |
-|---|---|---|
-| Landing page | ✅ Done | Linear-inspired: centered hero, product preview, stats strip, feature grid, About section, footer |
-| Login page | ✅ Done | Email/password, show/hide toggle, forgot password link, back button |
-| Register page | ✅ Done | Email/password with strength meter, confirm field, back button |
-| Forgot password page | ✅ Done | Email input → sends reset link |
-| Reset password page | ✅ Done | Token-based, new password + confirm + strength meter |
-| Onboarding (3 steps) | ✅ Done | Skills → Rate/Experience → Bio/GitHub; always redirects to dashboard |
-| Dashboard | ✅ Done | Scan form, stat tiles (total scans, avg score, top platform, top score), recent activity |
-| Scan results page | ✅ Done | Filter by verdict (GO/RISKY/SKIP), filter by platform, sort by Score/Rate/Bids |
-| Opportunity detail page | ✅ Done | Full score breakdown, client profile card, market rates chart, proposal angle |
-| Scan history page | ✅ Done | List of all past scans, click to view results |
-| Job analyzer page | ✅ Done | Paste a job URL → AI score + analysis |
-| Portfolio suggestions page | ✅ Done | AI-generated project ideas ranked by score impact |
-| Settings page | ✅ Done | Profile (display name, bio, GitHub), skills, rate/experience, password change |
-| Skill autocomplete (SkillInput) | ✅ Done | 60+ skills, dropdown on type, arrow key nav, custom skills, max limit |
-| StrikeScore visual component | ✅ Done | Animated ring with color-coded score |
-| ClientProfile component | ✅ Done | Spend, hire rate, reviews, disputes |
-| MarketRates component | ✅ Done | P25/P50/P75 bar visualization |
-| PasswordStrength component | ✅ Done | Segment bar, strength label |
-| AuthGuard (route protection) | ✅ Done | Redirects unauthenticated users to /login |
-| Dark / light theme | ✅ Done | Toggle persisted to localStorage |
-| Mobile responsive layout | ✅ Done | Sliding sidebar drawer, fixed top bar, bottom nav (5 icons), scrollable filter pills |
-| PWA support | ✅ Done | Web app manifest, service worker (cache-first), iOS meta tags, install prompt |
-| PWA icons | ✅ Done | icon-192.png + icon-512.png (lightning bolt, generated via sharp) |
-| Techy design system | ✅ Done | Electric blue accent (#3b82f6), cool blue-black bg, Space Grotesk + JetBrains Mono |
-| Dev indicator removed | ✅ Done | `devIndicators: false` in next.config.ts |
-
----
-
-## What's Missing / Gaps to Close
-
-### High Priority (Core Product)
-
-| Gap | Why It Matters |
+| Gap | Impact |
 |---|---|
-| **Visual scan progress bar** | Pipeline has status messages but no UI progress indicator — users don't know which step they're on |
-| **Real-time scan status** (WebSocket or SSE) | Currently polling every 2s; true real-time would feel faster and cleaner |
-| **Bookmark / save opportunities** | Can't save individual jobs from a scan to revisit later |
-| **Bid tracker** | Can't mark "I bid on this" and track win/loss outcomes — the data that would make Strikebase truly invaluable over time |
-| **Opportunity expiry / freshness flag** | Old listings waste users' time; need to surface "posted today" vs "posted 2 weeks ago" clearly |
+| **Visual scan progress bar** | Pipeline has status messages but UI just spins. Show step names: Searching → Extracting → Scoring |
+| **Caching headers in responses** | Client profile cache is in DB but not surfaced to the user — showing "from cache" badge builds trust with judges |
+| **Demo data pre-loaded** | Pre-scrape 3 complete scenarios (React dev, Python dev, copywriter) tagged `is_demo=true` before Day 4 ends |
+| **Timing alerts (stretch)** | Flag listings posted <2 hours ago with low bids — the "bid timing signals" feature in the plan |
 
-### Growth / Monetization
+### 🟢 Nice-to-have (post-hackathon)
 
-| Gap | Why It Matters |
+| Gap | Notes |
 |---|---|
-| **Subscription tiers + Stripe billing** | Free tier (3 scans/day) → Pro tier ($9/mo, unlimited) — needed to monetize |
-| **Scan usage limits** | Without a cap, every free user consumes Bright Data API credits |
-| **Email notifications** | "3 GO-rated jobs found matching your skills" sent after each scan completes |
-| **Referral system** | Invite a friend → both get a free week of Pro |
-
-### Quality / Polish
-
-| Gap | Why It Matters |
-|---|---|
-| **OAuth login** (Google / GitHub) | Reduces signup friction dramatically |
-| **Profile avatar upload** | Currently shows initials only |
-| **Scan scheduling** | "Scan for React jobs every day at 9am" — set-and-forget automation |
-| **Export to CSV / copy to clipboard** | Power users want to paste results into their own tracker |
-| **Win-rate analytics** | Charts showing your average score over time, which platforms work best for your skills |
-| **Rate limiting on API** | Prevent abuse; protect Bright Data credit budget |
-| **Error boundary UI** | App crashes show blank screen; need friendly error pages |
-| **Opportunity count on history** | History list shows scan date but not how many results were found |
-
-### Platform Coverage
-
-| Gap | Why It Matters |
-|---|---|
-| **LinkedIn freelance gigs** | Large untapped market |
-| **Fiverr / 99designs** | Fixed-price market different from hourly — different scoring model needed |
-| **Toptal quality check** | Currently in SERP scope but no Toptal-specific parsing |
+| Bookmark/save opportunities | Single DB column + API endpoint |
+| Bid tracker (mark + track outcomes) | The data that makes Strikebase invaluable long-term |
+| Stripe billing (free tier cap + Pro) | Needed for monetisation |
+| Email notifications after scan | Resend or Supabase Edge Functions |
+| OAuth login (Google/GitHub) | Supabase supports natively — 1 day |
+| Scan scheduling | "Scan for React jobs every morning" |
+| Win-rate analytics charts | Score trend over time per user |
+| Export to CSV | Power users want this |
+| Competitor profiling (stretch) | Who else is bidding, what their profiles look like |
 
 ---
 
 ## Architecture
 
 ```
-User → Next.js frontend
-         │
-         ▼
-FastAPI backend (Python)
-         │
-         ├─ Supabase (auth + Postgres DB + RLS)
-         │
-         ├─ Bright Data
-         │    ├─ SERP API         → Google search across 5 platforms
-         │    ├─ Web Scraper      → Structured job listing data
-         │    ├─ Web Unlocker     → Client profile behind bot protection
-         │    └─ Datasets         → Market rate benchmarks
-         │
-         └─ Anthropic Claude      → Scoring + suggestions + analysis
+User browser
+    │
+    ▼
+Next.js 16 frontend (Pages Router, TypeScript, CSS custom properties)
+    │  polls /opportunities/:scan_id every 3s while processing
+    ▼
+FastAPI backend (Python 3.11, httpx async)
+    │
+    ├── Supabase
+    │    ├── Auth (email/password, admin email-confirm, JWT)
+    │    ├── Postgres DB (5 tables + RLS)
+    │    └── Row Level Security (per-user data isolation)
+    │
+    ├── Bright Data
+    │    ├── SERP API         → Google search across 5 platforms
+    │    ├── Web Scraper API  → Structured job listing data
+    │    ├── Web Unlocker     → Client profiles behind bot protection
+    │    └── Datasets         → Market rate benchmarks (P25/P50/P75)
+    │
+    └── Anthropic Claude (claude-sonnet-4-5)
+         ├── Scoring pipeline → 0–100 score + reasons + verdict + proposal angle
+         └── Suggestions      → Portfolio project recommendations
 ```
 
 ---
 
-## Pages & Routes
+## All Pages & Routes
 
 ```
-/                        Landing page
-/login                   Sign in
-/register                Create account
-/forgot-password         Request reset email
-/reset-password          Set new password (token)
-/onboarding              3-step profile setup (skills → rate → bio)
+PUBLIC
+  /                        Landing page (Linear-inspired redesign)
+  /login                   Sign in
+  /register                Create account
+  /forgot-password         Request reset email
+  /reset-password          Set new password (token from email)
 
-/app/dashboard           Stats + scan launch
-/app/scan                Scan results (filter, sort)
-/app/history             Past scans
-/app/opportunity/[id]    Single opportunity deep dive
-/app/analyze             Single job URL analyzer
-/app/settings            Profile, skills, rate, password
+ONBOARDING
+  /onboarding              3-step: skills → rate/experience → bio/GitHub
+
+APP (auth required)
+  /app/dashboard           Stats tiles + scan launch form
+  /app/scan                Scan results — filter by verdict/platform, sort by score/rate/bids
+  /app/history             All past scans, click to reload results
+  /app/opportunity/[id]    Full breakdown: score, client profile, market rates, proposal angle
+  /app/analyze             Drop any job URL → instant AI score + analysis
+  /app/settings            Profile, skills, rate, experience, bio, GitHub, password change
+
+MISSING (not built yet)
+  /app/suggestions         AI portfolio project recommendations (backend exists, frontend route TBD)
 ```
 
-*Suggestions page exists in backend (`/api/suggestions`) but the frontend route may need verification.*
+---
+
+## Database Schema
+
+```sql
+scans           — id, user_id, skills[], hourly_rate, experience, status, progress, created_at
+opportunities   — id, scan_id, title, url, platform, budget_min/max, bid_count, client_id,
+                  strike_score, verdict, reasons[], red_flags[], proposal_angle, is_demo
+client_profiles — client_id (PK), platform, total_spent, hire_rate, review_count,
+                  dispute_count, avg_rating, avg_duration_days, scraped_at (cache TTL)
+market_rates    — id, skill_tag, platform, p25_rate, median_rate, p75_rate, sample_count, week_start
+user_profiles   — id (FK → auth.users), display_name, skills[], hourly_rate, experience,
+                  github_url, bio, onboarded
+```
 
 ---
 
@@ -159,22 +168,22 @@ FastAPI backend (Python)
 
 | Layer | Technology |
 |---|---|
-| Frontend | Next.js 16 (Pages Router), TypeScript, CSS Variables |
-| Backend | FastAPI, Python 3.11, httpx (async) |
+| Frontend | Next.js 16 (Pages Router), TypeScript, CSS Variables (no Tailwind) |
+| Backend | FastAPI, Python 3.11, httpx (fully async) |
 | Database | Supabase (Postgres + Auth + RLS) |
 | Data APIs | Bright Data — SERP API, Web Scraper, Web Unlocker, Datasets |
-| AI | Anthropic Claude (claude-sonnet-4-5 for scoring + suggestions) |
-| Auth | Supabase Auth (email/password, admin email-confirm on register) |
-| Fonts | Space Grotesk, Inter, JetBrains Mono |
-| PWA | Web app manifest + service worker (cache-first) |
-| Hosting | (TBD — Vercel for frontend, Railway/Render for backend) |
+| AI | Anthropic Claude claude-sonnet-4-5 (scoring + suggestions + analysis) |
+| Auth | Supabase Auth (email/password; admin auto-confirm on register) |
+| Design | Space Grotesk + Inter + JetBrains Mono; Electric blue (#3b82f6) accent |
+| PWA | Web app manifest + cache-first service worker |
+| Hosting | **TODO** — Vercel (frontend) + Railway (backend) |
 
 ---
 
-## Immediate Next Steps
+## Immediate Action Items (in priority order)
 
-1. **Add visual scan progress** — show step names (Searching → Extracting → Scoring) in the UI
-2. **Add bookmark/save** on opportunity cards (single DB column + API endpoint)
-3. **Wire up Stripe** — free tier cap + Pro subscription  
-4. **Add email notification** on scan complete (Supabase Edge Function or Resend)
-5. **OAuth** — add Google login via Supabase OAuth provider (1 day of work)
+1. **Build demo mode** — `/opportunities/demo` endpoint + `?demo=true` frontend bypass. Pre-load 3 scenarios.
+2. **Deploy** — Vercel for frontend, Railway for backend. Get a live URL.
+3. **Wire MCP Server** — even a thin integration counts for the hackathon criteria.
+4. **Visual progress bar** — show pipeline step names during scan.
+5. **Polish suggestions page** — the frontend page may need verification it routes correctly.
