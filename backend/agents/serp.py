@@ -106,6 +106,19 @@ def _parse_google_html(html: str) -> list[dict]:
     return results
 
 
+def _unwrap_bd(body: str) -> str:
+    """Bright Data sometimes wraps the response: {"status_code":200,"headers":{...},"body":"<html>..."}.
+    Extract the actual content so parsers get real HTML or JSON."""
+    import json as _json
+    try:
+        data = _json.loads(body)
+        if isinstance(data, dict) and isinstance(data.get("body"), str):
+            return data["body"]
+    except Exception:
+        pass
+    return body
+
+
 def _classify_platform(url: str) -> str:
     for name, _ in PLATFORMS:
         if name in url:
@@ -126,34 +139,33 @@ async def _search_platform(platform_prefix: str, skills: list[str], num_results:
         })
         print(f"[SERP] zone={settings.bright_data_serp_zone} status={status} body_len={len(body)}")
         if status == 200:
-            organic = _parse_serp_json(body)
+            content = _unwrap_bd(body)
+            organic = _parse_serp_json(content)
             if organic:
                 print(f"[SERP] JSON returned {len(organic)} results for '{query[:50]}'")
                 return _to_result_list(organic)
-            # 200 but no JSON organic — might be HTML from a proxy zone
-            print(f"[SERP] JSON had no organic, trying HTML parse. Body[:200]: {body[:200]}")
-            html_results = _parse_google_html(body)
+            html_results = _parse_google_html(content)
             if html_results:
-                print(f"[SERP] HTML fallback returned {len(html_results)} results")
+                print(f"[SERP] HTML parse returned {len(html_results)} results for '{query[:50]}'")
                 return _html_to_result_list(html_results)
+            print(f"[SERP] SERP zone 200 but no results. Content type preview: {content[:120]}")
         else:
-            print(f"[SERP] SERP zone returned {status}. Body: {body[:300]}")
+            print(f"[SERP] SERP zone returned {status}. Body: {body[:200]}")
 
     # ── Try 2: Web Unlocker zone (HTML fallback) ─────────────────────────────
     if settings.bright_data_unlocker_zone:
-        print(f"[SERP] Trying Web Unlocker fallback for '{query[:50]}'")
         status, body = await _bd_request({
             "zone": settings.bright_data_unlocker_zone,
             "url": google_url,
             "format": "raw",
         })
-        print(f"[SERP] Unlocker status={status} body_len={len(body)}")
         if status == 200:
-            html_results = _parse_google_html(body)
-            print(f"[SERP] Unlocker HTML returned {len(html_results)} results")
+            content = _unwrap_bd(body)
+            html_results = _parse_google_html(content)
+            print(f"[SERP] Unlocker returned {len(html_results)} results for '{query[:50]}'")
             return _html_to_result_list(html_results)
         else:
-            print(f"[SERP] Unlocker returned {status}. Body: {body[:300]}")
+            print(f"[SERP] Unlocker returned {status}. Body: {body[:200]}")
 
     return []
 
