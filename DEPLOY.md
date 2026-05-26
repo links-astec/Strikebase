@@ -35,7 +35,7 @@ CORS_ORIGINS          https://strikebase.vercel.app,http://localhost:3000
 - Your backend URL will be something like `https://strikebase-api.onrender.com`
 - Test it: `curl https://strikebase-api.onrender.com/health`
 
-> **Note:** Render free tier spins down after 15 min of inactivity. First request after sleep takes ~30s. For the hackathon demo, hit `/health` once before presenting to wake it up.
+> **Note:** Render free tier spins down after 15 min of inactivity. Set up UptimeRobot (section 5) to keep it alive permanently — no cold starts.
 
 ---
 
@@ -88,19 +88,41 @@ pip install "mcp>=1.0.0"
 
 ---
 
-## 5. Pre-demo checklist
+## 5. UptimeRobot — keep Render alive
+
+Render free tier shuts down after 15 min of inactivity. UptimeRobot pings `/health` every 5 minutes so the instance never sleeps.
+
+### Setup (free, ~2 minutes)
+1. Create a free account at [uptimerobot.com](https://uptimerobot.com)
+2. Click **Add New Monitor**
+3. Fill in:
+
+   | Field | Value |
+   |---|---|
+   | Monitor Type | HTTP(s) |
+   | Friendly Name | Strikebase API |
+   | URL | `https://strikebase-api.onrender.com/health` |
+   | Monitoring Interval | 5 minutes |
+
+4. Click **Create Monitor** — done.
+
+UptimeRobot sends an email if the endpoint goes down and auto-recovers. The free plan supports up to 50 monitors at 5-min intervals.
+
+---
+
+## 6. Pre-demo checklist
 
 - [ ] Run `002_demo_seed.sql` in Supabase
 - [ ] Backend live at Render → hit `/health` to verify
 - [ ] Frontend live at Vercel → confirm login works
 - [ ] `CORS_ORIGINS` on Render includes your Vercel URL
 - [ ] `NEXT_PUBLIC_API_URL` on Vercel points to your Render URL
-- [ ] Wake up the Render instance 2 minutes before presenting (free tier cold start)
+- [ ] UptimeRobot monitor created and showing "Up" status
 - [ ] Toggle Demo on in the sidebar → run a scan → confirm results appear instantly
 
 ---
 
-## 6. CORS checklist
+## 7. CORS checklist
 
 `CORS_ORIGINS` on Render must include (comma-separated, no spaces):
 ```

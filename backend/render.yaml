@@ -2,7 +2,6 @@ services:
   - type: web
     name: strikebase-api
     runtime: python
-    pythonVersion: "3.11.0"
     rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
@@ -23,5 +22,7 @@ services:
         value: serp_api
       - key: BRIGHT_DATA_UNLOCKER_ZONE
         value: unlocker
+      - key: PYTHON_VERSION
+        value: "3.11.0"
       - key: CORS_ORIGINS
         value: https://strikebase.vercel.app,http://localhost:3000
