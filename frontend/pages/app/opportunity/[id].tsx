@@ -114,13 +114,16 @@ export default function OpportunityDetail() {
                     </div>
                   </div>
 
-                  {data.opp.url && (
-                    <a href={data.opp.url} target="_blank" rel="noopener noreferrer">
-                      <button className="btn btn-ghost" style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, flexShrink: 0 }}>
-                        View listing <ExternalLink size={12} />
-                      </button>
-                    </a>
-                  )}
+                  {data.opp.url && (() => {
+                    const cleanUrl = data.opp.url.replace(/^["']+|["']+$/g, "");
+                    return cleanUrl.startsWith("http") ? (
+                      <a href={cleanUrl} target="_blank" rel="noopener noreferrer">
+                        <button className="btn btn-ghost" style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, flexShrink: 0 }}>
+                          View listing <ExternalLink size={12} />
+                        </button>
+                      </a>
+                    ) : null;
+                  })()}
                 </div>
 
                 <div className="gold-line" style={{ margin: "16px 0" }} />

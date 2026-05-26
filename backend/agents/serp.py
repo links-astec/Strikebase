@@ -135,11 +135,15 @@ async def _search_platform(platform_prefix: str, skills: list[str], num_results:
     return []
 
 
+def _clean_url(url: str) -> str:
+    return url.strip().strip('"\'')
+
+
 def _to_result_list(organic: list) -> list[dict]:
     out = []
     for r in organic:
-        link = r.get("link") or r.get("url") or r.get("href", "")
-        if not link:
+        link = _clean_url(r.get("link") or r.get("url") or r.get("href", ""))
+        if not link or not link.startswith("http"):
             continue
         out.append({
             "url": link,
@@ -151,11 +155,12 @@ def _to_result_list(organic: list) -> list[dict]:
 
 
 def _html_to_result_list(items: list) -> list[dict]:
-    return [
-        {**r, "platform": _classify_platform(r["url"])}
-        for r in items
-        if r.get("url")
-    ]
+    out = []
+    for r in items:
+        url = _clean_url(r.get("url", ""))
+        if url and url.startswith("http"):
+            out.append({**r, "url": url, "platform": _classify_platform(url)})
+    return out
 
 
 async def search_all_platforms(skills: list[str], num_results: int = 20) -> list[dict]:
