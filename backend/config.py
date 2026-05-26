@@ -3,8 +3,8 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     bright_data_token: str = ""
-    bright_data_serp_zone: str = "strikebaser_serp"
-    bright_data_unlocker_zone: str = "strikebase_webunlocker"
+    bright_data_serp_zone: str = ""
+    bright_data_unlocker_zone: str = ""
 
     anthropic_api_key: str = ""
 

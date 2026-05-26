@@ -21,10 +21,14 @@ async def run_pipeline(scan_id: str, req: ScanRequest, user_id: str | None = Non
     """Full pipeline: SERP → Scrape → Client profiles → AI score → Save."""
     try:
         db.update_scan_status(scan_id, "processing", "Searching job boards...")
-        serp_results = await search_job_listings(req.skills, num_results=MAX_LISTINGS)
+        try:
+            serp_results = await search_job_listings(req.skills, num_results=MAX_LISTINGS)
+        except RuntimeError as e:
+            db.update_scan_status(scan_id, "error", f"Configuration error: {e}. Check Bright Data environment variables in Render.")
+            return
 
         if not serp_results:
-            db.update_scan_status(scan_id, "error", "Could not retrieve listings — Bright Data connection issue. Please try again in a moment.")
+            db.update_scan_status(scan_id, "error", "Bright Data returned no results. Check your zone names and token in Render's environment variables.")
             return
 
         db.update_scan_status(scan_id, "processing", f"Found {len(serp_results)} listings, extracting details...")

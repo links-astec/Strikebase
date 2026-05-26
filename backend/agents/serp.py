@@ -7,7 +7,10 @@ from bs4 import BeautifulSoup
 from config import settings
 
 BD_API = "https://api.brightdata.com/request"
-HEADERS = {"Authorization": f"Bearer {settings.bright_data_token}", "Content-Type": "application/json"}
+
+
+def _headers() -> dict:
+    return {"Authorization": f"Bearer {settings.bright_data_token}", "Content-Type": "application/json"}
 
 PLATFORMS = [
     ("upwork",        "site:upwork.com/jobs"),
@@ -23,7 +26,7 @@ async def _bd_request(payload: dict, retries: int = 2) -> tuple[int, str]:
     for attempt in range(retries):
         try:
             async with httpx.AsyncClient(timeout=35) as client:
-                r = await client.post(BD_API, headers=HEADERS, json=payload)
+                r = await client.post(BD_API, headers=_headers(), json=payload)
                 return r.status_code, r.text
         except Exception as e:
             print(f"[SERP] Request error (attempt {attempt+1}): {e}")
@@ -164,6 +167,11 @@ def _html_to_result_list(items: list) -> list[dict]:
 
 
 async def search_all_platforms(skills: list[str], num_results: int = 20) -> list[dict]:
+    if not settings.bright_data_token:
+        raise RuntimeError("BRIGHT_DATA_TOKEN is not set")
+    if not settings.bright_data_serp_zone and not settings.bright_data_unlocker_zone:
+        raise RuntimeError("No Bright Data zone configured (BRIGHT_DATA_SERP_ZONE or BRIGHT_DATA_UNLOCKER_ZONE)")
+
     per_platform = max(5, num_results // len(PLATFORMS))
     tasks = [_search_platform(prefix, skills, per_platform) for _, prefix in PLATFORMS]
     results_per_platform = await asyncio.gather(*tasks, return_exceptions=True)
