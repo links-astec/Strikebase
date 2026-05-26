@@ -69,6 +69,7 @@ export default function ScanPage() {
 
     if (demo) {
       setProgress("Loading demo results...");
+      setScanId("demo");
       setTimeout(async () => {
         try {
           const r = await getOpportunities("demo");

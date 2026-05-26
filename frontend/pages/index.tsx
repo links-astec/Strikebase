@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { Zap, Search, BarChart3, Sparkles, CheckCircle, ArrowRight, Database, ShieldCheck, TrendingUp, Target, Globe } from "lucide-react";
@@ -5,19 +6,19 @@ import StrikeScore from "@/components/StrikeScore";
 import ThemeToggle from "@/components/ThemeToggle";
 
 const FEATURES = [
-  { Icon: Search,     color: "var(--gold)",   bg: "var(--gold-muted)",       title: "Real-time discovery",  desc: "SERP API scans 5 platforms in real time. No cached results, no stale listings. Every scan is live." },
-  { Icon: BarChart3,  color: "var(--go)",     bg: "rgba(16,185,129,0.12)",   title: "Competitive intel",    desc: "Bid counts, client spend, hire rates, and dispute records — live data scraped for every result." },
-  { Icon: Sparkles,   color: "#a78bfa",       bg: "rgba(167,139,250,0.12)",  title: "AI scoring",           desc: "Claude scores each listing 0–100 with data-backed reasoning. GO, RISKY, or SKIP — instantly clear." },
-  { Icon: TrendingUp, color: "var(--text-2)", bg: "rgba(255,255,255,0.06)",  title: "Market rate data",     desc: "P25/P50/P75 benchmarks for your exact skill stack. Know if your rate is competitive before you bid." },
-  { Icon: ShieldCheck,color: "var(--warn)",   bg: "var(--warn-bg)",          title: "Client due diligence", desc: "Reads client history behind bot protection — total spend, hire rate, review count, dispute records." },
-  { Icon: Target,     color: "var(--danger)", bg: "var(--danger-bg)",        title: "Bid timing signals",   desc: "Early-bid detection flags listings with under 5 bids so you get in before the competition spikes." },
+  { Icon: Search,      color: "var(--gold)",   bg: "var(--gold-muted)",        glow: "rgba(59,130,246,0.18)",   title: "Real-time discovery",  desc: "SERP API scans 5 platforms live. No cached results, no stale listings — every scan is happening now." },
+  { Icon: BarChart3,   color: "var(--go)",     bg: "rgba(16,185,129,0.12)",    glow: "rgba(16,185,129,0.18)",   title: "Competitive intel",    desc: "Bid counts, client spend, hire rates, and dispute records — live data scraped for every result." },
+  { Icon: Sparkles,    color: "#a78bfa",       bg: "rgba(167,139,250,0.12)",   glow: "rgba(167,139,250,0.18)",  title: "AI scoring",           desc: "Claude scores each listing 0–100 with data-backed reasoning. GO, RISKY, or SKIP — instantly clear." },
+  { Icon: TrendingUp,  color: "var(--text-2)", bg: "rgba(255,255,255,0.06)",   glow: "rgba(148,163,184,0.12)",  title: "Market rate data",     desc: "P25/P50/P75 benchmarks for your exact skill stack. Know if your rate is competitive before you bid." },
+  { Icon: ShieldCheck, color: "var(--warn)",   bg: "var(--warn-bg)",           glow: "rgba(245,158,11,0.16)",   title: "Client due diligence", desc: "Reads client history behind bot protection — total spend, hire rate, review count, dispute records." },
+  { Icon: Target,      color: "var(--danger)", bg: "var(--danger-bg)",         glow: "rgba(239,68,68,0.16)",    title: "Bid timing signals",   desc: "Early-bid detection flags listings with under 5 bids so you get in before the competition spikes." },
 ];
 
 const STEPS = [
-  { num: "01", Icon: Target,    color: "var(--gold)",   title: "Enter your skills",  desc: "Tell Strikebase what you do and your target hourly rate." },
-  { num: "02", Icon: Globe,     color: "var(--go)",     title: "Live SERP scan",     desc: "SERP API queries Google in real time across 5 major freelance platforms." },
-  { num: "03", Icon: Database,  color: "var(--text-2)", title: "Deep extraction",    desc: "Web Scraper + Web Unlocker pull bids, budgets, and client history." },
-  { num: "04", Icon: Sparkles,  color: "#a78bfa",       title: "AI ranking",         desc: "Claude scores each listing 0–100 with number-backed reasoning." },
+  { num: "01", Icon: Target,   color: "var(--gold)",   title: "Enter your skills",  desc: "Tell Strikebase what you do and your target hourly rate." },
+  { num: "02", Icon: Globe,    color: "var(--go)",     title: "Live SERP scan",     desc: "SERP API queries Google in real time across 5 major freelance platforms." },
+  { num: "03", Icon: Database, color: "var(--text-2)", title: "Deep extraction",    desc: "Web Scraper + Web Unlocker pull bids, budgets, and client history." },
+  { num: "04", Icon: Sparkles, color: "#a78bfa",       title: "AI ranking",         desc: "Claude scores each listing 0–100 with number-backed reasoning." },
 ];
 
 const TEAM = [
@@ -26,16 +27,41 @@ const TEAM = [
     name: "Gabriel Nii Attoh Quaye",
     role: "Co-founder · Full-stack Engineer",
     bio: "Builds the core platform and AI pipeline. Passionate about making tools that give freelancers a real competitive edge.",
+    gradient: "from-blue-500 to-indigo-600",
   },
   {
     initials: "PE",
     name: "Prince Edwin Nyarko",
     role: "Co-founder · Full-stack Developer",
     bio: "Shapes the product vision and builds core features. Focused on turning complex data into clear decisions anyone can act on.",
+    gradient: "from-violet-500 to-purple-600",
   },
 ];
 
 export default function Landing() {
+  useEffect(() => {
+    const nav = document.querySelector(".lp-nav");
+    const onScroll = () => nav?.classList.toggle("lp-nav-scrolled", window.scrollY > 10);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add("lp-revealed");
+            observer.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
+    );
+    document.querySelectorAll(".lp-reveal").forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <>
       <Head>
@@ -64,6 +90,10 @@ export default function Landing() {
       <section className="lp-hero">
         <div className="lp-hero-glow" />
         <div className="lp-hero-grid" />
+        <div className="lp-orb lp-orb-1" />
+        <div className="lp-orb lp-orb-2" />
+        <div className="lp-orb lp-orb-3" />
+
         <div className="lp-wrap lp-hero-content">
           <div className="lp-badge lp-anim-1">
             <span className="lp-badge-dot" />
@@ -95,6 +125,13 @@ export default function Landing() {
               <span className="lp-dot lp-dot-y" />
               <span className="lp-dot lp-dot-g" />
               <span className="lp-preview-url">strikebase.app · scan results</span>
+              <span className="lp-preview-live">
+                <span className="lp-preview-live-dot" />
+                live
+              </span>
+            </div>
+            <div className="lp-scan-bar-wrap">
+              <div className="lp-scan-bar" />
             </div>
             <div className="lp-preview-body">
               <div className="lp-mock">
@@ -139,8 +176,8 @@ export default function Landing() {
             { n: "4",     l: "Bright Data APIs"  },
             { n: "0–100", l: "AI win score"       },
             { n: "<30s",  l: "Time per scan"      },
-          ].map(s => (
-            <div key={s.l} className="lp-stat">
+          ].map((s, i) => (
+            <div key={s.l} className={`lp-stat lp-reveal`} data-delay={String(i + 1)}>
               <span className="lp-stat-n">{s.n}</span>
               <span className="lp-stat-l">{s.l}</span>
             </div>
@@ -151,23 +188,20 @@ export default function Landing() {
       {/* ── HOW IT WORKS ── */}
       <section className="lp-sec lp-sec-alt">
         <div className="lp-wrap">
-          <div className="lp-sec-hd">
+          <div className="lp-sec-hd lp-reveal">
             <p className="lp-sec-lbl">How it works</p>
             <h2 className="lp-sec-h2">From skills to ranked results in 30 seconds</h2>
             <p className="lp-sec-p">Four steps. Live Bright Data. Claude AI. No guesswork.</p>
           </div>
           <div className="lp-steps">
             {STEPS.map((s, i) => (
-              <div key={s.num} className="lp-step">
+              <div key={s.num} className="lp-step lp-reveal" data-delay={String(i + 1)}>
                 <div className="lp-step-num">{s.num}</div>
-                <div className="lp-step-icon" style={{ color: s.color }}>
+                <div className="lp-step-icon" style={{ color: s.color, borderColor: `${s.color}33`, background: `${s.color}10` }}>
                   <s.Icon size={20} />
                 </div>
                 <h3 className="lp-step-title">{s.title}</h3>
                 <p className="lp-step-desc">{s.desc}</p>
-                {i < STEPS.length - 1 && (
-                  <div className="lp-step-arrow"><ArrowRight size={15} /></div>
-                )}
               </div>
             ))}
           </div>
@@ -177,7 +211,7 @@ export default function Landing() {
       {/* ── FEATURES ── */}
       <section className="lp-sec">
         <div className="lp-wrap">
-          <div className="lp-sec-hd">
+          <div className="lp-sec-hd lp-reveal">
             <p className="lp-sec-lbl">Why Strikebase</p>
             <h2 className="lp-sec-h2">Intelligence nobody else has</h2>
             <p className="lp-sec-p">
@@ -186,8 +220,13 @@ export default function Landing() {
             </p>
           </div>
           <div className="lp-feat-grid">
-            {FEATURES.map(f => (
-              <div key={f.title} className="lp-feat-card">
+            {FEATURES.map((f, i) => (
+              <div
+                key={f.title}
+                className="lp-feat-card lp-reveal"
+                data-delay={String((i % 3) + 1)}
+                style={{ "--feat-glow": f.glow } as React.CSSProperties}
+              >
                 <div className="lp-feat-icon" style={{ background: f.bg, color: f.color }}>
                   <f.Icon size={18} />
                 </div>
@@ -202,7 +241,7 @@ export default function Landing() {
       {/* ── ABOUT ── */}
       <section className="lp-sec lp-sec-alt">
         <div className="lp-wrap">
-          <div className="lp-sec-hd">
+          <div className="lp-sec-hd lp-reveal">
             <p className="lp-sec-lbl">About us</p>
             <h2 className="lp-sec-h2">Built by freelancers, for freelancers</h2>
             <p className="lp-sec-p">
@@ -211,8 +250,8 @@ export default function Landing() {
             </p>
           </div>
           <div className="lp-team">
-            {TEAM.map(m => (
-              <div key={m.name} className="lp-team-card">
+            {TEAM.map((m, i) => (
+              <div key={m.name} className="lp-team-card lp-reveal" data-delay={String(i + 1)}>
                 <div className="lp-team-avatar">{m.initials}</div>
                 <h3 className="lp-team-name">{m.name}</h3>
                 <p className="lp-team-role">{m.role}</p>
@@ -225,17 +264,20 @@ export default function Landing() {
 
       {/* ── FINAL CTA ── */}
       <section className="lp-sec lp-cta-section">
-        <div className="lp-wrap" style={{ textAlign: "center" }}>
-          <div className="lp-cta-icon"><Zap size={22} color="#fff" /></div>
-          <h2 className="lp-sec-h2">Ready to stop guessing?</h2>
-          <p className="lp-sec-p" style={{ marginBottom: 32 }}>
-            Create your free account and scan live listings across 5 platforms in under 30 seconds.
-          </p>
-          <div className="lp-hero-ctas" style={{ justifyContent: "center" }}>
-            <Link href="/register" className="lp-cta-primary">
-              Create free account <ArrowRight size={14} />
-            </Link>
-            <Link href="/login" className="lp-cta-ghost">I have an account</Link>
+        <div className="lp-cta-bg-glow" />
+        <div className="lp-wrap">
+          <div className="lp-cta-inner lp-reveal" style={{ textAlign: "center" }}>
+            <div className="lp-cta-icon"><Zap size={22} color="#fff" /></div>
+            <h2 className="lp-sec-h2">Ready to stop guessing?</h2>
+            <p className="lp-sec-p" style={{ marginBottom: 32 }}>
+              Create your free account and scan live listings across 5 platforms in under 30 seconds.
+            </p>
+            <div className="lp-hero-ctas" style={{ justifyContent: "center" }}>
+              <Link href="/register" className="lp-cta-primary">
+                Create free account <ArrowRight size={14} />
+              </Link>
+              <Link href="/login" className="lp-cta-ghost">I have an account</Link>
+            </div>
           </div>
         </div>
       </section>

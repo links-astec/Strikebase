@@ -23,14 +23,28 @@ function groupByDate(scans: Scan[]): { label: string; items: Scan[] }[] {
   return Object.entries(groups).map(([label, items]) => ({ label, items }));
 }
 
+const SCANS_KEY = "sb_scans_v1";
+const SCANS_TTL = 30_000;
+
 export default function HistoryPage() {
   const [scans, setScans]     = useState<Scan[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState("");
 
   useEffect(() => {
+    try {
+      const cached = JSON.parse(localStorage.getItem(SCANS_KEY) || "null");
+      if (cached?.data) {
+        setScans(cached.data);
+        setLoading(false);
+        if (Date.now() - cached.ts < SCANS_TTL) return;
+      }
+    } catch {}
     getUserScans()
-      .then(r => setScans(r.scans))
+      .then(r => {
+        setScans(r.scans);
+        try { localStorage.setItem(SCANS_KEY, JSON.stringify({ ts: Date.now(), data: r.scans })); } catch {}
+      })
       .catch(() => setError("Failed to load scan history"))
       .finally(() => setLoading(false));
   }, []);

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { ArrowRight, Zap, TrendingUp, Clock, Sparkles, ChevronRight } from "lucide-react";
@@ -9,32 +9,72 @@ import { useAuth } from "@/lib/auth";
 import { getUserScans, getSuggestions } from "@/lib/api";
 import type { Scan, Suggestion } from "@/lib/types";
 
+const SCANS_KEY  = "sb_scans_v1";
+const SUGG_KEY   = "sb_sugg_v1";
+const SCANS_TTL  = 30_000;
+
+function suggProfileKey(skills: string[], rate: number | undefined, exp: string | undefined) {
+  return `${[...skills].sort().join(",")}|${rate ?? ""}|${exp ?? ""}`;
+}
+
+interface ScansCache { ts: number; data: Scan[] }
+interface SuggCache  { key: string; data: Suggestion[] }
+
+function readCache<T>(k: string): T | null {
+  try { return JSON.parse(localStorage.getItem(k) || "null"); } catch { return null; }
+}
+function writeCache(k: string, v: unknown) {
+  try { localStorage.setItem(k, JSON.stringify(v)); } catch {}
+}
+
 export default function Dashboard() {
   const { profile } = useAuth();
-  const [scans, setScans] = useState<Scan[]>([]);
+  const [scans, setScans]           = useState<Scan[]>([]);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [loadingScans, setLoadingScans] = useState(true);
-  const [loadingSugg, setLoadingSugg] = useState(false);
+  const [loadingSugg, setLoadingSugg]   = useState(false);
+  const sugg = useRef<AbortController | null>(null);
 
+  // Scans — show cache immediately, refresh in background if stale
   useEffect(() => {
+    const cached = readCache<ScansCache>(SCANS_KEY);
+    if (cached) {
+      setScans(cached.data);
+      setLoadingScans(false);
+      if (Date.now() - cached.ts < SCANS_TTL) return;
+    }
     getUserScans()
-      .then(r => setScans(r.scans))
+      .then(r => {
+        setScans(r.scans);
+        writeCache(SCANS_KEY, { ts: Date.now(), data: r.scans } satisfies ScansCache);
+      })
       .catch(() => {})
       .finally(() => setLoadingScans(false));
   }, []);
 
+  // Suggestions — cache by profile key; only re-fetch if skills/rate/exp changed
   useEffect(() => {
     if (!profile?.skills?.length) return;
+    const profileKey = suggProfileKey(profile.skills, profile.hourly_rate, profile.experience);
+
+    const cached = readCache<SuggCache>(SUGG_KEY);
+    if (cached && cached.key === profileKey) {
+      setSuggestions(cached.data);
+      return;
+    }
+
+    sugg.current?.abort();
+    sugg.current = new AbortController();
     setLoadingSugg(true);
-    getSuggestions({
-      skills: profile.skills,
-      experience: profile.experience,
-      hourly_rate: profile.hourly_rate,
-    })
-      .then(r => setSuggestions(r.suggestions.slice(0, 3)))
+    getSuggestions({ skills: profile.skills, experience: profile.experience, hourly_rate: profile.hourly_rate })
+      .then(r => {
+        const data = r.suggestions.slice(0, 3);
+        setSuggestions(data);
+        writeCache(SUGG_KEY, { key: profileKey, data } satisfies SuggCache);
+      })
       .catch(() => {})
       .finally(() => setLoadingSugg(false));
-  }, [profile]);
+  }, [profile?.skills?.join(","), profile?.hourly_rate, profile?.experience]); // eslint-disable-line
 
   const greeting = () => {
     const h = new Date().getHours();
