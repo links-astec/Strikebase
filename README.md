@@ -1,19 +1,47 @@
 # Strikebase
 
-**Bid intelligence for freelancers.** Strikebase scans live job listings across five platforms, scores every opportunity 0–100, and tells you exactly why to bid — or skip — before you write a single word.
+**Bid intelligence for freelancers.** Strikebase scans live job listings across five platforms, scores every opportunity 0–100 with AI, and tells you exactly why to bid — or skip — before you write a single word.
+
+> Built for the **[Web Data UNLOCKED Hackathon](https://lablab.ai)** (May 2026) · Powered by Bright Data + Claude AI
+
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-strikebase.vercel.app-blue?style=flat-square)](https://strikebase.vercel.app)
+[![Backend](https://img.shields.io/badge/API-Render-46E3B7?style=flat-square)](https://strikebase-api.onrender.com/docs)
+
+---
+
+## The problem
+
+Freelancers waste hours manually scanning job boards, reading low-effort listings, and sending proposals that never get a reply. There's no signal — just noise.
+
+Strikebase replaces that guesswork with a live, data-backed score on every listing in seconds.
 
 ---
 
 ## What it does
 
-- **Live SERP scan** — queries Google in real time across Upwork, Freelancer, Guru, PeoplePerHour, and Toptal simultaneously
-- **Deep data extraction** — pulls bid counts, budgets, required skills, and posting dates from each listing
-- **Client intelligence** — reads client history behind bot protection: total spend, hire rate, review count, dispute record
-- **AI scoring** — ranks every listing 0–100 with data-backed reasons and a GO / RISKY / SKIP verdict
-- **Proposal angle** — one-liner tip on how to open your proposal for that specific job
-- **Job analyzer** — paste any job URL or description and get an instant score against your profile
-- **Project suggestions** — AI recommends portfolio projects that would raise your win probability
-- **Scan history** — every scan is saved to your account with full results
+| Feature | Description |
+|---|---|
+| **Live SERP scan** | Queries Google across Upwork, Freelancer, Guru, PeoplePerHour, and Toptal simultaneously |
+| **Deep data extraction** | Pulls bid counts, budgets, required skills, and posting dates from each listing |
+| **Client intelligence** | Reads client history behind bot protection: total spend, hire rate, review count, dispute record |
+| **AI scoring** | Ranks every listing 0–100 with data-backed reasons and a GO / RISKY / SKIP verdict |
+| **Proposal angle** | One-liner opening for your proposal, tailored to each specific job |
+| **Job analyzer** | Paste any URL or description — get an instant score against your profile |
+| **Project suggestions** | AI recommends portfolio projects that raise your win probability |
+| **Scan history** | Every scan saved to your account with full results |
+
+---
+
+## How Bright Data is used
+
+Strikebase uses **all four** Bright Data tools:
+
+| Tool | How it's used |
+|---|---|
+| **SERP API** | Live Google search to surface fresh listings across all five platforms |
+| **Web Scraper API** | Structured extraction of job details (budget, skills, bid count, post date) |
+| **Web Unlocker** | Bypasses bot protection to read client profiles — spend history, hire rate, disputes |
+| **MCP Server** | Connects AI agents to Bright Data tools natively via the Model Context Protocol |
 
 ---
 
@@ -21,12 +49,12 @@
 
 | Layer | Technology |
 |---|---|
-| Frontend | Next.js 16, React 19, TypeScript |
-| Backend | FastAPI, Python 3.10, Uvicorn |
+| Frontend | Next.js, React, TypeScript |
+| Backend | FastAPI, Python 3.11, Uvicorn |
 | Database & Auth | Supabase (PostgreSQL + Auth) |
-| Scraping | Bright Data — SERP API, Web Scraper, Web Unlocker, Datasets |
-| AI | Anthropic API |
-| Styling | Custom CSS design system (Cormorant Garamond + Jost) |
+| Scraping | Bright Data — SERP API, Web Scraper, Web Unlocker, MCP Server |
+| AI | Anthropic Claude API |
+| Deployment | Vercel (frontend) · Render (backend) |
 
 ---
 
@@ -57,7 +85,7 @@ Strikebase/
 
 ### Prerequisites
 
-- Python 3.10+
+- Python 3.11+
 - Node.js 18+
 - A [Supabase](https://supabase.com) project
 - A [Bright Data](https://brightdata.com) account with SERP, Web Scraper, and Web Unlocker zones
@@ -101,7 +129,7 @@ PORT=8000
 Run the Supabase migration in your project's SQL Editor:
 
 ```sql
--- backend/migrations/001_user_profiles.sql
+-- contents of backend/migrations/001_user_profiles.sql
 ```
 
 Start the server:
@@ -110,7 +138,7 @@ Start the server:
 uvicorn main:app --reload
 ```
 
-API available at `http://localhost:8000`. Docs at `http://localhost:8000/docs`.
+API at `http://localhost:8000` · Swagger docs at `http://localhost:8000/docs`
 
 ---
 
@@ -127,13 +155,11 @@ Create `frontend/.env.local`:
 NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 
-Start the dev server:
-
 ```bash
 npm run dev
 ```
 
-App available at `http://localhost:3000`.
+App at `http://localhost:3000`
 
 ---
 
@@ -142,19 +168,16 @@ App available at `http://localhost:3000`.
 1. Create a new project at [supabase.com](https://supabase.com)
 2. Copy the project URL and **service role key** (Settings → API) into `backend/.env`
 3. Run `backend/migrations/001_user_profiles.sql` in the SQL Editor
-4. Go to **Authentication → URL Configuration** and add `http://localhost:3000/reset-password` to Redirect URLs (required for password reset emails)
+4. Go to **Authentication → URL Configuration** → add `http://localhost:3000/reset-password` to Redirect URLs
 
 ---
 
 ### Bright Data zones
 
-You need three zones configured in your Bright Data dashboard:
-
-| Zone | Type | Used for |
+| Zone | Type | Purpose |
 |---|---|---|
 | `your_serp_zone` | SERP API | Google search across all platforms |
-| `your_unlocker_zone` | Web Unlocker | Scraping individual job pages |
-| *(optional)* | Web Scraper Datasets | Structured Upwork/Freelancer data |
+| `your_unlocker_zone` | Web Unlocker | Job page scraping + client profile reads |
 
 ---
 
@@ -169,12 +192,11 @@ You need three zones configured in your Bright Data dashboard:
 | `POST` | `/auth/reset-password` | Set new password with recovery token |
 | `GET` | `/users/me` | Get profile |
 | `PUT` | `/users/me` | Update profile |
-| `POST` | `/scan` | Start a new scan (async) |
+| `POST` | `/scan` | Start a new scan |
 | `GET` | `/opportunities/{scan_id}` | Poll scan results |
 | `GET` | `/scans/history` | User scan history |
 | `POST` | `/jobs/analyze` | Analyze a single job URL or description |
-| `POST` | `/suggestions` | Get portfolio project suggestions |
-| `GET` | `/test/serp` | Debug Bright Data SERP connectivity |
+| `POST` | `/suggestions` | Get AI project suggestions |
 
 ---
 
@@ -188,7 +210,7 @@ You need three zones configured in your Bright Data dashboard:
 | `ANTHROPIC_API_KEY` | Yes | Anthropic API key |
 | `SUPABASE_URL` | Yes | Supabase project URL |
 | `SUPABASE_SERVICE_KEY` | Yes | Supabase service role key |
-| `CORS_ORIGINS` | No | Comma-separated allowed origins (default: `http://localhost:3000`) |
+| `CORS_ORIGINS` | No | Comma-separated allowed origins |
 | `PORT` | No | Server port (default: `8000`) |
 
 ---
