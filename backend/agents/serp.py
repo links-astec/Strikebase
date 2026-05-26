@@ -42,22 +42,28 @@ def _parse_serp_json(body: str) -> list[dict]:
         data = json.loads(body)
     except Exception:
         return []
+
+    # BD sometimes returns a top-level array
+    if isinstance(data, list):
+        return [r for r in data if isinstance(r, dict)]
+
     if not isinstance(data, dict):
         return []
 
-    # Try every common key BD uses for organic results
     organic = (
         data.get("organic")
+        or data.get("organic_results")
         or data.get("results")
         or data.get("items")
         or data.get("search_results")
+        or data.get("web", {}).get("results")
         or []
     )
-    # Scan top-level values for a list containing link/url dicts
+    # Last resort: scan top-level values for a list of link/url dicts
     if not organic:
         for v in data.values():
             if isinstance(v, list) and v and isinstance(v[0], dict):
-                if v[0].get("link") or v[0].get("url"):
+                if v[0].get("link") or v[0].get("url") or v[0].get("href"):
                     organic = v
                     break
     return organic
@@ -68,19 +74,33 @@ def _parse_google_html(html: str) -> list[dict]:
     results = []
     try:
         soup = BeautifulSoup(html, "lxml")
-        for g in soup.select("div.g, div[data-sokoban-container], div[jscontroller]"):
-            a = g.select_one("a[href]")
-            h3 = g.select_one("h3")
-            snippet_el = g.select_one("div[data-sncf], span.aCOpRe, div.VwiC3b, div[style='-webkit-line-clamp:2']")
-            href = a.get("href", "") if a else ""
-            # Filter out Google internal links
-            if not href or href.startswith("/") or "google.com" in href:
+
+        # Collect all <a> tags with real external hrefs — most reliable cross-layout approach
+        seen: set[str] = set()
+        for a in soup.find_all("a", href=True):
+            href = a["href"]
+            # Skip Google-internal, fragment, and javascript links
+            if not href.startswith("http") or "google.com" in href or "google." in href:
                 continue
-            results.append({
-                "url": href,
-                "title": h3.get_text(strip=True) if h3 else "",
-                "snippet": snippet_el.get_text(strip=True) if snippet_el else "",
-            })
+            if href in seen:
+                continue
+            seen.add(href)
+            # Title: nearest h3, else the link text itself
+            h3 = a.find("h3")
+            title = h3.get_text(strip=True) if h3 else a.get_text(strip=True)[:120]
+            if not title:
+                continue
+            results.append({"url": href, "title": title, "snippet": ""})
+
+        # Deduplicate keeping first occurrence
+        seen2: set[str] = set()
+        deduped = []
+        for r in results:
+            if r["url"] not in seen2:
+                seen2.add(r["url"])
+                deduped.append(r)
+        results = deduped
+
     except Exception as e:
         print(f"[SERP] HTML parse error: {e}")
     return results

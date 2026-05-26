@@ -62,24 +62,53 @@ async def health():
 @app.get("/test/serp")
 async def test_serp(q: str = "React TypeScript"):
     """Debug endpoint — shows raw BD response AND parsed results."""
-    import urllib.parse
-    from agents.serp import search_job_listings, _bd_request
+    import urllib.parse, json as _json
+    from agents.serp import search_job_listings, _bd_request, _parse_serp_json, _parse_google_html
 
     raw_url = "https://www.google.com/search?" + urllib.parse.urlencode(
         {"q": f"site:upwork.com/jobs {q}", "num": 5}
     )
-    status, body = await _bd_request({
+
+    serp_status, serp_body = await _bd_request({
         "zone": settings.bright_data_serp_zone,
         "url": raw_url,
         "format": "json",
     })
-    results = await search_job_listings([q], num_results=5)
+
+    # Detect body type
+    body_type = "empty"
+    if serp_body:
+        try:
+            parsed = _json.loads(serp_body)
+            body_type = f"json_{type(parsed).__name__}"
+        except Exception:
+            body_type = "html" if "<html" in serp_body.lower() else "text"
+
+    json_parsed = _parse_serp_json(serp_body)
+    html_parsed = _parse_google_html(serp_body)
+
+    results = []
+    try:
+        results = await search_job_listings([q], num_results=5)
+    except Exception as e:
+        results = [{"error": str(e)}]
+
     return {
-        "count": len(results),
-        "results": results,
-        "raw_status": status,
-        "raw_body_length": len(body),
-        "raw_body_preview": body[:600],
-        "serp_zone": settings.bright_data_serp_zone,
-        "unlocker_zone": settings.bright_data_unlocker_zone,
+        "config": {
+            "token_set": bool(settings.bright_data_token),
+            "serp_zone": settings.bright_data_serp_zone or "NOT SET",
+            "unlocker_zone": settings.bright_data_unlocker_zone or "NOT SET",
+        },
+        "serp_zone_request": {
+            "status": serp_status,
+            "body_type": body_type,
+            "body_length": len(serp_body),
+            "body_preview": serp_body[:1500],
+        },
+        "parsing": {
+            "json_parser_found": len(json_parsed),
+            "html_parser_found": len(html_parsed),
+        },
+        "final_results_count": len(results),
+        "final_results": results[:3],
     }
