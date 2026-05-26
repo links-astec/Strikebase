@@ -26,34 +26,10 @@ app.include_router(suggestions.router)
 
 @app.get("/health")
 async def health():
-    import httpx
-
-    # Check Supabase connectivity
-    supabase_status = "ok"
-    try:
-        async with httpx.AsyncClient(timeout=5) as client:
-            r = await client.get(f"{settings.supabase_url}/auth/v1/health")
-            supabase_status = "ok" if r.status_code < 500 else f"http_{r.status_code}"
-    except (httpx.ConnectError, httpx.TimeoutException) as e:
-        supabase_status = f"unreachable — project may be paused ({type(e).__name__})"
-    except Exception as e:
-        supabase_status = f"error: {e}"
-
-    # Check DB (Supabase PostgREST)
-    db_status = "ok"
-    try:
-        import database as db
-        db.get_db().table("scans").select("id").limit(1).execute()
-    except Exception as e:
-        db_status = f"error: {e}"
-
     return {
         "status": "ok",
         "service": "strikebase-api",
         "version": "2.0.0",
-        "supabase": supabase_status,
-        "database": db_status,
-        "supabase_url": settings.supabase_url[:40] + "..." if settings.supabase_url else "NOT SET",
         "bright_data_token_set": bool(settings.bright_data_token),
         "anthropic_key_set": bool(settings.anthropic_api_key),
     }
