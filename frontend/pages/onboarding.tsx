@@ -19,6 +19,7 @@ export default function Onboarding() {
   const [github, setGithub] = useState(profile?.github_url || "");
   const [bio, setBio]       = useState(profile?.bio || "");
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
 
   function addSkill(s: string) {
     const t = s.trim();
@@ -30,12 +31,19 @@ export default function Onboarding() {
 
   async function finish() {
     setSaving(true);
+    setSaveError("");
     try {
       await updateProfile({ skills, hourly_rate: parseFloat(rate) || 0, experience: exp, github_url: github || null, bio: bio || null, onboarded: true });
       await refreshProfile();
-      router.push("/app/dashboard");
-    } catch { /* show error inline if needed */ }
-    finally { setSaving(false); }
+    } catch (e: unknown) {
+      // Log but don't block — user can fix their profile in Settings
+      console.error("Profile save failed:", e);
+      setSaveError(e instanceof Error ? e.message : "Profile save failed — you can update it later in Settings.");
+    } finally {
+      setSaving(false);
+    }
+    // Always redirect to dashboard regardless of save outcome
+    router.push("/app/dashboard");
   }
 
   const steps = [
@@ -142,6 +150,12 @@ export default function Onboarding() {
           <p style={{ fontSize: 13, color: "var(--text-3)", fontWeight: 300, marginBottom: 24 }}>{s.sub}</p>
 
           {s.content}
+
+          {saveError && (
+            <div style={{ marginTop: 16, padding: "9px 12px", background: "var(--danger-bg)", border: "1px solid var(--danger-border)", borderRadius: "var(--radius)", fontSize: 12, color: "var(--danger)" }}>
+              {saveError}
+            </div>
+          )}
 
           <div className="row-sb" style={{ marginTop: 28 }}>
             {step > 0
