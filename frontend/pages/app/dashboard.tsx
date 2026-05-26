@@ -174,7 +174,7 @@ export default function Dashboard() {
                   Suggested projects
                 </p>
                 <span style={{ fontSize: 10, color: "var(--gold)", letterSpacing: "0.08em", background: "var(--gold-muted)", border: "1px solid var(--gold-border)", borderRadius: "var(--radius)", padding: "2px 7px" }}>
-                  AI · Claude
+                  AI · Agents
                 </span>
               </div>
 

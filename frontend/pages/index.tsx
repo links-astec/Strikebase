@@ -8,7 +8,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 const FEATURES = [
   { Icon: Search,      color: "var(--gold)",   bg: "var(--gold-muted)",        glow: "rgba(59,130,246,0.18)",   title: "Real-time discovery",  desc: "SERP API scans 5 platforms live. No cached results, no stale listings — every scan is happening now." },
   { Icon: BarChart3,   color: "var(--go)",     bg: "rgba(16,185,129,0.12)",    glow: "rgba(16,185,129,0.18)",   title: "Competitive intel",    desc: "Bid counts, client spend, hire rates, and dispute records — live data scraped for every result." },
-  { Icon: Sparkles,    color: "#a78bfa",       bg: "rgba(167,139,250,0.12)",   glow: "rgba(167,139,250,0.18)",  title: "AI scoring",           desc: "Claude scores each listing 0–100 with data-backed reasoning. GO, RISKY, or SKIP — instantly clear." },
+  { Icon: Sparkles,    color: "#a78bfa",       bg: "rgba(167,139,250,0.12)",   glow: "rgba(167,139,250,0.18)",  title: "AI scoring",           desc: "Best-in-class AI agents score each listing 0–100 with data-backed reasoning. GO, RISKY, or SKIP — instantly clear." },
   { Icon: TrendingUp,  color: "var(--text-2)", bg: "rgba(255,255,255,0.06)",   glow: "rgba(148,163,184,0.12)",  title: "Market rate data",     desc: "P25/P50/P75 benchmarks for your exact skill stack. Know if your rate is competitive before you bid." },
   { Icon: ShieldCheck, color: "var(--warn)",   bg: "var(--warn-bg)",           glow: "rgba(245,158,11,0.16)",   title: "Client due diligence", desc: "Reads client history behind bot protection — total spend, hire rate, review count, dispute records." },
   { Icon: Target,      color: "var(--danger)", bg: "var(--danger-bg)",         glow: "rgba(239,68,68,0.16)",    title: "Bid timing signals",   desc: "Early-bid detection flags listings with under 5 bids so you get in before the competition spikes." },
@@ -18,7 +18,7 @@ const STEPS = [
   { num: "01", Icon: Target,   color: "var(--gold)",   title: "Enter your skills",  desc: "Tell Strikebase what you do and your target hourly rate." },
   { num: "02", Icon: Globe,    color: "var(--go)",     title: "Live SERP scan",     desc: "SERP API queries Google in real time across 5 major freelance platforms." },
   { num: "03", Icon: Database, color: "var(--text-2)", title: "Deep extraction",    desc: "Web Scraper + Web Unlocker pull bids, budgets, and client history." },
-  { num: "04", Icon: Sparkles, color: "#a78bfa",       title: "AI ranking",         desc: "Claude scores each listing 0–100 with number-backed reasoning." },
+  { num: "04", Icon: Sparkles, color: "#a78bfa",       title: "AI ranking",         desc: "Our AI agents score each listing 0–100 with number-backed reasoning." },
 ];
 
 const TEAM = [
@@ -191,7 +191,7 @@ export default function Landing() {
           <div className="lp-sec-hd lp-reveal">
             <p className="lp-sec-lbl">How it works</p>
             <h2 className="lp-sec-h2">From skills to ranked results in 30 seconds</h2>
-            <p className="lp-sec-p">Four steps. Live Bright Data. Claude AI. No guesswork.</p>
+            <p className="lp-sec-p">Four steps. Live Bright Data. Best-in-class AI agents. No guesswork.</p>
           </div>
           <div className="lp-steps">
             {STEPS.map((s, i) => (

@@ -4,12 +4,12 @@ const STEPS = [
   { Icon: Search,    label: "SERP search",     desc: "Live scan across Upwork, Freelancer, Guru, PeoplePerHour, Toptal" },
   { Icon: Database,  label: "Extracting data",  desc: "Web Scraper API pulling details from each listing" },
   { Icon: UserCheck, label: "Client profiles",  desc: "Web Unlocker reading client history & spend data" },
-  { Icon: Sparkles,  label: "AI scoring",       desc: "Claude ranking every listing by your win probability" },
+  { Icon: Sparkles,  label: "AI scoring",       desc: "Advanced AI ranking every listing by your win probability" },
 ];
 
 function detect(msg: string): number {
   const m = msg.toLowerCase();
-  if (m.includes("scor") || m.includes("claude") || m.includes("ai") || m.includes("of ")) return 3;
+  if (m.includes("scor") || m.includes("ai") || m.includes("of ")) return 3;
   if (m.includes("client") || m.includes("profile") || m.includes("unlock")) return 2;
   if (m.includes("scraping") || m.includes("extract") || m.includes("found") || m.includes("detail")) return 1;
   return 0;

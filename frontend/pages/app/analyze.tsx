@@ -56,7 +56,7 @@ export default function AnalyzePage() {
               Analyze a Job
             </h1>
             <p style={{ fontSize: 13, color: "var(--text-3)", fontWeight: 300 }}>
-              Paste a URL or job description — Claude will score it against your profile
+              Paste a URL or job description — our AI agents will score it against your profile
             </p>
           </div>
         </div>
@@ -130,7 +130,7 @@ export default function AnalyzePage() {
 
               <button type="submit" disabled={loading || !canSubmit} className="btn btn-primary" style={{ width: "100%", padding: "12px 0" }}>
                 {loading ? (
-                  <><Loader2 size={14} style={{ animation: "spin 0.7s linear infinite" }} /> Analyzing with Claude...</>
+                  <><Loader2 size={14} style={{ animation: "spin 0.7s linear infinite" }} /> Analyzing...</>
                 ) : "Analyze opportunity"}
               </button>
             </form>
