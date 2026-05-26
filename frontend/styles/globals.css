@@ -119,6 +119,7 @@ h1, h2, h3, h4, h5 {
 }
 
 a { text-decoration: none; color: inherit; }
+a:visited { color: inherit; }
 button, input, select, textarea { font-family: inherit; }
 img { display: block; max-width: 100%; }
 
@@ -315,8 +316,9 @@ img { display: block; max-width: 100%; }
 }
 .btn-primary:active { transform: translateY(0); }
 .btn-primary:disabled {
-  background: linear-gradient(135deg, #5a4820, #7a6030);
-  box-shadow: none; cursor: not-allowed; transform: none; opacity: 0.6;
+  background: var(--bg-hover);
+  color: var(--text-3);
+  box-shadow: none; cursor: not-allowed; transform: none;
 }
 
 .btn-lg { padding: 14px 36px; font-size: 13px; }
