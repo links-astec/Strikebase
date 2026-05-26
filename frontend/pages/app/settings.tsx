@@ -1,19 +1,17 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
-import { X, Loader2, CheckCircle, Eye, EyeOff } from "lucide-react";
+import { Loader2, CheckCircle, Eye, EyeOff } from "lucide-react";
 import AppShell from "@/components/AppShell";
 import AuthGuard from "@/components/AuthGuard";
 import { useAuth } from "@/lib/auth";
 import { updateProfile, resetPassword } from "@/lib/api";
 import PasswordStrength from "@/components/PasswordStrength";
-
-const SKILL_SUGG = ["React", "TypeScript", "Python", "Node.js", "Next.js", "Figma", "SEO", "Copywriting", "Data Analysis", "WordPress", "Vue.js", "Django", "DevOps", "iOS", "GraphQL", "AWS", "PostgreSQL", "Flutter"];
+import SkillInput from "@/components/SkillInput";
 
 export default function SettingsPage() {
   const { profile, refreshProfile } = useAuth();
 
   const [skills, setSkills]       = useState<string[]>([]);
-  const [skillInput, setSkillIn]  = useState("");
   const [rate, setRate]           = useState("");
   const [exp, setExp]             = useState<"junior" | "mid" | "senior">("mid");
   const [github, setGithub]       = useState("");
@@ -42,14 +40,6 @@ export default function SettingsPage() {
     setBio(profile.bio || "");
     setDN(profile.display_name || "");
   }, [profile]);
-
-  function addSkill(s: string) {
-    const t = s.trim();
-    if (t && !skills.includes(t) && skills.length < 15) {
-      setSkills(p => [...p, t]);
-      setSkillIn("");
-    }
-  }
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -140,32 +130,7 @@ export default function SettingsPage() {
                 <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-3)", marginBottom: 4 }}>
                   Skills <span style={{ fontWeight: 300, textTransform: "none", letterSpacing: 0, color: "var(--text-3)", fontSize: 10 }}>— up to 15</span>
                 </p>
-
-                {skills.length > 0 && (
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                    {skills.map(s => (
-                      <span key={s} className="skill-chip">
-                        {s}
-                        <button type="button" className="skill-chip-x" onClick={() => setSkills(p => p.filter(x => x !== s))}>
-                          <X size={10} />
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                <input
-                  type="text" value={skillInput} onChange={e => setSkillIn(e.target.value)}
-                  onKeyDown={e => { if (e.key === "Enter" || e.key === ",") { e.preventDefault(); addSkill(skillInput); } }}
-                  placeholder="Type a skill, press Enter..."
-                  className="input"
-                />
-
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                  {SKILL_SUGG.filter(s => !skills.includes(s)).slice(0, 12).map(s => (
-                    <button key={s} type="button" className="sugg-btn" onClick={() => addSkill(s)}>+ {s}</button>
-                  ))}
-                </div>
+                <SkillInput skills={skills} onChange={setSkills} max={15} />
               </section>
 
               {/* Rate & Level */}

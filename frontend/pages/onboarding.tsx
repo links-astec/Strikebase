@@ -1,33 +1,23 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import { Zap, X, ArrowRight, Loader2 } from "lucide-react";
+import { Zap, ArrowRight, Loader2 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { updateProfile } from "@/lib/api";
 import AuthGuard from "@/components/AuthGuard";
-
-const SKILL_SUGG = ["React", "TypeScript", "Python", "Node.js", "Next.js", "Figma", "SEO", "Copywriting", "Data Analysis", "WordPress", "Vue.js", "Django", "DevOps", "iOS", "GraphQL"];
+import SkillInput from "@/components/SkillInput";
 
 export default function Onboarding() {
   const { profile, refreshProfile } = useAuth();
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [skills, setSkills] = useState<string[]>(profile?.skills || []);
-  const [skillInput, setSkillInput] = useState("");
   const [rate, setRate]     = useState(profile?.hourly_rate ? String(profile.hourly_rate) : "");
   const [exp, setExp]       = useState<"junior" | "mid" | "senior">(profile?.experience || "mid");
   const [github, setGithub] = useState(profile?.github_url || "");
   const [bio, setBio]       = useState(profile?.bio || "");
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
-
-  function addSkill(s: string) {
-    const t = s.trim();
-    if (t && !skills.includes(t) && skills.length < 10) {
-      setSkills(p => [...p, t]);
-      setSkillInput("");
-    }
-  }
 
   async function finish() {
     setSaving(true);
@@ -51,26 +41,7 @@ export default function Onboarding() {
       title: "What are your skills?",
       sub: "Add up to 10 skills. These will be used to find relevant opportunities.",
       content: (
-        <div className="stack">
-          <div className="flex-w">
-            {skills.map(s => (
-              <span key={s} className="skill-chip">{s}
-                <button type="button" className="skill-chip-x" onClick={() => setSkills(p => p.filter(x => x !== s))}><X size={10} /></button>
-              </span>
-            ))}
-          </div>
-          <input
-            type="text" value={skillInput} onChange={e => setSkillInput(e.target.value)}
-            onKeyDown={e => { if (e.key === "Enter" || e.key === ",") { e.preventDefault(); addSkill(skillInput); } }}
-            placeholder="Type a skill, press Enter..."
-            className="input"
-          />
-          <div className="flex-w">
-            {SKILL_SUGG.filter(s => !skills.includes(s)).slice(0, 10).map(s => (
-              <button key={s} type="button" className="sugg-btn" onClick={() => addSkill(s)}>+ {s}</button>
-            ))}
-          </div>
-        </div>
+        <SkillInput skills={skills} onChange={setSkills} max={10} />
       ),
       canNext: skills.length > 0,
     },
