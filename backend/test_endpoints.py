@@ -1,8 +1,11 @@
 """
 Quick endpoint smoke-test for Strikebase backend.
 Usage:
-    python test_endpoints.py [base_url]
-Default base_url: http://localhost:8000
+    python test_endpoints.py [base_url] [email] [password]
+
+Examples:
+    python test_endpoints.py
+    python test_endpoints.py http://localhost:8000 you@example.com yourpassword
 """
 import sys
 import time
@@ -28,16 +31,12 @@ def check(label: str, ok: bool, detail: str = ""):
     return ok
 
 
-# Fixed credentials — reused every run so Supabase email rate limits are never hit.
-TEST_EMAIL    = "strikebase_smoketest@mailinator.com"
-TEST_PASSWORD = "Str0ng!Pass99"
-
-
 def main():
     token = None
     scan_id = None
-    email    = TEST_EMAIL
-    password = TEST_PASSWORD
+    # Accept credentials as CLI args so you can test with an existing account.
+    email    = sys.argv[2] if len(sys.argv) > 2 else "strikebase_smoketest@mailinator.com"
+    password = sys.argv[3] if len(sys.argv) > 3 else "Str0ng!Pass99"
 
     print(f"\n  Target: {BASE}\n")
 
@@ -61,31 +60,45 @@ def main():
     except httpx.TimeoutException:
         print(f"{_SKIP}  GET /test/serp — timed out (Bright Data slow/unreachable)")
 
-    # ── Auth: login first; register only if the account doesn't exist yet ───────
-    # This avoids hitting Supabase's email-signup rate limit on repeated runs.
+    # ── Auth ─────────────────────────────────────────────────────────────────
+    # Try login first. Only attempt register if the account is truly missing.
+    # Supabase free tier rate-limits signup emails — avoid hitting it every run.
     print("\n── Auth ─────────────────────────────────────────────────")
+    print(f"  Using: {email}")
     login_r = httpx.post(f"{BASE}/auth/login",
                          json={"email": email, "password": password}, timeout=20)
     if login_r.status_code == 200:
         token = login_r.json().get("access_token")
-        check("POST /auth/login → 200 (existing account)", True)
+        check("POST /auth/login → 200", True)
         check("  returns access_token", bool(token))
     else:
-        # Account doesn't exist — register it (first run only)
+        err = login_r.json().get("detail", "")
+        if "rate limit" in err.lower():
+            print(f"\033[93m WARN\033[0m  Supabase email rate limit hit.")
+            print("       Fix: Supabase Dashboard → Authentication → Email → disable 'Enable email confirmations'")
+            print("       Then re-run. Or pass your own account: python test_endpoints.py http://localhost:8000 you@email.com pass")
+            _summary()
+            return
+        # Account doesn't exist — try registering (first run only)
         reg_r = httpx.post(f"{BASE}/auth/register",
                            json={"email": email, "password": password, "display_name": "Smoke Tester"},
                            timeout=20)
-        ok = check("POST /auth/register → 200 (new account)", reg_r.status_code == 200, reg_r.text[:300])
+        if "rate limit" in reg_r.text.lower():
+            print(f"\033[93m WARN\033[0m  Supabase email rate limit hit on register.")
+            print("       Fix: Supabase Dashboard → Authentication → Email → disable 'Enable email confirmations'")
+            print("       Or pass your own credentials: python test_endpoints.py http://localhost:8000 you@email.com pass")
+            _summary()
+            return
+        ok = check("POST /auth/register → 200 (first run)", reg_r.status_code == 200, reg_r.text[:300])
         if ok:
             token = reg_r.json().get("access_token")
             check("  returns access_token", bool(token), f"token={str(token)[:40]}")
-
-        # Confirm login now works after registration
-        login_r2 = httpx.post(f"{BASE}/auth/login",
-                               json={"email": email, "password": password}, timeout=20)
-        ok2 = check("POST /auth/login → 200 (after register)", login_r2.status_code == 200, login_r2.text[:300])
-        if ok2:
-            token = login_r2.json().get("access_token") or token
+            # Confirm login works immediately after register
+            login_r2 = httpx.post(f"{BASE}/auth/login",
+                                   json={"email": email, "password": password}, timeout=20)
+            ok2 = check("POST /auth/login → 200 (after register)", login_r2.status_code == 200, login_r2.text[:200])
+            if ok2:
+                token = login_r2.json().get("access_token") or token
 
     if not token:
         print(f"\n{_SKIP}  No token — skipping auth-required tests\n")
