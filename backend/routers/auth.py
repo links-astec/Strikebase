@@ -41,16 +41,42 @@ async def register(req: AuthRequest):
                     "data": {"display_name": req.display_name or req.email.split("@")[0]},
                 },
             )
+            data = r.json()
+            if r.status_code not in (200, 201):
+                raise HTTPException(status_code=400, detail=data.get("error_description") or data.get("msg") or "Registration failed")
+
+            user_id = (data.get("user") or {}).get("id") or data.get("id")
+            access_token = data.get("access_token")
+
+            # Email confirmation is enabled on the Supabase free tier by default.
+            # Auto-confirm the user via the admin API so they can log in immediately.
+            if user_id and not access_token:
+                await client.put(
+                    f"{_SUPABASE}/auth/v1/admin/users/{user_id}",
+                    headers={**_HEADERS, "Authorization": f"Bearer {_KEY}"},
+                    json={"email_confirm": True},
+                )
+                # Now get a real session token by logging in with the credentials.
+                login_r = await client.post(
+                    f"{_SUPABASE}/auth/v1/token?grant_type=password",
+                    headers=_HEADERS,
+                    json={"email": req.email, "password": req.password},
+                )
+                if login_r.status_code == 200:
+                    login_data = login_r.json()
+                    access_token = login_data.get("access_token")
+                    user_id = (login_data.get("user") or {}).get("id") or user_id
+
+    except HTTPException:
+        raise
     except (httpx.ConnectError, httpx.TimeoutException) as exc:
         raise _supabase_unavailable(exc)
-    data = r.json()
-    if r.status_code not in (200, 201):
-        raise HTTPException(status_code=400, detail=data.get("error_description") or data.get("msg") or "Registration failed")
+
     return {
-        "access_token": data.get("access_token"),
+        "access_token": access_token,
         "user": {
-            "id": data.get("user", {}).get("id") or (data.get("id")),
-            "email": data.get("user", {}).get("email") or req.email,
+            "id": user_id,
+            "email": (data.get("user") or {}).get("email") or req.email,
         },
     }
 
