@@ -30,8 +30,8 @@ const TEAM = [
   {
     initials: "PE",
     name: "Prince Edwin Nyarko",
-    role: "Co-founder · Product & Growth",
-    bio: "Shapes the product vision and user experience. Focused on turning complex data into clear decisions anyone can act on.",
+    role: "Co-founder · Full-stack Developer",
+    bio: "Shapes the product vision and builds core features. Focused on turning complex data into clear decisions anyone can act on.",
   },
 ];
 
@@ -247,7 +247,7 @@ export default function Landing() {
             <div className="lp-logo-icon" style={{ width: 26, height: 26 }}><Zap size={11} color="#fff" /></div>
             <span className="lp-logo-text" style={{ fontSize: 13 }}>STRIKE<span className="lp-logo-accent">BASE</span></span>
           </Link>
-          <p className="lp-footer-copy">Powered by Bright Data + Claude AI</p>
+          <p className="lp-footer-copy">© 2026 Strikebase. All rights reserved.</p>
           <div className="lp-footer-links">
             <Link href="/login" className="lp-footer-link">Sign in</Link>
             <Link href="/register" className="lp-footer-link">Register</Link>
