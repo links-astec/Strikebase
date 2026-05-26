@@ -35,7 +35,7 @@ Return ONLY this JSON:
     "<specific reason with a real number from the data>"
   ],
   "red_flags": ["<flag if any, empty list if none>"],
-  "proposal_angle": "<One concrete sentence: how to open the proposal>",
+  "proposal_angle": "<One sentence the freelancer can paste as their literal proposal opening line to the client. Must be specific to this listing. Do NOT give meta-advice — write the actual sentence.>",
   "verdict": "go" | "skip" | "risky"
 }}"""
 
