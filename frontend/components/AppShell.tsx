@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
+import { useDemo } from "@/lib/demo";
 
 const NAV = [
   { href: "/app/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -19,6 +20,7 @@ const NAV = [
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const { user, profile, logout } = useAuth();
   const { theme, toggle } = useTheme();
+  const { demo, toggle: toggleDemo } = useDemo();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -78,6 +80,21 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             </div>
             <LogOut size={13} color="var(--text-3)" style={{ flexShrink: 0, marginLeft: "auto" }} />
           </div>
+          <button
+            onClick={toggleDemo}
+            title={demo ? "Exit demo mode" : "Enter demo mode"}
+            style={{
+              marginTop: 6, width: "100%", display: "flex", alignItems: "center", gap: 7,
+              background: demo ? "var(--gold-muted)" : "transparent",
+              border: `1px solid ${demo ? "var(--gold-border)" : "transparent"}`,
+              borderRadius: "var(--radius)", padding: "5px 10px", cursor: "pointer",
+              fontSize: 10, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase",
+              color: demo ? "var(--gold)" : "var(--text-3)", transition: "all 0.15s",
+            }}
+          >
+            <span style={{ width: 5, height: 5, borderRadius: "50%", flexShrink: 0, background: demo ? "var(--gold)" : "var(--text-3)", transition: "background 0.15s" }} />
+            {demo ? "Demo on" : "Demo"}
+          </button>
         </div>
       </aside>
 

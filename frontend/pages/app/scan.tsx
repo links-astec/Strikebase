@@ -9,6 +9,7 @@ import LoadingState from "@/components/LoadingState";
 import OpportunityCard from "@/components/OpportunityCard";
 import MarketRates from "@/components/MarketRates";
 import { useAuth } from "@/lib/auth";
+import { useDemo } from "@/lib/demo";
 import { startScan, getOpportunities } from "@/lib/api";
 import type { Opportunity, MarketRates as MR, ScanRequest } from "@/lib/types";
 
@@ -17,6 +18,7 @@ type SortKey = "score" | "rate" | "bids";
 
 export default function ScanPage() {
   const { profile } = useAuth();
+  const { demo } = useDemo();
   const router = useRouter();
   const resumeId = router.query.id as string | undefined;
 
@@ -64,6 +66,23 @@ export default function ScanPage() {
     setOpps([]);
     setMarket(null);
     setStatus("processing");
+
+    if (demo) {
+      setProgress("Loading demo results...");
+      setTimeout(async () => {
+        try {
+          const r = await getOpportunities("demo");
+          setOpps(r.opportunities);
+          setMarket(r.market_rates || null);
+          setStatus("complete");
+        } catch {
+          setError("Failed to load demo data — make sure demo rows are seeded in Supabase.");
+          setStatus("error");
+        }
+      }, 900);
+      return;
+    }
+
     setProgress("Starting scan...");
     try {
       const r = await startScan(req);

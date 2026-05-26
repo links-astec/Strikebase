@@ -7,6 +7,7 @@ from typing import Optional
 from middleware.auth import get_current_user
 from agents.scraper import scrape_listing, _from_serp_snippet
 from agents.unlocker import get_client_profile
+from agents.mcp_client import fetch_url_via_mcp
 from ai.scorer import score_listing
 import database as db
 
@@ -32,13 +33,31 @@ async def analyze_job(req: JobAnalysisRequest, user: dict | None = Depends(get_c
 
     # Build listing dict
     if req.url:
+        platform = _detect_platform(req.url)
+
+        # Try MCP first — richer markdown content via Bright Data
+        mcp_content = await fetch_url_via_mcp(req.url)
+
         sem = asyncio.Semaphore(1)
         listing = await scrape_listing(
-            {"url": req.url, "title": req.title or "", "snippet": req.description or "", "platform": _detect_platform(req.url)},
-            sem
+            {
+                "url": req.url,
+                "title": req.title or "",
+                "snippet": mcp_content or req.description or "",
+                "platform": platform,
+            },
+            sem,
         )
         if not listing:
-            listing = {"url": req.url, "title": req.title or "Untitled", "description": req.description or "", "platform": _detect_platform(req.url)}
+            listing = {
+                "url": req.url,
+                "title": req.title or "Untitled",
+                "description": mcp_content or req.description or "",
+                "platform": platform,
+            }
+        elif mcp_content and not listing.get("description"):
+            # Augment scraper result with MCP markdown for richer AI context
+            listing["description"] = mcp_content
     elif req.description:
         listing = {
             "url": "",
