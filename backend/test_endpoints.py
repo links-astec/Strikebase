@@ -47,15 +47,20 @@ def main():
     r = httpx.get(f"{BASE}/health", timeout=15)
     check("GET /health → 200", r.status_code == 200)
     body = r.json()
-    check("  supabase reachable", body.get("supabase_reachable") is True, str(body))
-    check("  db connected",       body.get("db_connected")       is True, str(body))
+    check("  supabase reachable", body.get("supabase") == "ok", str(body))
+    check("  db connected",       body.get("database") == "ok", str(body))
 
     # ── SERP debug ────────────────────────────────────────────────────────────
     print("\n── SERP debug ──────────────────────────────────────────")
-    r = httpx.get(f"{BASE}/test/serp", timeout=30)
-    check("GET /test/serp → 200", r.status_code == 200, r.text[:200])
-    body = r.json()
-    check("  raw_status received", "raw_status" in body, str(body)[:200])
+    try:
+        r = httpx.get(f"{BASE}/test/serp", timeout=60)
+        check("GET /test/serp → 200", r.status_code == 200, r.text[:200])
+        body = r.json()
+        check("  raw_status received", "raw_status" in body, str(body)[:200])
+        check("  SERP returned data", body.get("raw_status") == 200,
+              f"raw_status={body.get('raw_status')}  preview={str(body.get('raw_body_preview',''))[:120]}")
+    except httpx.TimeoutException:
+        print(f"{_SKIP}  GET /test/serp — timed out (Bright Data slow/unreachable)")
 
     # ── Auth: register ────────────────────────────────────────────────────────
     print("\n── Auth ─────────────────────────────────────────────────")
