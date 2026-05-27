@@ -44,6 +44,8 @@ export default function OpportunityDetail() {
   const vBorder = data?.opp ? (data.opp.verdict === "go" ? "var(--go-border)" : data.opp.verdict === "risky" ? "var(--warn-border)" : "var(--danger-border)") : "var(--border)";
   const VIcon   = data?.opp?.verdict === "go" ? CheckCircle : data?.opp?.verdict === "risky" ? AlertTriangle : XCircle;
 
+  const listingUrl = data?.opp ? cleanListingUrl(data.opp.url) : null;
+
   return (
     <AuthGuard>
       <Head><title>{data?.opp?.title ?? "Opportunity"} — Strikebase</title></Head>
@@ -51,7 +53,11 @@ export default function OpportunityDetail() {
         <div className="page-header">
           <button
             className="btn btn-ghost"
-            onClick={() => router.back()}
+            onClick={() => {
+              const scanId = router.query.scan as string | undefined;
+              if (scanId) router.push(`/app/scan?id=${scanId}`);
+              else router.push("/app/scan");
+            }}
             style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12 }}
           >
             <ArrowLeft size={13} /> Back
@@ -107,18 +113,18 @@ export default function OpportunityDetail() {
                         </span>
                       )}
                     </div>
-                  </div>
 
-                  {data.opp.url && (() => {
-                    const cleanUrl = data.opp.url.replace(/^["']+|["']+$/g, "");
-                    return cleanUrl.startsWith("http") ? (
-                      <a href={cleanUrl} target="_blank" rel="noopener noreferrer" className="opp-detail-link">
-                        <button className="btn btn-ghost" style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12 }}>
-                          View listing <ExternalLink size={12} />
-                        </button>
+                    {listingUrl && (
+                      <a
+                        href={listingUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="opp-detail-link"
+                      >
+                        View job listing <ExternalLink size={14} />
                       </a>
-                    ) : null;
-                  })()}
+                    )}
+                  </div>
                 </div>
 
                 <div className="gold-line" style={{ margin: "16px 0" }} />
@@ -190,6 +196,16 @@ export default function OpportunityDetail() {
       </AppShell>
     </AuthGuard>
   );
+}
+
+function cleanListingUrl(raw: string | null | undefined): string | null {
+  if (!raw) return null;
+  let url = raw.trim().replace(/^["']+|["']+$/g, "");
+  if (!url.startsWith("http")) {
+    const match = url.match(/https?:\/\/[^\s"']+/);
+    url = match ? match[0] : url;
+  }
+  return url.startsWith("http") ? url : null;
 }
 
 function timeAgo(ts: string): string {

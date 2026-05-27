@@ -819,7 +819,30 @@ img { display: block; max-width: 100%; }
   font-weight: 600; font-size: 22px; color: var(--text-1);
   line-height: 1.35; margin-bottom: 12px;
 }
-.opp-detail-link { flex-shrink: 0; }
+.opp-detail-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px 22px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  color: #fff;
+  background: var(--gold);
+  border-radius: var(--radius);
+  box-shadow: var(--gold-sh);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  flex-shrink: 0;
+}
+.opp-detail-link:hover {
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 36px rgba(59, 130, 246, 0.42);
+}
+.opp-detail-link:active { transform: translateY(0); }
 
 .reason-row { display: flex; align-items: flex-start; gap: 12px; }
 .reason-icon {
@@ -974,8 +997,7 @@ img { display: block; max-width: 100%; }
   .mobile-bottom-nav { display: flex; }
   .detail-grid { grid-template-columns: 1fr; }
   .opp-detail-hero { flex-wrap: wrap; gap: 14px; }
-  .opp-detail-link { order: 3; width: 100%; }
-  .opp-detail-link .btn { width: 100%; justify-content: center; }
+  .opp-detail-link { width: 100%; }
   .page-header { padding: 20px 20px 0; }
   .page-body   { padding: 0 20px 40px; }
 }
@@ -1027,7 +1049,6 @@ img { display: block; max-width: 100%; }
   .opp-detail-hero { flex-direction: column; gap: 12px; }
   .opp-detail-title { font-size: 18px; }
   .opp-detail-link { width: 100%; }
-  .opp-detail-link .btn { width: 100%; justify-content: center; }
 
   /* Scan controls — stack and make pills scrollable */
   .controls-row {

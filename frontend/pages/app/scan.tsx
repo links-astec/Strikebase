@@ -18,6 +18,33 @@ type SortKey = "score" | "rate" | "bids";
 
 const POLL_MS = 1500;
 
+function scanCacheKey(id: string) {
+  return `sb_scan_${id}`;
+}
+
+function readScanCache(id: string): { opps: Opportunity[]; market: MR | null; status: string } | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(scanCacheKey(id));
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { opps: Opportunity[]; market: MR | null; status: string };
+    if (parsed.status === "complete") return parsed;
+    if (parsed.status === "processing" && parsed.opps.length > 0) return parsed;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function writeScanCache(id: string, opps: Opportunity[], market: MR | null, status: string) {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.setItem(scanCacheKey(id), JSON.stringify({ opps, market, status }));
+  } catch {
+    /* ignore quota errors */
+  }
+}
+
 export default function ScanPage() {
   const { profile } = useAuth();
   const { demo } = useDemo();
@@ -47,10 +74,13 @@ export default function ScanPage() {
         setOpps(r.opportunities);
         setMarket(r.market_rates || null);
         setStatus("complete");
+        writeScanCache(id, r.opportunities, r.market_rates || null, "complete");
       } else if (r.status === "error") {
         setError(r.message || "Scan failed");
         setStatus("error");
       } else {
+        setStatus("processing");
+        writeScanCache(id, r.opportunities ?? [], r.market_rates || null, "processing");
         setTimeout(() => poll(id), POLL_MS);
       }
     } catch {
@@ -60,10 +90,48 @@ export default function ScanPage() {
   }, []);
 
   useEffect(() => {
-    if (resumeId) {
-      setStatus("processing");
-      poll(resumeId);
+    if (!resumeId) return;
+
+    const cached = readScanCache(resumeId);
+    if (cached) {
+      setScanId(resumeId);
+      setOpps(cached.opps);
+      setMarket(cached.market);
+      setStatus(cached.status);
+      if (cached.status === "processing") poll(resumeId);
+      return;
     }
+
+    let cancelled = false;
+    setScanId(resumeId);
+
+    (async () => {
+      try {
+        const r = await getOpportunities(resumeId);
+        if (cancelled) return;
+        setProgress(r.message || "");
+        if (r.opportunities?.length) setOpps(r.opportunities);
+        if (r.status === "complete") {
+          setOpps(r.opportunities);
+          setMarket(r.market_rates || null);
+          setStatus("complete");
+          writeScanCache(resumeId, r.opportunities, r.market_rates || null, "complete");
+        } else if (r.status === "error") {
+          setError(r.message || "Scan failed");
+          setStatus("error");
+        } else {
+          setStatus("processing");
+          poll(resumeId);
+        }
+      } catch {
+        if (!cancelled) {
+          setError("Failed to fetch results");
+          setStatus("error");
+        }
+      }
+    })();
+
+    return () => { cancelled = true; };
   }, [resumeId, poll]);
 
   async function handleSubmit(req: ScanRequest) {
@@ -155,7 +223,7 @@ export default function ScanPage() {
         </div>
 
         <div className="page-body">
-          {status === "idle" || status === "error" ? (
+          {status === "idle" && resumeId ? null : status === "idle" || status === "error" ? (
             <>
               <ScanForm
                 onSubmit={handleSubmit}
