@@ -1,4 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="96" fill="#3b82f6"/>
-  <polygon points="280,80 160,280 240,280 232,432 352,220 268,220" fill="white"/>
+  <rect width="512" height="512" rx="96" fill="#0d0b2b"/>
+  <text x="28" y="370" font-family="'Arial Black', 'Impact', sans-serif" font-weight="900" font-size="310" fill="#0a5a9e">S</text>
+  <text x="240" y="370" font-family="'Arial Black', 'Impact', sans-serif" font-weight="900" font-size="310" fill="#0a5a9e">B</text>
+  <text x="16" y="356" font-family="'Arial Black', 'Impact', sans-serif" font-weight="900" font-size="310" fill="#1EAEFF">S</text>
+  <text x="228" y="356" font-family="'Arial Black', 'Impact', sans-serif" font-weight="900" font-size="310" fill="#1EAEFF">B</text>
+  <path d="M332 38 L228 256 L288 256 L168 440 L392 196 L320 196 Z" fill="white"/>
 </svg>

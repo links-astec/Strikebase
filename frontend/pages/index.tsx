@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Zap, Search, BarChart3, Sparkles, CheckCircle, XCircle, ArrowRight, Database, ShieldCheck, TrendingUp, Target, Globe, Clock, DollarSign } from "lucide-react";
 import StrikeScore from "@/components/StrikeScore";
 import ThemeToggle from "@/components/ThemeToggle";
+import { LogoIcon } from "@/components/Logo";
 
 const PLATFORMS = ["Upwork", "Freelancer", "Guru", "PeoplePerHour", "Toptal"];
 
@@ -123,7 +124,7 @@ export default function Landing() {
       <nav className="lp-nav">
         <div className="lp-wrap lp-nav-inner">
           <Link href="/" className="lp-logo">
-            <div className="lp-logo-icon"><Zap size={13} color="#fff" /></div>
+            <LogoIcon size={30} />
             <span className="lp-logo-text">STRIKE<span className="lp-logo-accent">BASE</span></span>
           </Link>
           <div className="lp-nav-end">

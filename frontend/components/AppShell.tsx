@@ -5,6 +5,7 @@ import {
   Zap, LayoutDashboard, Search, FileText, Clock,
   Settings, LogOut, ChevronRight, Sun, Moon, Menu, X,
 } from "lucide-react";
+import { LogoIcon } from "@/components/Logo";
 import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
 import { useDemo } from "@/lib/demo";
@@ -38,7 +39,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <aside className={`sidebar${mobileOpen ? " sidebar-mobile-open" : ""}`}>
         <div className="sidebar-logo" style={{ justifyContent: "space-between" }}>
           <Link href="/app/dashboard" style={{ display: "flex", alignItems: "center", gap: 10 }} onClick={() => setMobileOpen(false)}>
-            <div className="sidebar-logo-icon"><Zap size={15} color="#fff" /></div>
+            <LogoIcon size={32} />
             <span className="sidebar-wordmark">STRIKE<span className="sidebar-accent">BASE</span></span>
           </Link>
           <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
@@ -104,7 +105,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       {/* ── Mobile top bar ────────────────────── */}
       <div className="mobile-topbar">
         <Link href="/app/dashboard" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div className="sidebar-logo-icon" style={{ width: 28, height: 28 }}><Zap size={13} color="#fff" /></div>
+          <LogoIcon size={28} />
           <span className="sidebar-wordmark" style={{ fontSize: 15 }}>STRIKE<span className="sidebar-accent">BASE</span></span>
         </Link>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>

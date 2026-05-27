@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Head from "next/head";
-import { Link2, FileText, Loader2, CheckCircle, AlertTriangle, XCircle, ExternalLink, DollarSign } from "lucide-react";
+import { Link2, FileText, Loader2, CheckCircle, AlertTriangle, XCircle, ExternalLink, DollarSign, ArrowLeft } from "lucide-react";
 import AppShell from "@/components/AppShell";
 import AuthGuard from "@/components/AuthGuard";
 import StrikeScore from "@/components/StrikeScore";
@@ -62,73 +62,149 @@ export default function AnalyzePage() {
         </div>
 
         <div className="page-body">
-          <div className="analyze-wrap">
-            {/* Mode toggle */}
-            <div className="seg-control">
-              <button className={mode === "url" ? "seg-active" : "seg-btn"} type="button" onClick={() => setMode("url")}>
-                <Link2 size={13} /> Job URL
-              </button>
-              <button className={mode === "text" ? "seg-active" : "seg-btn"} type="button" onClick={() => setMode("text")}>
-                <FileText size={13} /> Paste description
-              </button>
+          {/* When no result: two-column layout (form + what-you-get panel) */}
+          {!result ? (
+            <div className="scan-2col">
+              {/* Left: form card with toggle embedded */}
+              <div>
+                <div className="card" style={{ overflow: "hidden" }}>
+                  {/* Tab toggle row */}
+                  <div style={{ display: "flex", borderBottom: "1px solid var(--border)" }}>
+                    <button
+                      type="button"
+                      onClick={() => setMode("url")}
+                      style={{
+                        flex: 1, padding: "14px 0", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                        background: mode === "url" ? "var(--bg-card)" : "var(--bg-soft)",
+                        borderRight: "1px solid var(--border)", border: "none",
+                        borderBottom: mode === "url" ? "2px solid var(--gold)" : "2px solid transparent",
+                        cursor: "pointer", fontSize: 13, fontWeight: mode === "url" ? 600 : 400,
+                        color: mode === "url" ? "var(--text-1)" : "var(--text-3)",
+                        transition: "all 0.15s",
+                      }}
+                    >
+                      <Link2 size={14} /> Job URL
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMode("text")}
+                      style={{
+                        flex: 1, padding: "14px 0", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                        background: mode === "text" ? "var(--bg-card)" : "var(--bg-soft)",
+                        border: "none",
+                        borderBottom: mode === "text" ? "2px solid var(--gold)" : "2px solid transparent",
+                        cursor: "pointer", fontSize: 13, fontWeight: mode === "text" ? 600 : 400,
+                        color: mode === "text" ? "var(--text-1)" : "var(--text-3)",
+                        transition: "all 0.15s",
+                      }}
+                    >
+                      <FileText size={14} /> Paste description
+                    </button>
+                  </div>
+
+                  <form onSubmit={handleSubmit} className="card-p stack" style={{ background: "var(--bg-card)" }}>
+                    {mode === "url" ? (
+                      <div className="form-group">
+                        <label className="input-label">Job URL</label>
+                        <input
+                          type="url" value={url} onChange={e => setUrl(e.target.value)}
+                          placeholder="https://www.upwork.com/jobs/~..."
+                          className="input" autoFocus
+                        />
+                        <p style={{ fontSize: 11, color: "var(--text-3)", marginTop: 6, fontWeight: 300 }}>
+                          Supports Upwork, Freelancer, Guru, PeoplePerHour, and Toptal
+                        </p>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="form-group">
+                          <label className="input-label">Job title (optional)</label>
+                          <input
+                            type="text" value={title} onChange={e => setTitle(e.target.value)}
+                            placeholder="e.g. Senior React Developer for SaaS Dashboard"
+                            className="input"
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label className="input-label">Job description</label>
+                          <textarea
+                            value={description} onChange={e => setDesc(e.target.value)}
+                            placeholder="Paste the full job description here..."
+                            rows={8} className="input" style={{ resize: "vertical" }}
+                            autoFocus
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {!profile?.skills?.length && (
+                      <div style={{ padding: "9px 12px", background: "var(--warn-bg)", border: "1px solid var(--warn-border)", borderRadius: "var(--radius)", fontSize: 12, color: "var(--warn)" }}>
+                        Add your skills in Settings for a more accurate analysis
+                      </div>
+                    )}
+
+                    {error && (
+                      <div style={{ padding: "9px 12px", background: "var(--danger-bg)", border: "1px solid var(--danger-border)", borderRadius: "var(--radius)", fontSize: 12, color: "var(--danger)" }}>
+                        {error}
+                      </div>
+                    )}
+
+                    <button type="submit" disabled={loading || !canSubmit} className="btn btn-primary" style={{ width: "100%", padding: "13px 0", fontSize: 14 }}>
+                      {loading ? (
+                        <><Loader2 size={14} style={{ animation: "spin 0.7s linear infinite" }} /> Analyzing...</>
+                      ) : "Analyze opportunity"}
+                    </button>
+                  </form>
+                </div>
+              </div>
+
+              {/* Right: what you get panel */}
+              <div className="scan-panel">
+                <div className="scan-panel-hd">
+                  <p className="scan-panel-title">What you&apos;ll get</p>
+                  <p className="scan-panel-sub">AI analysis personalised to your profile</p>
+                </div>
+                {[
+                  { icon: "⚡", label: "Strike score",      desc: "0–100 win probability" },
+                  { icon: "✓",  label: "Verdict",           desc: "Go, Risky, or Skip" },
+                  { icon: "💡", label: "Reasons & flags",   desc: "Why to bid or avoid" },
+                  { icon: "📈", label: "Market rates",      desc: "P25 / median / P75 /hr" },
+                  { icon: "✍️", label: "Proposal opener",   desc: "First line to paste in" },
+                ].map(item => (
+                  <div key={item.label} className="scan-platform-row">
+                    <span style={{ fontSize: 16, lineHeight: 1, width: 22, textAlign: "center", flexShrink: 0 }}>{item.icon}</span>
+                    <div style={{ flex: 1 }}>
+                      <p style={{ fontSize: 12, fontWeight: 600, color: "var(--text-1)", marginBottom: 1 }}>{item.label}</p>
+                      <p style={{ fontSize: 10, color: "var(--text-3)", fontWeight: 300 }}>{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+                <div className="scan-panel-footer">
+                  <div className="scan-panel-stat">
+                    <div className="scan-panel-stat-icon"><DollarSign size={10} color="var(--gold)" /></div>
+                    Benchmarked against live market data
+                  </div>
+                  <div className="scan-panel-stat">
+                    <div className="scan-panel-stat-icon"><CheckCircle size={10} color="var(--text-3)" /></div>
+                    Scored against your skills &amp; rate
+                  </div>
+                </div>
+              </div>
             </div>
-
-            <form onSubmit={handleSubmit} className="card card-p stack">
-              {mode === "url" ? (
-                <div className="form-group">
-                  <label className="input-label">Job URL</label>
-                  <input
-                    type="url" value={url} onChange={e => setUrl(e.target.value)}
-                    placeholder="https://www.upwork.com/jobs/~..."
-                    className="input" autoFocus
-                  />
-                  <p style={{ fontSize: 11, color: "var(--text-3)", marginTop: 6, fontWeight: 300 }}>
-                    Supports Upwork, Freelancer, Guru, PeoplePerHour, and Toptal
-                  </p>
-                </div>
-              ) : (
-                <>
-                  <div className="form-group">
-                    <label className="input-label">Job title (optional)</label>
-                    <input
-                      type="text" value={title} onChange={e => setTitle(e.target.value)}
-                      placeholder="e.g. Senior React Developer for SaaS Dashboard"
-                      className="input"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="input-label">Job description</label>
-                    <textarea
-                      value={description} onChange={e => setDesc(e.target.value)}
-                      placeholder="Paste the full job description here..."
-                      rows={8} className="input" style={{ resize: "vertical" }}
-                      autoFocus
-                    />
-                  </div>
-                </>
-              )}
-
-              {!profile?.skills?.length && (
-                <div style={{ padding: "9px 12px", background: "var(--warn-bg)", border: "1px solid var(--warn-border)", borderRadius: "var(--radius)", fontSize: 12, color: "var(--warn)" }}>
-                  Add your skills in Settings for a more accurate analysis
-                </div>
-              )}
-
-              {error && (
-                <div style={{ padding: "9px 12px", background: "var(--danger-bg)", border: "1px solid var(--danger-border)", borderRadius: "var(--radius)", fontSize: 12, color: "var(--danger)" }}>
-                  {error}
-                </div>
-              )}
-
-              <button type="submit" disabled={loading || !canSubmit} className="btn btn-primary" style={{ width: "100%", padding: "12px 0" }}>
-                {loading ? (
-                  <><Loader2 size={14} style={{ animation: "spin 0.7s linear infinite" }} /> Analyzing...</>
-                ) : "Analyze opportunity"}
+          ) : (
+            /* Result: full-width */
+            <div>
+              <button
+                type="button"
+                onClick={() => setResult(null)}
+                className="btn btn-ghost"
+                style={{ marginBottom: 20, display: "flex", alignItems: "center", gap: 6, fontSize: 12 }}
+              >
+                ← Analyze another
               </button>
-            </form>
-
-            {result && <AnalysisResult r={result} />}
-          </div>
+              <AnalysisResult r={result} />
+            </div>
+          )}
         </div>
       </AppShell>
     </AuthGuard>

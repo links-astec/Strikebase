@@ -103,7 +103,6 @@ export default function HistoryPage() {
         </div>
 
         <div className="page-body">
-          <div className="history-list">
           {loading ? (
             <div style={{ display: "flex", justifyContent: "center", paddingTop: 60 }}>
               <div className="spinner" />
@@ -135,7 +134,6 @@ export default function HistoryPage() {
               ))}
             </div>
           )}
-          </div>
         </div>
       </AppShell>
     </AuthGuard>
