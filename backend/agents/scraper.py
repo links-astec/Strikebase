@@ -19,7 +19,12 @@ FREELANCER_DATASET = "gd_m794xo3l298ja2x99e"
 BD_HEADERS = {"Authorization": f"Bearer {settings.bright_data_token}", "Content-Type": "application/json"}
 
 
-async def scrape_listing(item: dict | str, semaphore: asyncio.Semaphore) -> dict | None:
+async def scrape_listing(
+    item: dict | str,
+    semaphore: asyncio.Semaphore,
+    *,
+    fast: bool = True,
+) -> dict | None:
     """item can be a URL string or a {url, title, snippet, platform} dict from SERP."""
     if isinstance(item, str):
         item = {"url": item, "title": "", "snippet": "", "platform": "upwork" if "upwork" in item else "freelancer"}
@@ -29,17 +34,15 @@ async def scrape_listing(item: dict | str, semaphore: asyncio.Semaphore) -> dict
         return None
 
     async with semaphore:
-        # First try dataset API (fast structured data)
-        result = await _scrape_dataset(url)
-        if result:
-            return result
+        if not fast:
+            result = await _scrape_dataset(url)
+            if result:
+                return result
 
-        # Fallback: Web Unlocker + HTML parse
         result = await _scrape_unlocker(url, item)
         if result:
             return result
 
-        # Last resort: use SERP snippet data directly
         if item.get("title") or item.get("snippet"):
             return _from_serp_snippet(item)
 

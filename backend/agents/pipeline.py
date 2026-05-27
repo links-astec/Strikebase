@@ -10,15 +10,79 @@ import database as db
 from agents.serp import search_job_listings
 from agents.scraper import scrape_listing
 from agents.unlocker import get_client_profile
-from ai.scorer import score_listing
+from ai.scorer import score_listing_async
 from models.schemas import ScanRequest
 
-MAX_CONCURRENT_SCRAPES = 5
-MAX_LISTINGS = 20
+MAX_CONCURRENT = 8
+MAX_LISTINGS = 12
+
+
+class _ProgressTracker:
+    def __init__(self, total: int):
+        self.total = total
+        self.done = 0
+        self.lock = asyncio.Lock()
+
+    async def tick(self, scan_id: str) -> None:
+        async with self.lock:
+            self.done += 1
+            db.update_scan_status(
+                scan_id,
+                "processing",
+                f"Scoring {self.done} of {self.total} opportunities...",
+            )
+
+
+async def _process_listing(
+    scan_id: str,
+    item: dict,
+    user: dict,
+    sem: asyncio.Semaphore,
+    progress: _ProgressTracker,
+    listings_out: list[dict],
+    listings_lock: asyncio.Lock,
+) -> None:
+    listing = await scrape_listing(item, sem, fast=True)
+    if not listing:
+        return
+
+    client = None
+    client_id = listing.get("client_id", "")
+    if client_id:
+        try:
+            client = await get_client_profile(client_id)
+        except Exception:
+            pass
+
+    score_data = await score_listing_async(listing, client, None, user)
+
+    db.save_opportunity({
+        "id": str(uuid.uuid4()),
+        "scan_id": scan_id,
+        "title": listing.get("title", "Untitled"),
+        "url": listing.get("url", ""),
+        "platform": listing.get("platform", "upwork"),
+        "budget_min": listing.get("budget_min"),
+        "budget_max": listing.get("budget_max"),
+        "bid_count": listing.get("bid_count"),
+        "posted_at": listing.get("posted_at"),
+        "client_id": client_id,
+        "strike_score": score_data.get("strike_score", 50),
+        "verdict": score_data.get("verdict", "risky"),
+        "reasons": score_data.get("reasons", []),
+        "red_flags": score_data.get("red_flags", []),
+        "proposal_angle": score_data.get("proposal_angle", ""),
+        "is_demo": False,
+    })
+
+    async with listings_lock:
+        listings_out.append(listing)
+
+    await progress.tick(scan_id)
 
 
 async def run_pipeline(scan_id: str, req: ScanRequest, user_id: str | None = None) -> None:
-    """Full pipeline: SERP → Scrape → Client profiles → AI score → Save."""
+    """SERP → per-listing scrape → client → score → save (concurrent workers)."""
     try:
         db.update_scan_status(scan_id, "processing", "Searching job boards...")
         serp_results = await search_job_listings(req.skills, num_results=MAX_LISTINGS)
@@ -27,75 +91,41 @@ async def run_pipeline(scan_id: str, req: ScanRequest, user_id: str | None = Non
             db.update_scan_status(scan_id, "error", "No listings found. Try different skills.")
             return
 
-        db.update_scan_status(scan_id, "processing", f"Found {len(serp_results)} listings, extracting details...")
+        items = serp_results[:MAX_LISTINGS]
+        total = len(items)
+        db.update_scan_status(
+            scan_id, "processing",
+            f"Found {total} listings, scoring opportunities...",
+        )
 
-        sem = asyncio.Semaphore(MAX_CONCURRENT_SCRAPES)
-        listing_results = await asyncio.gather(
-            *[scrape_listing(item, sem) for item in serp_results[:MAX_LISTINGS]],
+        user = req.model_dump()
+        sem = asyncio.Semaphore(MAX_CONCURRENT)
+        progress = _ProgressTracker(total)
+        listings_out: list[dict] = []
+        listings_lock = asyncio.Lock()
+
+        await asyncio.gather(
+            *[
+                _process_listing(scan_id, item, user, sem, progress, listings_out, listings_lock)
+                for item in items
+            ],
             return_exceptions=True,
         )
-        listings = [r for r in listing_results if isinstance(r, dict) and r]
 
-        if not listings:
+        if not listings_out:
             db.update_scan_status(scan_id, "error", "Failed to extract listing details.")
             return
 
-        db.update_scan_status(
-            scan_id, "processing",
-            f"Fetching client profiles for {len(set(l.get('client_id','') for l in listings if l.get('client_id')))} clients..."
-        )
-
-        client_ids = list({l["client_id"] for l in listings if l.get("client_id")})
-        client_results = await asyncio.gather(
-            *[get_client_profile(cid) for cid in client_ids],
-            return_exceptions=True,
-        )
-        client_map = {
-            c["client_id"]: c
-            for c in client_results
-            if isinstance(c, dict) and c and c.get("client_id")
-        }
-
-        market = _compute_market_rates(listings, req.skills)
+        market = _compute_market_rates(listings_out, req.skills)
         if market:
             db.upsert_market_rates(market)
-
-        db.update_scan_status(scan_id, "processing", f"Scoring {len(listings)} opportunities with AI...")
-
-        user = req.model_dump()
-        for i, listing in enumerate(listings):
-            client = client_map.get(listing.get("client_id", ""))
-            score_data = score_listing(listing, client, market, user)
-
-            db.save_opportunity({
-                "id": str(uuid.uuid4()),
-                "scan_id": scan_id,
-                "title": listing.get("title", "Untitled"),
-                "url": listing.get("url", ""),
-                "platform": listing.get("platform", "upwork"),
-                "budget_min": listing.get("budget_min"),
-                "budget_max": listing.get("budget_max"),
-                "bid_count": listing.get("bid_count"),
-                "posted_at": listing.get("posted_at"),
-                "client_id": listing.get("client_id", ""),
-                "strike_score": score_data.get("strike_score", 50),
-                "verdict": score_data.get("verdict", "risky"),
-                "reasons": score_data.get("reasons", []),
-                "red_flags": score_data.get("red_flags", []),
-                "proposal_angle": score_data.get("proposal_angle", ""),
-                "is_demo": False,
-            })
-
-            db.update_scan_status(
-                scan_id, "processing",
-                f"Scoring {i + 1} of {len(listings)} opportunities..."
-            )
 
         db.update_scan_status(scan_id, "complete", "Done")
 
     except Exception as e:
         print(f"[Pipeline] Fatal error for scan {scan_id}: {e}")
-        import traceback; traceback.print_exc()
+        import traceback
+        traceback.print_exc()
         db.update_scan_status(scan_id, "error", "Pipeline error — please try again.")
 
 

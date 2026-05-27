@@ -1,3 +1,4 @@
+import asyncio
 import json
 import anthropic
 from config import settings
@@ -20,7 +21,7 @@ def score_listing(listing: dict, client: dict | None, market: dict | None, user:
         ai = anthropic.Anthropic(api_key=settings.anthropic_api_key)
         msg = ai.messages.create(
             model="claude-sonnet-4-5",
-            max_tokens=600,
+            max_tokens=400,
             system=SYSTEM_PROMPT,
             messages=[{"role": "user", "content": prompt}],
         )
@@ -40,3 +41,12 @@ def score_listing(listing: dict, client: dict | None, market: dict | None, user:
         return FALLBACK_SCORE
     except Exception:
         return FALLBACK_SCORE
+
+
+async def score_listing_async(
+    listing: dict,
+    client: dict | None,
+    market: dict | None,
+    user: dict,
+) -> dict:
+    return await asyncio.to_thread(score_listing, listing, client, market, user)

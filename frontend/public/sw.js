@@ -32,6 +32,6 @@ self.addEventListener("fetch", e => {
         }
         return res;
       })
-      .catch(() => caches.match(e.request).then(cached => cached || caches.match("/")))
+      .catch(() => caches.match(e.request).then(cached => cached || caches.match("/offline")))
   );
 });

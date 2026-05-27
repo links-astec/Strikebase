@@ -21,13 +21,14 @@ async def get_opportunities(scan_id: str):
     if not scan:
         raise HTTPException(status_code=404, detail="Scan not found")
 
+    opps = db.get_opportunities(scan_id)
+
     if scan["status"] != "complete":
         return OpportunitiesResponse(
             status=scan["status"],
             message=scan.get("progress", "Processing..."),
+            opportunities=opps,
         )
-
-    opps = db.get_opportunities(scan_id)
     # Get market rates for the primary skill
     skills = scan.get("skills") or []
     market = db.get_market_rates(skills[0].lower()) if skills else None

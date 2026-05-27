@@ -16,6 +16,8 @@ import type { Opportunity, MarketRates as MR, ScanRequest } from "@/lib/types";
 type Verdict = "go" | "risky" | "skip";
 type SortKey = "score" | "rate" | "bids";
 
+const POLL_MS = 1500;
+
 export default function ScanPage() {
   const { profile } = useAuth();
   const { demo } = useDemo();
@@ -38,6 +40,9 @@ export default function ScanPage() {
     try {
       const r = await getOpportunities(id);
       setProgress(r.message || "");
+      if (r.opportunities?.length) {
+        setOpps(r.opportunities);
+      }
       if (r.status === "complete") {
         setOpps(r.opportunities);
         setMarket(r.market_rates || null);
@@ -46,7 +51,7 @@ export default function ScanPage() {
         setError(r.message || "Scan failed");
         setStatus("error");
       } else {
-        setTimeout(() => poll(id), 2500);
+        setTimeout(() => poll(id), POLL_MS);
       }
     } catch {
       setError("Failed to fetch results");
@@ -109,8 +114,30 @@ export default function ScanPage() {
       return sortAsc ? diff : -diff;
     });
 
-  const goCnt   = opps.filter(o => o.verdict === "go").length;
+  const goCnt    = opps.filter(o => o.verdict === "go").length;
   const riskyCnt = opps.filter(o => o.verdict === "risky").length;
+  const isComplete = status === "complete";
+
+  function renderResults() {
+    if (visible.length === 0 && isComplete) {
+      return (
+        <div className="card card-p empty-state">
+          <SlidersHorizontal size={24} color="var(--text-3)" style={{ marginBottom: 10 }} />
+          <p style={{ color: "var(--text-2)", fontSize: 13 }}>No results match this filter</p>
+        </div>
+      );
+    }
+    if (visible.length === 0) {
+      return null;
+    }
+    return (
+      <div className="stack-sm">
+        {visible.map((opp, i) => (
+          <OpportunityCard key={opp.id} opp={opp} best={i === 0 && filter === "all" && isComplete} scanId={scanId ?? undefined} />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <AuthGuard>
@@ -144,10 +171,18 @@ export default function ScanPage() {
               )}
             </>
           ) : status === "processing" ? (
-            <LoadingState message={progress} />
+            <>
+              {opps.length === 0 ? (
+                <LoadingState message={progress} />
+              ) : (
+                <>
+                  <LoadingState message={progress} inline foundCount={opps.length} />
+                  {renderResults()}
+                </>
+              )}
+            </>
           ) : (
             <>
-              {/* Summary bar */}
               <div className="summary-bar" style={{ marginBottom: 16 }}>
                 <span style={{ fontSize: 13, color: "var(--text-2)", fontWeight: 500 }}>{opps.length} opportunities found</span>
                 <span style={{ color: "var(--go)", fontSize: 12, fontWeight: 600 }}>{goCnt} GO</span>
@@ -155,7 +190,6 @@ export default function ScanPage() {
                 <span style={{ color: "var(--danger)", fontSize: 12, fontWeight: 600 }}>{opps.length - goCnt - riskyCnt} SKIP</span>
               </div>
 
-              {/* Controls */}
               <div className="controls-row" style={{ marginBottom: 16 }}>
                 <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
                   <Filter size={13} color="var(--text-3)" />
@@ -191,18 +225,7 @@ export default function ScanPage() {
 
               {market && <div style={{ marginBottom: 20 }}><MarketRates rates={market} userRate={profile?.hourly_rate} /></div>}
 
-              {visible.length === 0 ? (
-                <div className="card card-p empty-state">
-                  <SlidersHorizontal size={24} color="var(--text-3)" style={{ marginBottom: 10 }} />
-                  <p style={{ color: "var(--text-2)", fontSize: 13 }}>No results match this filter</p>
-                </div>
-              ) : (
-                <div className="stack-sm">
-                  {visible.map((opp, i) => (
-                    <OpportunityCard key={opp.id} opp={opp} best={i === 0 && filter === "all"} scanId={scanId ?? undefined} />
-                  ))}
-                </div>
-              )}
+              {renderResults()}
             </>
           )}
         </div>

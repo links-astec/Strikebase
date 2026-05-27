@@ -15,8 +15,67 @@ function detect(msg: string): number {
   return 0;
 }
 
-export default function LoadingState({ message }: { message: string }) {
+interface Props {
+  message: string;
+  inline?: boolean;
+  foundCount?: number;
+}
+
+export default function LoadingState({ message, inline = false, foundCount = 0 }: Props) {
   const step = detect(message);
+
+  if (inline) {
+    return (
+      <div
+        className="card card-p"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 12,
+          marginBottom: 16,
+          borderColor: "var(--border-2)",
+        }}
+      >
+        <div className="spinner-sm" style={{ flexShrink: 0 }} />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: "var(--text-1)", marginBottom: 2 }}>
+            {message || "Processing..."}
+          </p>
+          <p style={{ fontSize: 11, color: "var(--text-3)" }}>
+            {foundCount > 0
+              ? `${foundCount} ${foundCount === 1 ? "job" : "jobs"} ready to review · scan still running`
+              : "Live scan in progress · results appear as they are scored"}
+          </p>
+        </div>
+        <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
+          {STEPS.map(({ Icon, label }, i) => {
+            const done = i < step;
+            const active = i === step;
+            return (
+              <div
+                key={label}
+                title={label}
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: 6,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: done ? "var(--go-bg)" : active ? "var(--gold)" : "var(--bg-hover)",
+                  opacity: i > step ? 0.4 : 1,
+                }}
+              >
+                {done
+                  ? <CheckCircle size={12} color="var(--go)" />
+                  : <Icon size={11} color={active ? "#fff" : "var(--text-3)"} />}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="card card-p-lg">
