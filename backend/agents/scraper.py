@@ -16,7 +16,8 @@ UNLOCKER_URL = "https://api.brightdata.com/request"
 UPWORK_DATASET   = "gd_lvz8ah0kl026ufku4y"
 FREELANCER_DATASET = "gd_m794xo3l298ja2x99e"
 
-BD_HEADERS = {"Authorization": f"Bearer {settings.bright_data_token}", "Content-Type": "application/json"}
+def _bd_headers() -> dict:
+    return {"Authorization": f"Bearer {settings.bright_data_token}", "Content-Type": "application/json"}
 
 
 async def scrape_listing(
@@ -54,7 +55,7 @@ async def _scrape_dataset(url: str) -> dict | None:
     dataset_id = UPWORK_DATASET if "upwork.com" in url else FREELANCER_DATASET
     try:
         async with httpx.AsyncClient(timeout=90) as client:
-            tr = await client.post(TRIGGER_URL, headers=BD_HEADERS,
+            tr = await client.post(TRIGGER_URL, headers=_bd_headers(),
                 params={"dataset_id": dataset_id, "format": "json"},
                 json=[{"url": url}])
             if tr.status_code not in (200, 201):
@@ -65,7 +66,7 @@ async def _scrape_dataset(url: str) -> dict | None:
 
             for _ in range(20):
                 await asyncio.sleep(3)
-                pr = await client.get(PROGRESS_URL.format(sid=sid), headers=BD_HEADERS)
+                pr = await client.get(PROGRESS_URL.format(sid=sid), headers=_bd_headers())
                 st = pr.json().get("status", "")
                 if st == "ready":
                     break
@@ -74,7 +75,7 @@ async def _scrape_dataset(url: str) -> dict | None:
             else:
                 return None
 
-            dr = await client.get(SNAPSHOT_URL.format(sid=sid), headers=BD_HEADERS, params={"format": "json"})
+            dr = await client.get(SNAPSHOT_URL.format(sid=sid), headers=_bd_headers(), params={"format": "json"})
             if dr.status_code != 200:
                 return None
             rows = dr.json()
@@ -94,7 +95,7 @@ async def _scrape_unlocker(url: str, item: dict) -> dict | None:
     """Use Web Unlocker to fetch the page, then parse HTML."""
     try:
         async with httpx.AsyncClient(timeout=30) as client:
-            r = await client.post(UNLOCKER_URL, headers=BD_HEADERS, json={
+            r = await client.post(UNLOCKER_URL, headers=_bd_headers(), json={
                 "zone": settings.bright_data_unlocker_zone,
                 "url": url,
                 "format": "raw",

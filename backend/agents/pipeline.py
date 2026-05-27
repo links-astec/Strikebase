@@ -43,7 +43,7 @@ async def _process_listing(
     listings_lock: asyncio.Lock,
 ) -> None:
     listing = await scrape_listing(item, sem, fast=True)
-    if not listing:
+    if not listing or not _is_usable(listing):
         return
 
     client = None
@@ -81,14 +81,37 @@ async def _process_listing(
     await progress.tick(scan_id)
 
 
+def _is_usable(listing: dict) -> bool:
+    """Drop listings that are too old or have almost no extractable data."""
+    # Drop if posted more than 60 days ago
+    if listing.get("posted_at"):
+        try:
+            posted = datetime.fromisoformat(listing["posted_at"].replace("Z", "+00:00"))
+            if (datetime.now(timezone.utc) - posted).days > 60:
+                return False
+        except Exception:
+            pass
+    # Drop if no title AND no budget AND no description
+    has_title = bool(listing.get("title") and listing["title"] != "Untitled")
+    has_budget = listing.get("budget_max") is not None
+    has_desc = bool((listing.get("description") or "").strip())
+    if not has_title and not has_budget and not has_desc:
+        return False
+    return True
+
+
 async def run_pipeline(scan_id: str, req: ScanRequest, user_id: str | None = None) -> None:
     """SERP → per-listing scrape → client → score → save (concurrent workers)."""
     try:
         db.update_scan_status(scan_id, "processing", "Searching job boards...")
-        serp_results = await search_job_listings(req.skills, num_results=MAX_LISTINGS)
+        try:
+            serp_results = await search_job_listings(req.skills, num_results=MAX_LISTINGS)
+        except RuntimeError as e:
+            db.update_scan_status(scan_id, "error", f"Configuration error: {e}. Check Bright Data environment variables in Render.")
+            return
 
         if not serp_results:
-            db.update_scan_status(scan_id, "error", "No listings found. Try different skills.")
+            db.update_scan_status(scan_id, "error", "Bright Data returned no results. Check your zone names and token in Render's environment variables.")
             return
 
         items = serp_results[:MAX_LISTINGS]
@@ -111,9 +134,12 @@ async def run_pipeline(scan_id: str, req: ScanRequest, user_id: str | None = Non
             ],
             return_exceptions=True,
         )
-
         if not listings_out:
-            db.update_scan_status(scan_id, "error", "Failed to extract listing details.")
+            db.update_scan_status(
+                scan_id,
+                "error",
+                "All listings were filtered out (stale or missing data). Try again — SERP results vary.",
+            )
             return
 
         market = _compute_market_rates(listings_out, req.skills)

@@ -69,12 +69,12 @@ export default function OpportunityDetail() {
               <Link href="/app/scan"><button className="btn btn-ghost">Start new scan</button></Link>
             </div>
           ) : data ? (
-            <div className="stack" style={{ maxWidth: 760 }}>
+            <div className="stack">
               {/* Hero card */}
               <div className="card card-p" style={{ borderLeft: `3px solid ${vColor}` }}>
-                <div style={{ display: "flex", alignItems: "flex-start", gap: 24, marginBottom: 20 }}>
+                <div className="opp-detail-hero">
                   <StrikeScore score={data.opp.strike_score} size="lg" />
-                  <div style={{ flex: 1 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
                       <span style={{ background: vBg, color: vColor, border: `1px solid ${vBorder}`, borderRadius: "var(--radius)", padding: "3px 10px", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", display: "flex", alignItems: "center", gap: 5 }}>
                         <VIcon size={11} /> {data.opp.verdict.toUpperCase()}
@@ -82,13 +82,8 @@ export default function OpportunityDetail() {
                       <span style={{ background: "rgba(255,255,255,0.05)", color: "var(--text-2)", border: "1px solid var(--border)", borderRadius: "var(--radius)", padding: "3px 10px", fontSize: 11, fontWeight: 500 }}>
                         {data.opp.platform}
                       </span>
-                      {data.opp.is_demo && (
-                        <span style={{ background: "var(--gold-muted)", color: "var(--gold)", border: "1px solid var(--gold-border)", borderRadius: "var(--radius)", padding: "3px 10px", fontSize: 10, fontWeight: 600, letterSpacing: "0.08em" }}>
-                          DEMO
-                        </span>
-                      )}
                     </div>
-                    <h1 style={{ fontFamily: "Space Grotesk, Inter, sans-serif", fontWeight: 600, fontSize: 22, color: "var(--text-1)", lineHeight: 1.35, marginBottom: 12 }}>
+                    <h1 className="opp-detail-title">
                       {data.opp.title}
                     </h1>
 
@@ -114,13 +109,16 @@ export default function OpportunityDetail() {
                     </div>
                   </div>
 
-                  {data.opp.url && (
-                    <a href={data.opp.url} target="_blank" rel="noopener noreferrer">
-                      <button className="btn btn-ghost" style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, flexShrink: 0 }}>
-                        View listing <ExternalLink size={12} />
-                      </button>
-                    </a>
-                  )}
+                  {data.opp.url && (() => {
+                    const cleanUrl = data.opp.url.replace(/^["']+|["']+$/g, "");
+                    return cleanUrl.startsWith("http") ? (
+                      <a href={cleanUrl} target="_blank" rel="noopener noreferrer" className="opp-detail-link">
+                        <button className="btn btn-ghost" style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12 }}>
+                          View listing <ExternalLink size={12} />
+                        </button>
+                      </a>
+                    ) : null;
+                  })()}
                 </div>
 
                 <div className="gold-line" style={{ margin: "16px 0" }} />
@@ -165,9 +163,12 @@ export default function OpportunityDetail() {
               {/* Proposal angle */}
               {data.opp.proposal_angle && (
                 <div className="card card-p" style={{ borderLeft: "3px solid var(--gold)" }}>
-                  <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gold)", marginBottom: 10 }}>
-                    AI proposal angle
-                  </p>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 10 }}>
+                    <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gold)" }}>
+                      How to open your proposal
+                    </p>
+                    <p style={{ fontSize: 10, color: "var(--text-3)", fontWeight: 300 }}>— write this as your first line to the client</p>
+                  </div>
                   <p style={{ fontSize: 14, color: "var(--text-2)", fontStyle: "italic", lineHeight: 1.75, fontWeight: 300 }}>
                     &ldquo;{data.opp.proposal_angle}&rdquo;
                   </p>
@@ -175,10 +176,14 @@ export default function OpportunityDetail() {
               )}
 
               {/* Market rates + client */}
-              <div className="col-2" style={{ alignItems: "flex-start" }}>
-                {data.market && <MarketRates rates={data.market} />}
-                {data.client && <ClientProfile profile={data.client} />}
-              </div>
+              {data.market && data.client ? (
+                <div className="col-2" style={{ alignItems: "flex-start" }}>
+                  <MarketRates rates={data.market} />
+                  <ClientProfile profile={data.client} />
+                </div>
+              ) : data.market ? (
+                <MarketRates rates={data.market} />
+              ) : null}
             </div>
           ) : null}
         </div>
