@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { X, Search, Zap, Loader2 } from "lucide-react";
+import { X, Search, Zap } from "lucide-react";
 import type { ScanRequest } from "@/lib/types";
 
 const SUGGESTIONS = [
@@ -7,6 +7,12 @@ const SUGGESTIONS = [
   "Figma", "SEO", "Copywriting", "Data Analysis", "WordPress",
   "Vue.js", "Django", "GraphQL", "DevOps", "iOS",
 ];
+
+const EXP_OPTS = [
+  { value: "junior", label: "Junior",   sub: "0–2 yrs" },
+  { value: "mid",    label: "Mid",      sub: "2–5 yrs" },
+  { value: "senior", label: "Senior",   sub: "5+ yrs"  },
+] as const;
 
 interface Props {
   onSubmit: (r: ScanRequest) => void;
@@ -37,16 +43,29 @@ export default function ScanForm({ onSubmit, loading, defaultSkills = [], defaul
   return (
     <form
       onSubmit={e => { e.preventDefault(); if (!disabled) onSubmit({ skills, hourly_rate: parseFloat(rate), experience: exp }); }}
-      className="card card-p stack"
+      className="card card-p-lg"
+      style={{ maxWidth: 640 }}
     >
+      {/* Header */}
+      <div className="scan-form-hd">
+        <div className="scan-form-hd-icon">
+          <Zap size={22} color="#fff" />
+        </div>
+        <p className="scan-form-hd-title">Find your next win</p>
+        <p className="scan-form-hd-sub">AI-powered scan across Upwork, Freelancer, Guru, PeoplePerHour & Toptal</p>
+      </div>
+
       {/* Skills */}
-      <div className="form-group">
-        <label className="input-label">Skills <span style={{ fontWeight: 300, textTransform: "none", letterSpacing: 0, color: "var(--text-3)" }}>(up to 8)</span></label>
+      <div className="form-group" style={{ marginBottom: 20 }}>
+        <label className="input-label">
+          Your skills
+          <span style={{ fontWeight: 300, textTransform: "none", letterSpacing: 0, color: "var(--text-3)", marginLeft: 6 }}>up to 8</span>
+        </label>
 
         {skills.length > 0 && (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
             {skills.map(s => (
-              <span key={s} className="skill-chip">
+              <span key={s} className="skill-chip" style={{ fontSize: 12, padding: "4px 12px" }}>
                 {s}
                 <button type="button" className="skill-chip-x" onClick={() => setSkills(prev => prev.filter(x => x !== s))}>
                   <X size={10} />
@@ -62,12 +81,12 @@ export default function ScanForm({ onSubmit, loading, defaultSkills = [], defaul
             ref={inputRef}
             type="text" value={input} onChange={e => setInput(e.target.value)}
             onKeyDown={e => { if (e.key === "Enter" || e.key === ",") { e.preventDefault(); add(input); } }}
-            placeholder="Type a skill, press Enter..."
-            className="input" style={{ paddingLeft: 32 }}
+            placeholder="Type a skill and press Enter..."
+            className="input" style={{ paddingLeft: 34 }}
           />
         </div>
 
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginTop: 8 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginTop: 10 }}>
           {SUGGESTIONS.filter(s => !skills.includes(s)).slice(0, 8).map(s => (
             <button key={s} type="button" className="sugg-btn" onClick={() => add(s)}>+ {s}</button>
           ))}
@@ -75,28 +94,47 @@ export default function ScanForm({ onSubmit, loading, defaultSkills = [], defaul
       </div>
 
       {/* Rate + Level */}
-      <div className="col-2">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 14, marginBottom: 24 }}>
         <div className="form-group">
-          <label className="input-label">Rate $/hr</label>
-          <input type="number" value={rate} onChange={e => setRate(e.target.value)}
-            placeholder="45" min="1" max="999" className="input" />
+          <label className="input-label">Hourly rate (USD)</label>
+          <div style={{ position: "relative" }}>
+            <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", fontSize: 14, color: "var(--text-3)", fontWeight: 500 }}>$</span>
+            <input type="number" value={rate} onChange={e => setRate(e.target.value)}
+              placeholder="45" min="1" max="999" className="input" style={{ paddingLeft: 24 }} />
+          </div>
         </div>
         <div className="form-group">
-          <label className="input-label">Level</label>
-          <select value={exp} onChange={e => setExp(e.target.value as "junior" | "mid" | "senior")}
-            className="input" style={{ cursor: "pointer" }}>
-            <option value="junior">Junior</option>
-            <option value="mid">Mid-level</option>
-            <option value="senior">Senior</option>
-          </select>
+          <label className="input-label">Experience level</label>
+          <div style={{ display: "flex", gap: 6 }}>
+            {EXP_OPTS.map(o => (
+              <button
+                key={o.value} type="button"
+                onClick={() => setExp(o.value)}
+                style={{
+                  flex: 1, padding: "9px 8px", border: `1px solid ${exp === o.value ? "var(--gold-border)" : "var(--border)"}`,
+                  borderRadius: "var(--radius)", background: exp === o.value ? "var(--gold-muted)" : "var(--bg-soft)",
+                  cursor: "pointer", transition: "all 0.15s", textAlign: "center",
+                }}
+              >
+                <p style={{ fontSize: 12, fontWeight: 600, color: exp === o.value ? "var(--gold)" : "var(--text-2)", marginBottom: 1 }}>{o.label}</p>
+                <p style={{ fontSize: 10, color: "var(--text-3)", fontWeight: 300 }}>{o.sub}</p>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      <button type="submit" disabled={disabled} className="btn btn-primary" style={{ width: "100%", padding: "12px 0" }}>
+      <button type="submit" disabled={disabled} className="btn btn-primary btn-lg" style={{ width: "100%", fontSize: 13, padding: "14px 0", letterSpacing: "0.06em" }}>
         {loading
-          ? <><div className="spinner-sm" /> Scanning...</>
-          : <><Zap size={14} /> Find opportunities</>}
+          ? <><div className="spinner-sm" /> Scanning live listings...</>
+          : <><Zap size={15} /> Scan for opportunities</>}
       </button>
+
+      {disabled && !loading && (
+        <p style={{ textAlign: "center", fontSize: 11, color: "var(--text-3)", marginTop: 8, fontWeight: 300 }}>
+          {!skills.length ? "Add at least one skill to scan" : "Enter your hourly rate to continue"}
+        </p>
+      )}
     </form>
   );
 }

@@ -1,10 +1,10 @@
 import { Search, Database, UserCheck, Sparkles, CheckCircle } from "lucide-react";
 
 const STEPS = [
-  { Icon: Search,    label: "SERP search",     desc: "Live scan across Upwork, Freelancer, Guru, PeoplePerHour, Toptal" },
-  { Icon: Database,  label: "Extracting data",  desc: "Web Scraper API pulling details from each listing" },
-  { Icon: UserCheck, label: "Client profiles",  desc: "Web Unlocker reading client history & spend data" },
-  { Icon: Sparkles,  label: "AI scoring",       desc: "Advanced AI ranking every listing by your win probability" },
+  { Icon: Search,    label: "Searching job boards",   desc: "Live SERP scan across Upwork, Freelancer, Guru, PeoplePerHour & Toptal" },
+  { Icon: Database,  label: "Extracting listing data", desc: "Web Scraper API pulling budget, bids, and description from each listing" },
+  { Icon: UserCheck, label: "Reading client profiles", desc: "Web Unlocker bypassing bot protection to fetch client spend & history" },
+  { Icon: Sparkles,  label: "AI scoring & ranking",    desc: "Scoring every listing for your win probability against market rates" },
 ];
 
 function detect(msg: string): number {
@@ -27,48 +27,44 @@ export default function LoadingState({ message, inline = false, foundCount = 0 }
   if (inline) {
     return (
       <div
-        className="card card-p"
+        className="card"
         style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-          marginBottom: 16,
-          borderColor: "var(--border-2)",
+          display: "flex", alignItems: "center", gap: 14,
+          marginBottom: 16, padding: "14px 18px",
+          borderColor: "var(--gold-border)",
+          background: "linear-gradient(135deg, var(--gold-muted) 0%, transparent 100%)",
         }}
       >
-        <div className="spinner-sm" style={{ flexShrink: 0 }} />
+        <div className="spinner-sm" style={{ flexShrink: 0, borderTopColor: "var(--gold)" }} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <p style={{ fontSize: 13, fontWeight: 600, color: "var(--text-1)", marginBottom: 2 }}>
             {message || "Processing..."}
           </p>
-          <p style={{ fontSize: 11, color: "var(--text-3)" }}>
+          <p style={{ fontSize: 11, color: "var(--text-3)", fontWeight: 300 }}>
             {foundCount > 0
-              ? `${foundCount} ${foundCount === 1 ? "job" : "jobs"} ready to review · scan still running`
-              : "Live scan in progress · results appear as they are scored"}
+              ? `${foundCount} ${foundCount === 1 ? "result" : "results"} ready · scan still running`
+              : "Live scan in progress · results appear as they score"}
           </p>
         </div>
         <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
           {STEPS.map(({ Icon, label }, i) => {
-            const done = i < step;
+            const done   = i < step;
             const active = i === step;
             return (
               <div
-                key={label}
-                title={label}
+                key={label} title={label}
                 style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: 6,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  width: 26, height: 26, borderRadius: 7,
+                  display: "flex", alignItems: "center", justifyContent: "center",
                   background: done ? "var(--go-bg)" : active ? "var(--gold)" : "var(--bg-hover)",
-                  opacity: i > step ? 0.4 : 1,
+                  border: `1px solid ${done ? "var(--go-border)" : active ? "transparent" : "var(--border)"}`,
+                  opacity: i > step ? 0.35 : 1,
+                  transition: "all 0.25s",
                 }}
               >
                 {done
-                  ? <CheckCircle size={12} color="var(--go)" />
-                  : <Icon size={11} color={active ? "#fff" : "var(--text-3)"} />}
+                  ? <CheckCircle size={13} color="var(--go)" />
+                  : <Icon size={12} color={active ? "#fff" : "var(--text-3)"} />}
               </div>
             );
           })}
@@ -77,42 +73,55 @@ export default function LoadingState({ message, inline = false, foundCount = 0 }
     );
   }
 
+  const activeStep = STEPS[step];
+
   return (
-    <div className="card card-p-lg">
-      <div style={{ display: "flex", justifyContent: "center", marginBottom: 24 }}>
-        <div className="spinner" />
+    <div className="load-v2">
+      <div className="load-v2-bar-wrap">
+        <div className="load-v2-bar" />
       </div>
+      <div className="load-v2-body">
+        <div className="load-v2-icon-wrap">
+          <activeStep.Icon size={24} color="var(--gold)" />
+        </div>
 
-      <p style={{ textAlign: "center", fontFamily: "Space Grotesk, Inter, sans-serif", fontWeight: 600, fontSize: 18, color: "var(--text-1)", marginBottom: 4 }}>
-        {message || "Processing..."}
-      </p>
-      <p style={{ textAlign: "center", fontSize: 12, color: "var(--text-3)", marginBottom: 28 }}>
-        Live Bright Data scrape in progress · 15–45 seconds
-      </p>
+        <p style={{ textAlign: "center", fontFamily: "Space Grotesk, Inter, sans-serif", fontWeight: 700, fontSize: 20, color: "var(--text-1)", marginBottom: 6, letterSpacing: "-0.02em" }}>
+          {message || "Processing..."}
+        </p>
+        <p style={{ textAlign: "center", fontSize: 12, color: "var(--text-3)", fontWeight: 300, maxWidth: 340, margin: "0 auto" }}>
+          {activeStep.desc}
+        </p>
 
-      <div className="stack-sm" style={{ maxWidth: 380, margin: "0 auto" }}>
-        {STEPS.map(({ Icon, label, desc }, i) => {
-          const done   = i < step;
-          const active = i === step;
-          return (
-            <div key={label} className={`load-step ${done ? "load-done" : active ? "load-active" : "load-idle"}`}>
-              <div className={`load-icon ${done ? "load-icon-done" : active ? "load-icon-active" : "load-icon-idle"}`}>
-                {done
-                  ? <CheckCircle size={15} color="var(--go)" />
-                  : <Icon size={14} color={active ? "#fff" : "var(--text-3)"} />}
+        <div className="load-v2-steps">
+          {STEPS.map(({ Icon, label }, i) => {
+            const done   = i < step;
+            const active = i === step;
+            return (
+              <div key={label} className={`load-v2-step ${done ? "load-v2-step-done" : active ? "load-v2-step-active" : "load-v2-step-idle"}`}>
+                <div className={`load-v2-step-ico ${done ? "load-v2-step-ico-done" : active ? "load-v2-step-ico-active" : "load-v2-step-ico-idle"}`}>
+                  {done
+                    ? <CheckCircle size={14} color="var(--go)" />
+                    : <Icon size={13} color={active ? "#fff" : "var(--text-3)"} />}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontSize: 12, fontWeight: active ? 600 : 400, color: done ? "var(--go)" : active ? "var(--text-1)" : "var(--text-3)" }}>
+                    {label}
+                  </p>
+                </div>
+                {active && (
+                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--gold)", animation: "pulse-dot 1.2s ease-in-out infinite" }} />
+                )}
+                {done && (
+                  <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", color: "var(--go)", textTransform: "uppercase" }}>Done</span>
+                )}
               </div>
-              <div style={{ flex: 1 }}>
-                <p style={{ fontSize: 12, fontWeight: 500, color: done ? "var(--go)" : active ? "var(--text-1)" : "var(--text-3)" }}>
-                  {label}
-                </p>
-                {active && <p style={{ fontSize: 11, color: "var(--text-3)", marginTop: 2, fontWeight: 300 }}>{desc}</p>}
-              </div>
-              {active && (
-                <div style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--gold)", animation: "pulse-dot 1.2s ease-in-out infinite" }} />
-              )}
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
+
+        <p style={{ textAlign: "center", fontSize: 11, color: "var(--text-3)", marginTop: 20, fontWeight: 300 }}>
+          Powered by Bright Data · typically 15–45 seconds
+        </p>
       </div>
     </div>
   );

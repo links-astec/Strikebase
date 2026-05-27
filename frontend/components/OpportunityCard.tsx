@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronRight, DollarSign, Users, Clock } from "lucide-react";
+import { ChevronRight, DollarSign, Users, Clock, CheckCircle } from "lucide-react";
 import type { Opportunity } from "@/lib/types";
 import StrikeScore from "./StrikeScore";
 
@@ -15,25 +15,25 @@ export default function OpportunityCard({ opp, best, scanId }: { opp: Opportunit
 
   return (
     <Link href={href} style={{ display: "block", position: "relative" }}>
-      <article className="opp-card" style={{ borderLeft: `3px solid ${accent}` }}>
+      <article className="opp-card" data-verdict={opp.verdict} style={{ borderLeft: `3px solid ${accent}` }}>
         {best && <div className="opp-best">★ Best match</div>}
-        <div className="opp-inner">
+        <div className="opp-inner" style={{ padding: "18px 20px", gap: 16, alignItems: "center" }}>
           <StrikeScore score={opp.strike_score} size="md" />
           <div className="opp-body">
-            <div className="opp-tags">
+            <div className="opp-tags" style={{ marginBottom: 7 }}>
               <span className={`tag tag-${opp.verdict}`}>{opp.verdict.toUpperCase()}</span>
               <span className="tag tag-platform">{opp.platform}</span>
             </div>
             <p className="opp-title">{opp.title}</p>
-            <div className="opp-meta">
+            <div className="opp-meta" style={{ marginBottom: opp.reasons[0] ? 8 : 0 }}>
               {opp.budget_max != null && (
-                <span className="opp-meta-item">
-                  <DollarSign size={11} />
+                <span className="opp-meta-item" style={{ color: "var(--go)", fontWeight: 500 }}>
+                  <DollarSign size={11} color="var(--go)" />
                   {opp.budget_min != null ? `$${opp.budget_min}–$${opp.budget_max}` : `$${opp.budget_max}`}/hr
                 </span>
               )}
               {opp.bid_count != null && (
-                <span className="opp-meta-item" style={{ color: opp.bid_count > 20 ? "var(--danger)" : "var(--go)" }}>
+                <span className="opp-meta-item" style={{ color: opp.bid_count > 20 ? "var(--danger)" : "var(--text-2)" }}>
                   <Users size={11} /> {opp.bid_count} bids
                 </span>
               )}
@@ -43,10 +43,16 @@ export default function OpportunityCard({ opp, best, scanId }: { opp: Opportunit
                 </span>
               )}
             </div>
-            {opp.reasons[0] && <p className="opp-reason">{opp.reasons[0]}</p>}
+            {opp.reasons[0] && (
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
+                <CheckCircle size={11} color="var(--go)" style={{ flexShrink: 0, marginTop: 2 }} />
+                <p className="opp-reason" style={{ fontSize: 11, color: "var(--text-3)" }}>{opp.reasons[0]}</p>
+              </div>
+            )}
           </div>
-          <ChevronRight size={15} color="var(--border-2)" style={{ flexShrink: 0, marginTop: 4 }} />
+          <ChevronRight size={15} color="var(--border-2)" style={{ flexShrink: 0 }} />
         </div>
+        <div className="opp-card-footer" style={{ "--opp-accent": accent } as React.CSSProperties} />
       </article>
     </Link>
   );

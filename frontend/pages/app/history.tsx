@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
-import { Clock, ChevronRight, Zap } from "lucide-react";
+import { Clock, ChevronRight, Zap, CheckCircle, AlertTriangle } from "lucide-react";
 import AppShell from "@/components/AppShell";
 import AuthGuard from "@/components/AuthGuard";
 import { getUserScans } from "@/lib/api";
@@ -60,9 +60,42 @@ export default function HistoryPage() {
             <h1 style={{ fontFamily: "Space Grotesk, Inter, sans-serif", fontSize: 26, fontWeight: 600, color: "var(--text-1)", marginBottom: 4 }}>
               Scan History
             </h1>
-            <p style={{ fontSize: 13, color: "var(--text-3)", fontWeight: 300 }}>
-              {loading ? "Loading..." : `${scans.length} scan${scans.length !== 1 ? "s" : ""} on record`}
-            </p>
+            {!loading && scans.length > 0 && (() => {
+              const complete   = scans.filter(s => s.status === "complete").length;
+              const processing = scans.filter(s => s.status === "processing").length;
+              const failed     = scans.length - complete - processing;
+              return (
+                <div className="history-header-stats">
+                  <span className="hist-stat">
+                    <span className="hist-stat-dot" style={{ background: "var(--go)" }} />
+                    <span style={{ color: "var(--go)", fontWeight: 600 }}>{complete}</span>
+                    <span style={{ color: "var(--text-3)" }}>complete</span>
+                  </span>
+                  {processing > 0 && (
+                    <span className="hist-stat">
+                      <span className="hist-stat-dot" style={{ background: "var(--warn)" }} />
+                      <span style={{ color: "var(--warn)", fontWeight: 600 }}>{processing}</span>
+                      <span style={{ color: "var(--text-3)" }}>processing</span>
+                    </span>
+                  )}
+                  {failed > 0 && (
+                    <span className="hist-stat">
+                      <span className="hist-stat-dot" style={{ background: "var(--danger)" }} />
+                      <span style={{ color: "var(--danger)", fontWeight: 600 }}>{failed}</span>
+                      <span style={{ color: "var(--text-3)" }}>failed</span>
+                    </span>
+                  )}
+                  <span style={{ fontSize: 12, color: "var(--text-3)", fontWeight: 300 }}>
+                    · {scans.length} total
+                  </span>
+                </div>
+              );
+            })()}
+            {(loading || scans.length === 0) && (
+              <p style={{ fontSize: 13, color: "var(--text-3)", fontWeight: 300 }}>
+                {loading ? "Loading..." : "No scans yet"}
+              </p>
+            )}
           </div>
           <Link href="/app/scan">
             <button className="btn btn-primary">New scan <Zap size={13} /></button>

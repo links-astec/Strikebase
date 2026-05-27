@@ -1,6 +1,6 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import Head from "next/head";
-import { Link2, FileText, Loader2, CheckCircle, AlertTriangle, XCircle, ExternalLink } from "lucide-react";
+import { Link2, FileText, Loader2, CheckCircle, AlertTriangle, XCircle, ExternalLink, DollarSign } from "lucide-react";
 import AppShell from "@/components/AppShell";
 import AuthGuard from "@/components/AuthGuard";
 import StrikeScore from "@/components/StrikeScore";
@@ -64,19 +64,11 @@ export default function AnalyzePage() {
         <div className="page-body">
           <div style={{ maxWidth: 700 }}>
             {/* Mode toggle */}
-            <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
-              <button
-                className={`btn${mode === "url" ? " btn-primary" : " btn-ghost"}`}
-                onClick={() => setMode("url")}
-                style={{ display: "flex", alignItems: "center", gap: 7 }}
-              >
+            <div className="seg-control">
+              <button className={mode === "url" ? "seg-active" : "seg-btn"} type="button" onClick={() => setMode("url")}>
                 <Link2 size={13} /> Job URL
               </button>
-              <button
-                className={`btn${mode === "text" ? " btn-primary" : " btn-ghost"}`}
-                onClick={() => setMode("text")}
-                style={{ display: "flex", alignItems: "center", gap: 7 }}
-              >
+              <button className={mode === "text" ? "seg-active" : "seg-btn"} type="button" onClick={() => setMode("text")}>
                 <FileText size={13} /> Paste description
               </button>
             </div>
@@ -144,58 +136,89 @@ export default function AnalyzePage() {
 }
 
 function AnalysisResult({ r }: { r: AnalysisResponse }) {
-  const VIcon = r.verdict === "go" ? CheckCircle : r.verdict === "risky" ? AlertTriangle : XCircle;
-  const vColor = r.verdict === "go" ? "var(--go)" : r.verdict === "risky" ? "var(--warn)" : "var(--danger)";
-  const vBg    = r.verdict === "go" ? "rgba(61,171,120,0.12)" : r.verdict === "risky" ? "var(--warn-bg)" : "var(--danger-bg)";
+  const VIcon   = r.verdict === "go" ? CheckCircle : r.verdict === "risky" ? AlertTriangle : XCircle;
+  const vColor  = r.verdict === "go" ? "var(--go)"     : r.verdict === "risky" ? "var(--warn)"        : "var(--danger)";
+  const vBg     = r.verdict === "go" ? "var(--go-bg)"  : r.verdict === "risky" ? "var(--warn-bg)"     : "var(--danger-bg)";
   const vBorder = r.verdict === "go" ? "var(--go-border)" : r.verdict === "risky" ? "var(--warn-border)" : "var(--danger-border)";
+  const heroBg  = r.verdict === "go" ? "rgba(16,185,129,0.07)" : r.verdict === "risky" ? "rgba(245,158,11,0.07)" : "rgba(239,68,68,0.06)";
 
   return (
     <div className="stack" style={{ marginTop: 24 }}>
-      {/* Header card */}
-      <div className="card card-p" style={{ borderLeft: `3px solid ${vColor}` }}>
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 20, marginBottom: 16 }}>
-          <StrikeScore score={r.strike_score} size="lg" />
-          <div style={{ flex: 1 }}>
-            <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
-              <span style={{ background: vBg, color: vColor, border: `1px solid ${vBorder}`, borderRadius: "var(--radius)", padding: "3px 10px", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", display: "flex", alignItems: "center", gap: 5 }}>
+      {/* Cinematic hero — mirrors opp-detail-v2 */}
+      <div className="opp-detail-v2">
+        <div className="opp-detail-hd" style={{ "--hero-bg": `linear-gradient(160deg, ${heroBg} 0%, transparent 70%)` } as React.CSSProperties}>
+          <div className="opp-detail-hd-inner">
+            {/* Verdict + platform + link row */}
+            <div className="opp-verdict-row">
+              <span style={{ background: vBg, color: vColor, border: `1px solid ${vBorder}`, borderRadius: "var(--radius)", padding: "4px 12px", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", display: "flex", alignItems: "center", gap: 5 }}>
                 <VIcon size={11} /> {r.verdict.toUpperCase()}
               </span>
-              <span style={{ background: "rgba(255,255,255,0.05)", color: "var(--text-2)", border: "1px solid var(--border)", borderRadius: "var(--radius)", padding: "3px 10px", fontSize: 11, fontWeight: 500 }}>
+              <span style={{ background: "rgba(255,255,255,0.05)", color: "var(--text-2)", border: "1px solid var(--border)", borderRadius: "var(--radius)", padding: "4px 12px", fontSize: 11, fontWeight: 400, textTransform: "capitalize" }}>
                 {r.opportunity.platform}
               </span>
+              {r.opportunity.url && (
+                <a href={r.opportunity.url} target="_blank" rel="noopener noreferrer" style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "var(--gold)", fontWeight: 500, textDecoration: "none" }}>
+                  View listing <ExternalLink size={12} />
+                </a>
+              )}
             </div>
-            <h2 style={{ fontFamily: "Space Grotesk, Inter, sans-serif", fontWeight: 600, fontSize: 20, color: "var(--text-1)", lineHeight: 1.3, marginBottom: 8 }}>
-              {r.opportunity.title || "Analyzed opportunity"}
-            </h2>
-            {r.opportunity.url && (
-              <a href={r.opportunity.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: "var(--gold)", display: "flex", alignItems: "center", gap: 4 }}>
-                View original posting <ExternalLink size={10} />
-              </a>
-            )}
+
+            {/* Score + title */}
+            <div className="opp-detail-score-row">
+              <div className="opp-detail-score-wrap">
+                <StrikeScore score={r.strike_score} size="lg" />
+                <span className="opp-detail-score-label">Strike score</span>
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <h2 className="opp-detail-title-v2">{r.opportunity.title || "Analyzed opportunity"}</h2>
+                {r.opportunity.budget_max != null && (
+                  <div className="opp-detail-meta-row">
+                    <span className="opp-detail-meta-item" style={{ color: "var(--go)", fontWeight: 600 }}>
+                      <DollarSign size={13} color="var(--go)" />
+                      {r.opportunity.budget_min != null
+                        ? `$${r.opportunity.budget_min}–$${r.opportunity.budget_max}`
+                        : `$${r.opportunity.budget_max}`}/hr
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Reasons */}
-        {r.reasons.length > 0 && (
-          <div className="stack-sm" style={{ marginBottom: r.red_flags.length > 0 ? 14 : 0 }}>
-            {r.reasons.map((reason, i) => (
-              <div key={i} className="reason-row">
-                <CheckCircle size={12} color="var(--go)" className="reason-icon" style={{ flexShrink: 0, marginTop: 2 }} />
-                <p style={{ fontSize: 12, color: "var(--text-2)", fontWeight: 300, lineHeight: 1.5 }}>{reason}</p>
+        {/* Reasons + red flags grid */}
+        {(r.reasons.length > 0 || r.red_flags.length > 0) && (
+          <div className="opp-detail-insights">
+            {r.reasons.length > 0 && (
+              <div className="insight-col">
+                <div className="insight-col-lbl" style={{ color: "var(--go)" }}>
+                  <CheckCircle size={12} color="var(--go)" /> Why bid
+                </div>
+                {r.reasons.map((reason, i) => (
+                  <div key={i} className="insight-row">
+                    <div className="insight-ico insight-ico-go">
+                      <CheckCircle size={11} color="var(--go)" />
+                    </div>
+                    <p className="insight-txt">{reason}</p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        )}
-
-        {/* Red flags */}
-        {r.red_flags.length > 0 && (
-          <div className="stack-sm">
-            {r.red_flags.map((flag, i) => (
-              <div key={i} className="reason-row">
-                <AlertTriangle size={12} color="var(--danger)" className="reason-icon" style={{ flexShrink: 0, marginTop: 2 }} />
-                <p style={{ fontSize: 12, color: "var(--text-2)", fontWeight: 300, lineHeight: 1.5 }}>{flag}</p>
+            )}
+            {r.red_flags.length > 0 && (
+              <div className="insight-col">
+                <div className="insight-col-lbl" style={{ color: "var(--danger)" }}>
+                  <AlertTriangle size={12} color="var(--danger)" /> Red flags
+                </div>
+                {r.red_flags.map((flag, i) => (
+                  <div key={i} className="insight-row">
+                    <div className="insight-ico insight-ico-danger">
+                      <AlertTriangle size={11} color="var(--danger)" />
+                    </div>
+                    <p className="insight-txt">{flag}</p>
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
         )}
       </div>
@@ -212,10 +235,16 @@ function AnalysisResult({ r }: { r: AnalysisResponse }) {
       )}
 
       {/* Market rates + client profile */}
-      <div className="col-2" style={{ alignItems: "flex-start" }}>
-        {r.market_rates && <MarketRates rates={r.market_rates} />}
-        {r.client_profile && <ClientProfile profile={r.client_profile} />}
-      </div>
+      {r.market_rates && r.client_profile ? (
+        <div className="col-2" style={{ alignItems: "flex-start" }}>
+          <MarketRates rates={r.market_rates} />
+          <ClientProfile profile={r.client_profile} />
+        </div>
+      ) : r.market_rates ? (
+        <MarketRates rates={r.market_rates} />
+      ) : r.client_profile ? (
+        <ClientProfile profile={r.client_profile} />
+      ) : null}
     </div>
   );
 }

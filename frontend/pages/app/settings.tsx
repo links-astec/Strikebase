@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
-import { Loader2, CheckCircle, Eye, EyeOff, UserCircle, Code2, DollarSign, Lock } from "lucide-react";
+import { Loader2, CheckCircle, Eye, EyeOff, UserCircle, Code2, DollarSign, Lock, Shield } from "lucide-react";
 import AppShell from "@/components/AppShell";
 import AuthGuard from "@/components/AuthGuard";
 import { useAuth } from "@/lib/auth";
@@ -100,6 +100,34 @@ export default function SettingsPage() {
         </div>
 
         <div className="page-body">
+          {/* Profile hero card */}
+          {profile && (
+            <div className="settings-profile-card" style={{ maxWidth: 640 }}>
+              <div className="settings-avatar-lg">
+                {(profile.display_name || "U").charAt(0).toUpperCase()}
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p className="settings-profile-name">{profile.display_name || "Your Profile"}</p>
+                <p className="settings-profile-email">{profile.bio || "No bio yet"}</p>
+                <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
+                  <span className="settings-profile-badge">
+                    <Shield size={9} /> {profile.experience || "mid"}
+                  </span>
+                  {profile.hourly_rate > 0 && (
+                    <span className="settings-profile-badge">
+                      ${profile.hourly_rate}/hr
+                    </span>
+                  )}
+                  {profile.skills.length > 0 && (
+                    <span className="settings-profile-badge">
+                      {profile.skills.length} skill{profile.skills.length !== 1 ? "s" : ""}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleSave} style={{ maxWidth: 640 }}>
             <div className="stack">
               {/* Profile */}
@@ -158,12 +186,27 @@ export default function SettingsPage() {
                   </div>
                   <div className="form-group">
                     <label className="input-label">Experience level</label>
-                    <select value={exp} onChange={e => setExp(e.target.value as "junior" | "mid" | "senior")}
-                      className="input" style={{ cursor: "pointer" }}>
-                      <option value="junior">Junior (0–2 years)</option>
-                      <option value="mid">Mid-level (2–5 years)</option>
-                      <option value="senior">Senior (5+ years)</option>
-                    </select>
+                    <div style={{ display: "flex", gap: 6 }}>
+                      {([
+                        { value: "junior", label: "Junior",  sub: "0–2 yrs" },
+                        { value: "mid",    label: "Mid",     sub: "2–5 yrs" },
+                        { value: "senior", label: "Senior",  sub: "5+ yrs"  },
+                      ] as const).map(o => (
+                        <button
+                          key={o.value} type="button"
+                          onClick={() => setExp(o.value)}
+                          style={{
+                            flex: 1, padding: "9px 8px",
+                            border: `1px solid ${exp === o.value ? "var(--gold-border)" : "var(--border)"}`,
+                            borderRadius: "var(--radius)", background: exp === o.value ? "var(--gold-muted)" : "var(--bg-soft)",
+                            cursor: "pointer", transition: "all 0.15s", textAlign: "center",
+                          }}
+                        >
+                          <p style={{ fontSize: 12, fontWeight: 600, color: exp === o.value ? "var(--gold)" : "var(--text-2)", marginBottom: 1 }}>{o.label}</p>
+                          <p style={{ fontSize: 10, color: "var(--text-3)", fontWeight: 300 }}>{o.sub}</p>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </section>
