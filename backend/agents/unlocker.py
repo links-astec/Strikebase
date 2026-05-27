@@ -11,11 +11,11 @@ from config import settings
 import database as db
 
 BD_API = "https://api.brightdata.com/request"
-HEADERS = {
-    "Authorization": f"Bearer {settings.bright_data_token}",
-    "Content-Type": "application/json",
-}
 CACHE_TTL_HOURS = 24
+
+
+def _bd_headers() -> dict:
+    return {"Authorization": f"Bearer {settings.bright_data_token}", "Content-Type": "application/json"}
 
 
 async def get_client_profile(client_id: str, platform: str = "upwork") -> dict | None:
@@ -54,7 +54,7 @@ async def _scrape_client_profile(client_id: str, platform: str) -> dict | None:
         async with httpx.AsyncClient(timeout=45) as client:
             response = await client.post(
                 BD_API,
-                headers=HEADERS,
+                headers=_bd_headers(),
                 json={
                     "zone": settings.bright_data_unlocker_zone,
                     "url": target_url,
