@@ -118,6 +118,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </div>
 
       <main className="app-content">
+        <div className="app-bg-glow" aria-hidden="true" />
         {children}
       </main>
 

@@ -251,12 +251,40 @@ export default function ScanPage() {
             </>
           ) : (
             <>
-              <div className="summary-bar" style={{ marginBottom: 16 }}>
-                <span style={{ fontSize: 13, color: "var(--text-2)", fontWeight: 500 }}>{opps.length} opportunities found</span>
-                <span style={{ color: "var(--go)", fontSize: 12, fontWeight: 600 }}>{goCnt} GO</span>
-                <span style={{ color: "var(--warn)", fontSize: 12, fontWeight: 600 }}>{riskyCnt} RISKY</span>
-                <span style={{ color: "var(--danger)", fontSize: 12, fontWeight: 600 }}>{opps.length - goCnt - riskyCnt} SKIP</span>
-              </div>
+              {(() => {
+                const total = opps.length;
+                const skipCnt = total - goCnt - riskyCnt;
+                const goPct   = total > 0 ? Math.round(goCnt   / total * 100) : 0;
+                const warnPct = total > 0 ? Math.round(riskyCnt / total * 100) : 0;
+                const skipPct = 100 - goPct - warnPct;
+                return (
+                  <div className="scan-sum-v2">
+                    <div className="scan-sum-bar">
+                      <div style={{ width: `${goPct}%`,   background: "var(--go)",     transition: "width 0.6s ease" }} />
+                      <div style={{ width: `${warnPct}%`, background: "var(--warn)",   transition: "width 0.6s ease" }} />
+                      <div style={{ width: `${skipPct}%`, background: "var(--danger)", transition: "width 0.6s ease" }} />
+                    </div>
+                    <div className="scan-sum-body">
+                      <div className="sum-v2-col">
+                        <span className="sum-v2-n" style={{ color: "var(--text-1)" }}>{total}</span>
+                        <span className="sum-v2-l" style={{ color: "var(--text-3)" }}>Found</span>
+                      </div>
+                      <div className="sum-v2-col">
+                        <span className="sum-v2-n" style={{ color: "var(--go)" }}>{goCnt}</span>
+                        <span className="sum-v2-l" style={{ color: "var(--go)" }}>GO</span>
+                      </div>
+                      <div className="sum-v2-col">
+                        <span className="sum-v2-n" style={{ color: "var(--warn)" }}>{riskyCnt}</span>
+                        <span className="sum-v2-l" style={{ color: "var(--warn)" }}>RISKY</span>
+                      </div>
+                      <div className="sum-v2-col">
+                        <span className="sum-v2-n" style={{ color: "var(--danger)" }}>{skipCnt}</span>
+                        <span className="sum-v2-l" style={{ color: "var(--danger)" }}>SKIP</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
 
               <div className="controls-row" style={{ marginBottom: 16 }}>
                 <div style={{ display: "flex", gap: 6, alignItems: "center" }}>

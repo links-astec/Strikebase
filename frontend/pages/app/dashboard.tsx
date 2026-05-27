@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import Head from "next/head";
 import Link from "next/link";
-import { ArrowRight, Zap, TrendingUp, Clock, Sparkles, ChevronRight } from "lucide-react";
+import { ArrowRight, Zap, TrendingUp, Clock, Sparkles, ChevronRight, DollarSign, Layers } from "lucide-react";
 import AppShell from "@/components/AppShell";
 import AuthGuard from "@/components/AuthGuard";
 import StrikeScore from "@/components/StrikeScore";
@@ -92,14 +92,19 @@ export default function Dashboard() {
       <AppShell>
         <div className="page-header">
           <div>
-            <h1 style={{ fontFamily: "Space Grotesk, Inter, sans-serif", fontSize: 26, fontWeight: 600, color: "var(--text-1)", marginBottom: 4 }}>
+            <div className="dash-greeting-badge">
+              <span className="dash-greeting-dot" />
+              {profile?.experience ? `${profile.experience.charAt(0).toUpperCase() + profile.experience.slice(1)} freelancer` : "Freelancer"}
+            </div>
+            <h1 style={{ fontFamily: "Space Grotesk, Inter, sans-serif", fontSize: 28, fontWeight: 700, color: "var(--text-1)", marginBottom: 5, letterSpacing: "-0.02em" }}>
               {greeting()}, {name}
             </h1>
-            <p style={{ fontSize: 13, color: "var(--text-3)", fontWeight: 300 }}>
+            <div className="page-h1-sub">
+              <span className="page-h1-sub-dot" />
               {profile?.skills?.length
                 ? `Scanning for ${profile.skills.slice(0, 3).join(", ")}${profile.skills.length > 3 ? ` +${profile.skills.length - 3} more` : ""}`
                 : "Complete your profile to get started"}
-            </p>
+            </div>
           </div>
           <Link href="/app/scan">
             <button className="btn btn-primary">
@@ -110,22 +115,26 @@ export default function Dashboard() {
 
         <div className="page-body">
           {/* Quick stats */}
-          <div className="stat-grid" style={{ marginBottom: 28 }}>
-            <div className="stat-tile">
-              <p className="stat-lbl">Total scans</p>
-              <p className="stat-val">{loadingScans ? "—" : scans.length}</p>
+          <div className="col-3" style={{ marginBottom: 28, gridTemplateColumns: "repeat(4, 1fr)" }}>
+            <div className="str-tile" style={{ "--tile-top": "var(--gold)" } as React.CSSProperties}>
+              <div className="str-ico"><Zap size={15} color="var(--gold)" /></div>
+              <p className="str-n">{loadingScans ? "—" : scans.length}</p>
+              <p className="str-l">Total scans</p>
             </div>
-            <div className="stat-tile">
-              <p className="stat-lbl">Skills tracked</p>
-              <p className="stat-val">{profile?.skills?.length ?? 0}</p>
+            <div className="str-tile" style={{ "--tile-top": "var(--go)" } as React.CSSProperties}>
+              <div className="str-ico"><Layers size={15} color="var(--go)" /></div>
+              <p className="str-n">{profile?.skills?.length ?? 0}</p>
+              <p className="str-l">Skills tracked</p>
             </div>
-            <div className="stat-tile">
-              <p className="stat-lbl">Target rate</p>
-              <p className="stat-val">{profile?.hourly_rate ? `$${profile.hourly_rate}/hr` : "—"}</p>
+            <div className="str-tile" style={{ "--tile-top": "var(--warn)" } as React.CSSProperties}>
+              <div className="str-ico"><DollarSign size={15} color="var(--warn)" /></div>
+              <p className="str-n">{profile?.hourly_rate ? `$${profile.hourly_rate}` : "—"}</p>
+              <p className="str-l">Target rate /hr</p>
             </div>
-            <div className="stat-tile">
-              <p className="stat-lbl">Level</p>
-              <p className="stat-val" style={{ textTransform: "capitalize" }}>{profile?.experience ?? "—"}</p>
+            <div className="str-tile" style={{ "--tile-top": "var(--gold-border)" } as React.CSSProperties}>
+              <div className="str-ico"><TrendingUp size={15} color="var(--text-3)" /></div>
+              <p className="str-n" style={{ textTransform: "capitalize", fontSize: 28 }}>{profile?.experience ?? "—"}</p>
+              <p className="str-l">Experience level</p>
             </div>
           </div>
 
@@ -133,10 +142,8 @@ export default function Dashboard() {
             {/* Recent scans */}
             <div>
               <div className="row-sb" style={{ marginBottom: 14 }}>
-                <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-3)" }}>
-                  Recent scans
-                </p>
-                <Link href="/app/history" style={{ fontSize: 11, color: "var(--gold)", display: "flex", alignItems: "center", gap: 3 }}>
+                <span className="sec-lbl-v2">Recent scans</span>
+                <Link href="/app/history" style={{ fontSize: 11, color: "var(--gold)", display: "flex", alignItems: "center", gap: 3, fontWeight: 500 }}>
                   View all <ChevronRight size={11} />
                 </Link>
               </div>
@@ -170,11 +177,9 @@ export default function Dashboard() {
             {/* Project suggestions */}
             <div>
               <div className="row-sb" style={{ marginBottom: 14 }}>
-                <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-3)" }}>
-                  Suggested projects
-                </p>
-                <span style={{ fontSize: 10, color: "var(--gold)", letterSpacing: "0.08em", background: "var(--gold-muted)", border: "1px solid var(--gold-border)", borderRadius: "var(--radius)", padding: "2px 7px" }}>
-                  AI · Agents
+                <span className="sec-lbl-v2">Suggested projects</span>
+                <span style={{ fontSize: 9, color: "var(--gold)", letterSpacing: "0.1em", background: "var(--gold-muted)", border: "1px solid var(--gold-border)", borderRadius: "var(--radius)", padding: "2px 8px", fontWeight: 700, textTransform: "uppercase" }}>
+                  AI Agents
                 </span>
               </div>
 
@@ -225,21 +230,23 @@ export default function Dashboard() {
 }
 
 function ScanRow({ scan }: { scan: Scan }) {
+  const isComplete = scan.status === "complete";
+  const accent = isComplete ? "var(--go)" : "var(--warn)";
   return (
-    <Link href={`/app/scan?id=${scan.id}`} style={{ display: "block" }}>
-      <div className="card card-p card-hover" style={{ display: "flex", alignItems: "center", gap: 14 }}>
-        <div style={{ width: 36, height: 36, borderRadius: "var(--radius)", background: "var(--gold-muted)", border: "1px solid var(--gold-border)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-          <Zap size={15} color="var(--gold)" />
+    <Link href={`/app/scan?id=${scan.id}`} style={{ display: "block", textDecoration: "none" }}>
+      <div className="scan-row-v2" style={{ "--row-accent": accent } as React.CSSProperties}>
+        <div style={{ width: 36, height: 36, borderRadius: "var(--radius)", background: isComplete ? "var(--go-bg)" : "var(--gold-muted)", border: `1px solid ${isComplete ? "var(--go-border)" : "var(--gold-border)"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <Zap size={15} color={isComplete ? "var(--go)" : "var(--gold)"} />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ fontSize: 13, fontWeight: 500, color: "var(--text-1)", marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          <p style={{ fontSize: 13, fontWeight: 500, color: "var(--text-1)", marginBottom: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {scan.skills?.slice(0, 3).join(", ")}
           </p>
           <p style={{ fontSize: 11, color: "var(--text-3)", fontWeight: 300 }}>
             ${scan.hourly_rate}/hr · {scan.experience} · {timeAgo(scan.created_at)}
           </p>
         </div>
-        <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: scan.status === "complete" ? "var(--go)" : "var(--warn)", background: scan.status === "complete" ? "rgba(61,171,120,0.12)" : "var(--warn-bg)", border: `1px solid ${scan.status === "complete" ? "var(--go-border)" : "var(--warn-border)"}`, borderRadius: "var(--radius)", padding: "2px 7px", flexShrink: 0 }}>
+        <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: isComplete ? "var(--go)" : "var(--warn)", background: isComplete ? "var(--go-bg)" : "var(--warn-bg)", border: `1px solid ${isComplete ? "var(--go-border)" : "var(--warn-border)"}`, borderRadius: "var(--radius)", padding: "3px 8px", flexShrink: 0 }}>
           {scan.status}
         </span>
         <ChevronRight size={13} color="var(--border-2)" style={{ flexShrink: 0 }} />
@@ -250,24 +257,26 @@ function ScanRow({ scan }: { scan: Scan }) {
 
 function SuggCard({ s }: { s: Suggestion }) {
   const diffColor = s.difficulty === "easy" ? "var(--go)" : s.difficulty === "medium" ? "var(--warn)" : "var(--danger)";
+  const diffBg    = s.difficulty === "easy" ? "var(--go-bg)" : s.difficulty === "medium" ? "var(--warn-bg)" : "var(--danger-bg)";
+  const diffBorder = s.difficulty === "easy" ? "var(--go-border)" : s.difficulty === "medium" ? "var(--warn-border)" : "var(--danger-border)";
   return (
-    <div className="card card-p suggestion-card">
+    <div className="sugg-v2" style={{ "--sugg-accent": diffColor } as React.CSSProperties}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 8 }}>
-        <p style={{ fontFamily: "Space Grotesk, Inter, sans-serif", fontSize: 15, fontWeight: 600, color: "var(--text-1)", lineHeight: 1.3, flex: 1 }}>
+        <p style={{ fontFamily: "Space Grotesk, Inter, sans-serif", fontSize: 14, fontWeight: 600, color: "var(--text-1)", lineHeight: 1.35, flex: 1 }}>
           {s.title}
         </p>
-        <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: diffColor, background: `${diffColor}18`, border: `1px solid ${diffColor}44`, borderRadius: "var(--radius)", padding: "2px 7px", flexShrink: 0 }}>
+        <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: diffColor, background: diffBg, border: `1px solid ${diffBorder}`, borderRadius: "var(--radius)", padding: "3px 8px", flexShrink: 0 }}>
           {s.difficulty}
         </span>
       </div>
-      <p style={{ fontSize: 12, color: "var(--text-3)", fontWeight: 300, lineHeight: 1.6, marginBottom: 8 }}>{s.description}</p>
-      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+      <p style={{ fontSize: 12, color: "var(--text-3)", fontWeight: 300, lineHeight: 1.6, marginBottom: 10 }}>{s.description}</p>
+      <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
         {s.skills_gained?.slice(0, 4).map(sk => (
-          <span key={sk} style={{ fontSize: 10, color: "var(--text-2)", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)", borderRadius: "var(--radius)", padding: "2px 7px" }}>
+          <span key={sk} style={{ fontSize: 10, color: "var(--text-2)", background: "rgba(255,255,255,0.04)", border: "1px solid var(--border)", borderRadius: "var(--radius)", padding: "2px 7px" }}>
             {sk}
           </span>
         ))}
-        <span style={{ fontSize: 10, color: "var(--gold)", background: "var(--gold-muted)", border: "1px solid var(--gold-border)", borderRadius: "var(--radius)", padding: "2px 7px" }}>
+        <span style={{ fontSize: 10, color: "var(--gold)", background: "var(--gold-muted)", border: "1px solid var(--gold-border)", borderRadius: "var(--radius)", padding: "2px 7px", fontWeight: 600 }}>
           +{s.score_impact}
         </span>
       </div>

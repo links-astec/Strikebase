@@ -202,13 +202,12 @@ function AnalysisResult({ r }: { r: AnalysisResponse }) {
 
       {/* Proposal angle */}
       {r.proposal_angle && (
-        <div className="card card-p" style={{ borderLeft: "3px solid var(--gold)" }}>
-          <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gold)", marginBottom: 8 }}>
-            Proposal opening line
-          </p>
-          <p style={{ fontSize: 13, color: "var(--text-2)", fontStyle: "italic", lineHeight: 1.7, fontWeight: 300 }}>
-            &ldquo;{r.proposal_angle}&rdquo;
-          </p>
+        <div className="proposal-block">
+          <div className="proposal-block-hd">
+            <span className="proposal-block-lbl">How to open your proposal</span>
+            <span className="proposal-block-sub">— paste this as your first line</span>
+          </div>
+          <p className="proposal-block-text">&ldquo;{r.proposal_angle}&rdquo;</p>
         </div>
       )}
 

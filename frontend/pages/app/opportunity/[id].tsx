@@ -168,16 +168,12 @@ export default function OpportunityDetail() {
 
               {/* Proposal angle */}
               {data.opp.proposal_angle && (
-                <div className="card card-p" style={{ borderLeft: "3px solid var(--gold)" }}>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 10 }}>
-                    <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gold)" }}>
-                      How to open your proposal
-                    </p>
-                    <p style={{ fontSize: 10, color: "var(--text-3)", fontWeight: 300 }}>— write this as your first line to the client</p>
+                <div className="proposal-block">
+                  <div className="proposal-block-hd">
+                    <span className="proposal-block-lbl">How to open your proposal</span>
+                    <span className="proposal-block-sub">— paste this as your first line</span>
                   </div>
-                  <p style={{ fontSize: 14, color: "var(--text-2)", fontStyle: "italic", lineHeight: 1.75, fontWeight: 300 }}>
-                    &ldquo;{data.opp.proposal_angle}&rdquo;
-                  </p>
+                  <p className="proposal-block-text">&ldquo;{data.opp.proposal_angle}&rdquo;</p>
                 </div>
               )}
 

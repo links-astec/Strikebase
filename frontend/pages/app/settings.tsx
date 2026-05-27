@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
-import { Loader2, CheckCircle, Eye, EyeOff } from "lucide-react";
+import { Loader2, CheckCircle, Eye, EyeOff, UserCircle, Code2, DollarSign, Lock } from "lucide-react";
 import AppShell from "@/components/AppShell";
 import AuthGuard from "@/components/AuthGuard";
 import { useAuth } from "@/lib/auth";
@@ -104,9 +104,13 @@ export default function SettingsPage() {
             <div className="stack">
               {/* Profile */}
               <section className="card card-p stack">
-                <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-3)", marginBottom: 4 }}>
-                  Profile
-                </p>
+                <div className="stg-sec-hd">
+                  <div className="stg-sec-ico"><UserCircle size={16} color="var(--gold)" /></div>
+                  <div>
+                    <p className="stg-sec-title">Profile</p>
+                    <p className="stg-sec-sub">Your public identity on Strikebase</p>
+                  </div>
+                </div>
                 <div className="form-group">
                   <label className="input-label">Display name</label>
                   <input type="text" value={displayName} onChange={e => setDN(e.target.value)}
@@ -127,17 +131,25 @@ export default function SettingsPage() {
 
               {/* Skills */}
               <section className="card card-p stack">
-                <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-3)", marginBottom: 4 }}>
-                  Skills <span style={{ fontWeight: 300, textTransform: "none", letterSpacing: 0, color: "var(--text-3)", fontSize: 10 }}>— up to 15</span>
-                </p>
+                <div className="stg-sec-hd">
+                  <div className="stg-sec-ico"><Code2 size={16} color="var(--gold)" /></div>
+                  <div>
+                    <p className="stg-sec-title">Skills</p>
+                    <p className="stg-sec-sub">Up to 15 skills used to match opportunities</p>
+                  </div>
+                </div>
                 <SkillInput skills={skills} onChange={setSkills} max={15} />
               </section>
 
               {/* Rate & Level */}
               <section className="card card-p">
-                <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-3)", marginBottom: 14 }}>
-                  Rate & experience
-                </p>
+                <div className="stg-sec-hd">
+                  <div className="stg-sec-ico"><DollarSign size={16} color="var(--gold)" /></div>
+                  <div>
+                    <p className="stg-sec-title">Rate & experience</p>
+                    <p className="stg-sec-sub">Used to benchmark you against market rates</p>
+                  </div>
+                </div>
                 <div className="col-2">
                   <div className="form-group">
                     <label className="input-label">Hourly rate (USD)</label>
@@ -175,9 +187,13 @@ export default function SettingsPage() {
           {/* Change password — separate form using current session token */}
           <form onSubmit={handlePasswordChange} style={{ maxWidth: 640, marginTop: 8 }}>
             <section className="card card-p stack">
-              <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-3)", marginBottom: 4 }}>
-                Change password
-              </p>
+              <div className="stg-sec-hd">
+                <div className="stg-sec-ico"><Lock size={16} color="var(--gold)" /></div>
+                <div>
+                  <p className="stg-sec-title">Change password</p>
+                  <p className="stg-sec-sub">Update your login credentials</p>
+                </div>
+              </div>
               <div className="form-group">
                 <label className="input-label">New password</label>
                 <div style={{ position: "relative" }}>
