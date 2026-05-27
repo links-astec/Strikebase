@@ -75,7 +75,7 @@ export default function OpportunityDetail() {
               <Link href="/app/scan"><button className="btn btn-ghost">Start new scan</button></Link>
             </div>
           ) : data ? (
-            <div className="stack" style={{ gap: 14 }}>
+            <div className="opp-detail-page stack" style={{ gap: 14 }}>
 
               {/* ── Cinematic hero ── */}
               <div className="opp-detail-v2">

@@ -101,8 +101,9 @@ export default function SettingsPage() {
 
         <div className="page-body">
           {/* Profile hero card */}
+          <div className="settings-forms">
           {profile && (
-            <div className="settings-profile-card" style={{ maxWidth: 640 }}>
+            <div className="settings-profile-card">
               <div className="settings-avatar-lg">
                 {(profile.display_name || "U").charAt(0).toUpperCase()}
               </div>
@@ -128,7 +129,7 @@ export default function SettingsPage() {
             </div>
           )}
 
-          <form onSubmit={handleSave} style={{ maxWidth: 640 }}>
+          <form onSubmit={handleSave}>
             <div className="stack">
               {/* Profile */}
               <section className="card card-p stack">
@@ -228,7 +229,7 @@ export default function SettingsPage() {
           </form>
 
           {/* Change password — separate form using current session token */}
-          <form onSubmit={handlePasswordChange} style={{ maxWidth: 640, marginTop: 8 }}>
+          <form onSubmit={handlePasswordChange} style={{ marginTop: 8 }}>
             <section className="card card-p stack">
               <div className="stg-sec-hd">
                 <div className="stg-sec-ico"><Lock size={16} color="var(--gold)" /></div>
@@ -287,6 +288,7 @@ export default function SettingsPage() {
               </button>
             </section>
           </form>
+          </div>{/* /settings-forms */}
         </div>
       </AppShell>
     </AuthGuard>

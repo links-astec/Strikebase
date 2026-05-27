@@ -62,7 +62,7 @@ export default function AnalyzePage() {
         </div>
 
         <div className="page-body">
-          <div style={{ maxWidth: 700 }}>
+          <div className="analyze-wrap">
             {/* Mode toggle */}
             <div className="seg-control">
               <button className={mode === "url" ? "seg-active" : "seg-btn"} type="button" onClick={() => setMode("url")}>

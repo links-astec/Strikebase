@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import { SlidersHorizontal, ArrowUpDown, Filter } from "lucide-react";
+import { SlidersHorizontal, ArrowUpDown, Filter, Zap as ZapIcon, Clock, Brain } from "lucide-react";
 import AppShell from "@/components/AppShell";
 import AuthGuard from "@/components/AuthGuard";
 import ScanForm from "@/components/ScanForm";
@@ -224,20 +224,64 @@ export default function ScanPage() {
 
         <div className="page-body">
           {status === "idle" && resumeId ? null : status === "idle" || status === "error" ? (
-            <>
-              <ScanForm
-                onSubmit={handleSubmit}
-                loading={false}
-                defaultSkills={profile?.skills}
-                defaultRate={profile?.hourly_rate}
-                defaultExp={profile?.experience}
-              />
-              {error && (
-                <div style={{ marginTop: 12, padding: "10px 14px", background: "var(--danger-bg)", border: "1px solid var(--danger-border)", borderRadius: "var(--radius)", fontSize: 12, color: "var(--danger)" }}>
-                  {error}
+            <div className="scan-2col">
+              {/* Left: form */}
+              <div>
+                <ScanForm
+                  onSubmit={handleSubmit}
+                  loading={false}
+                  defaultSkills={profile?.skills}
+                  defaultRate={profile?.hourly_rate}
+                  defaultExp={profile?.experience}
+                />
+                {error && (
+                  <div style={{ marginTop: 12, padding: "10px 14px", background: "var(--danger-bg)", border: "1px solid var(--danger-border)", borderRadius: "var(--radius)", fontSize: 12, color: "var(--danger)" }}>
+                    {error}
+                  </div>
+                )}
+              </div>
+
+              {/* Right: platform intelligence panel */}
+              <div className="scan-panel">
+                <div className="scan-panel-hd">
+                  <p className="scan-panel-title">5 platforms, live data</p>
+                  <p className="scan-panel-sub">Real-time scan across the top freelance marketplaces</p>
                 </div>
-              )}
-            </>
+                {[
+                  { name: "Upwork",        tag: "Largest platform" },
+                  { name: "Freelancer",    tag: "50M+ projects" },
+                  { name: "Guru",          tag: "Vetted clients" },
+                  { name: "PeoplePerHour", tag: "EU-focused" },
+                  { name: "Toptal",        tag: "Top 3% talent" },
+                ].map(p => (
+                  <div key={p.name} className="scan-platform-row">
+                    <span className="scan-live-dot" />
+                    <span className="scan-platform-name">{p.name}</span>
+                    <span className="scan-platform-tag">{p.tag}</span>
+                  </div>
+                ))}
+                <div className="scan-panel-footer">
+                  <div className="scan-panel-stat">
+                    <div className="scan-panel-stat-icon">
+                      <ZapIcon size={10} color="var(--gold)" />
+                    </div>
+                    Listings scraped, extracted &amp; AI-scored
+                  </div>
+                  <div className="scan-panel-stat">
+                    <div className="scan-panel-stat-icon">
+                      <Clock size={10} color="var(--text-3)" />
+                    </div>
+                    Results appear in 15–45 seconds
+                  </div>
+                  <div className="scan-panel-stat">
+                    <div className="scan-panel-stat-icon">
+                      <Brain size={10} color="var(--text-3)" />
+                    </div>
+                    Personalised to your skills &amp; rate
+                  </div>
+                </div>
+              </div>
+            </div>
           ) : status === "processing" ? (
             <>
               {opps.length === 0 ? (

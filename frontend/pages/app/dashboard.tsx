@@ -115,7 +115,7 @@ export default function Dashboard() {
 
         <div className="page-body">
           {/* Quick stats */}
-          <div className="col-3" style={{ marginBottom: 28, gridTemplateColumns: "repeat(4, 1fr)" }}>
+          <div className="stat-grid-4">
             <div className="str-tile" style={{ "--tile-top": "var(--gold)" } as React.CSSProperties}>
               <div className="str-ico"><Zap size={15} color="var(--gold)" /></div>
               <p className="str-n">{loadingScans ? "—" : scans.length}</p>

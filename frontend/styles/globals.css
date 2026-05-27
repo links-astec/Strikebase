@@ -2391,3 +2391,209 @@ img { display: block; max-width: 100%; }
 [data-theme="light"] .settings-profile-card {
   background: linear-gradient(135deg, rgba(37,99,235,0.06) 0%, rgba(37,99,235,0.02) 100%);
 }
+
+/* ═══════════════════════════════════════════════════════
+   LAYOUT v3 — centering, separation, world-class polish
+══════════════════════════════════════════════════════════ */
+
+/* Page header gets a separator line */
+.page-header {
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+}
+.page-body { padding-top: 28px; }
+
+/* Page-level max-width cap (kicks in on ultra-wide only) */
+.page-header,
+.page-body {
+  max-width: 1280px;
+}
+
+/* Centered column utilities */
+.col-center  { margin: 0 auto; }
+.col-narrow  { max-width: 700px;  margin: 0 auto; }
+.col-mid     { max-width: 900px;  margin: 0 auto; }
+.col-wide    { max-width: 1100px; margin: 0 auto; }
+
+/* ── Scan idle two-column layout ── */
+.scan-2col {
+  display: grid;
+  grid-template-columns: minmax(0, 640px) 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.scan-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: sticky;
+  top: 24px;
+  box-shadow: var(--sh);
+}
+
+.scan-panel-hd {
+  padding: 16px 20px 14px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, var(--gold-muted) 0%, transparent 75%);
+}
+
+.scan-panel-title {
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-size: 13px; font-weight: 700; color: var(--text-1);
+  letter-spacing: -0.01em; margin-bottom: 3px;
+}
+
+.scan-panel-sub {
+  font-size: 10px; font-weight: 300; color: var(--text-3);
+  letter-spacing: 0.02em;
+}
+
+.scan-platform-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+}
+.scan-platform-row:last-of-type { border-bottom: none; }
+.scan-platform-row:hover { background: var(--bg-hover); }
+
+.scan-live-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--go); flex-shrink: 0;
+  box-shadow: 0 0 6px var(--go);
+  animation: pulse-dot 2.5s ease-in-out infinite;
+}
+
+.scan-platform-name {
+  font-size: 12px; font-weight: 500; color: var(--text-2); flex: 1;
+}
+
+.scan-platform-tag {
+  font-size: 9px; font-weight: 400; color: var(--text-3);
+  letter-spacing: 0.02em;
+}
+
+.scan-panel-divider {
+  height: 1px; background: var(--border); margin: 0;
+}
+
+.scan-panel-footer {
+  padding: 14px 20px;
+  background: var(--bg-soft);
+  display: flex; flex-direction: column; gap: 9px;
+}
+
+.scan-panel-stat {
+  display: flex; align-items: center; gap: 9px;
+  font-size: 11px; color: var(--text-3); font-weight: 300;
+}
+
+.scan-panel-stat-icon {
+  width: 20px; height: 20px; border-radius: 5px;
+  background: var(--bg-hover); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1140px) {
+  .scan-2col { grid-template-columns: minmax(0, 640px) 1fr; }
+}
+@media (max-width: 1000px) {
+  .scan-2col { grid-template-columns: 1fr; }
+  .scan-panel { display: none; }
+}
+
+/* ── Settings: center both forms ── */
+.settings-forms { max-width: 680px; margin: 0 auto; }
+
+/* ── History: center the list ── */
+.history-list { max-width: 860px; margin: 0 auto; }
+
+/* ── Opportunity detail: center stack ── */
+.opp-detail-page { max-width: 900px; margin: 0 auto; }
+
+/* ── Analyze: center form + result ── */
+.analyze-wrap { max-width: 760px; margin: 0 auto; }
+
+/* ── Dashboard stat grid full-width ── */
+.stat-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+@media (max-width: 900px) {
+  .stat-grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .stat-grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── Better base card ── */
+.card {
+  transition: border-color 0.15s;
+}
+
+/* ── Results full-width wrapper ── */
+.scan-results { width: 100%; }
+
+/* Mobile overrides for new layout */
+@media (max-width: 1024px) {
+  .page-header, .page-body { max-width: 100%; }
+}
+
+/* Mobile overrides for v3 layout additions (must come after v3 base rules) */
+@media (max-width: 1024px) {
+  .page-header { padding-bottom: 16px; }
+  .page-body   { padding-top: 24px; }
+  .opp-detail-page { max-width: 100%; }
+  .scan-results  { max-width: 100%; }
+}
+@media (max-width: 600px) {
+  .page-header { padding-bottom: 12px; }
+  .page-body   { padding-top: 18px; }
+  .analyze-wrap { max-width: 100%; }
+  .history-list { max-width: 100%; }
+  .settings-forms { max-width: 100%; }
+}
+
+/* ── Extra polish ── */
+
+/* Card subtle top-gradient on hover */
+.opp-card:hover {
+  box-shadow: var(--sh-md);
+}
+
+/* Section label refinement */
+.sec-lbl-v2 {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--text-3);
+}
+
+/* Scan summary wider */
+.scan-sum-v2 { border-radius: var(--radius-md); }
+
+/* Page h1 consistency */
+.page-h1 {
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-size: 26px; font-weight: 700; color: var(--text-1);
+  letter-spacing: -0.02em; margin-bottom: 4px;
+}
+
+/* Controls row tighter */
+.controls-row {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 10px 14px; background: var(--bg-card);
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  margin-bottom: 14px;
+}
+
+/* Insight grid single-col when alone */
+.opp-detail-insights:has(.insight-col:only-child) {
+  grid-template-columns: 1fr;
+}
+
