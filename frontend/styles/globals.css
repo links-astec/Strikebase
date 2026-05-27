@@ -2597,3 +2597,16 @@ img { display: block; max-width: 100%; }
   grid-template-columns: 1fr;
 }
 
+
+/* ── True centering fix: page-header and page-body center within app-content ── */
+.page-header,
+.page-body {
+  box-sizing: border-box;
+  max-width: 1120px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (max-width: 1024px) {
+  .page-header, .page-body { max-width: 100%; margin-left: 0; margin-right: 0; }
+}
