@@ -11,6 +11,7 @@ from agents.serp import search_job_listings
 from agents.scraper import scrape_listing
 from agents.unlocker import get_client_profile
 from ai.scorer import score_listing_async
+from memory.cognee_memory import store_scan_results
 from models.schemas import ScanRequest
 
 MAX_CONCURRENT = 8
@@ -147,6 +148,13 @@ async def run_pipeline(scan_id: str, req: ScanRequest, user_id: str | None = Non
             db.upsert_market_rates(market)
 
         db.update_scan_status(scan_id, "complete", "Done")
+
+        # Persist results to Cognee memory for future scan enrichment
+        if user_id:
+            saved_opps = db.get_opportunities(scan_id)
+            asyncio.create_task(
+                store_scan_results(scan_id, user_id, saved_opps)
+            )
 
     except Exception as e:
         print(f"[Pipeline] Fatal error for scan {scan_id}: {e}")

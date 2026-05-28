@@ -85,6 +85,11 @@ export interface Scan {
   created_at: string;
 }
 
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
 export interface Suggestion {
   title: string;
   description: string;

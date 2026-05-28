@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from config import settings
 from routers import scan, opps, analyze, status
-from routers import auth, users, jobs, suggestions
+from routers import auth, users, jobs, suggestions, chat
 
 app = FastAPI(title="Strikebase API", version="2.0.0")
 
@@ -22,6 +22,7 @@ app.include_router(analyze.router)
 app.include_router(status.router)
 app.include_router(jobs.router)
 app.include_router(suggestions.router)
+app.include_router(chat.router)
 
 
 @app.get("/health")
@@ -32,6 +33,7 @@ async def health():
         "version": "2.0.0",
         "bright_data_token_set": bool(settings.bright_data_token),
         "anthropic_key_set": bool(settings.anthropic_api_key),
+        "aiml_key_set": bool(settings.aiml_api_key),
     }
 
 

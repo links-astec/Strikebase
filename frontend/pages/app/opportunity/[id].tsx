@@ -8,6 +8,7 @@ import AuthGuard from "@/components/AuthGuard";
 import StrikeScore from "@/components/StrikeScore";
 import MarketRates from "@/components/MarketRates";
 import ClientProfile from "@/components/ClientProfile";
+import OpportunityChat from "@/components/OpportunityChat";
 import { getOpportunities } from "@/lib/api";
 import type { Opportunity, MarketRates as MR, ClientProfile as CP } from "@/lib/types";
 
@@ -190,6 +191,9 @@ export default function OpportunityDetail() {
               ) : data.market ? (
                 <MarketRates rates={data.market} />
               ) : null}
+
+              {/* AI Chat */}
+              <OpportunityChat opportunity={data.opp} />
 
             </div>
           ) : null}

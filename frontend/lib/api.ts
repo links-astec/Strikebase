@@ -1,6 +1,6 @@
 import type {
   OpportunitiesResponse, AnalysisResponse,
-  ScanRequest, UserProfile, Suggestion,
+  ScanRequest, UserProfile, Suggestion, ChatMessage,
 } from "./types";
 
 const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -91,3 +91,46 @@ export async function getUserScans(): Promise<{ scans: import("./types").Scan[] 
 export async function testSerp(q: string) {
   return apiFetch<{ count: number; results: unknown[] }>(`/test/serp?q=${encodeURIComponent(q)}`);
 }
+
+export async function* streamOpportunityChat(
+  messages: ChatMessage[],
+  opportunityContext: Record<string, unknown>
+): AsyncGenerator<string> {
+  const token = getToken();
+  const r = await fetch(`${BASE}/chat/opportunity`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({ messages, opportunity_context: opportunityContext }),
+  });
+
+  if (!r.ok) throw new Error("Chat request failed");
+
+  const reader = r.body!.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split("
+");
+    buffer = lines.pop() ?? "";
+
+    for (const line of lines) {
+      if (!line.startsWith("data: ")) continue;
+      const data = line.slice(6).trim();
+      if (data === "[DONE]") return;
+      try {
+        const parsed = JSON.parse(data) as { text?: string; error?: string };
+        if (parsed.error) throw new Error(parsed.error);
+        if (parsed.text) yield parsed.text;
+      } catch {
+        // skip malformed chunks
+      }
+    }
+  }
+}
