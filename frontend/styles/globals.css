@@ -1463,9 +1463,10 @@ img { display: block; max-width: 100%; }
   .lp-step:nth-child(2) { border-right: none; }
   .lp-step:nth-child(3) { border-top: 1px solid var(--border); }
   .lp-step:nth-child(4) { border-top: 1px solid var(--border); border-right: none; }
-  /* Bento collapses to 2-col */
+  /* Bento collapses to 2-col — all cards equal width to avoid empty-cell bug */
   .lp-bento { grid-template-columns: 1fr 1fr; }
-  .lp-bento-card-1, .lp-bento-card-4, .lp-bento-card-6 { grid-column: span 2; }
+  .lp-bento-card-1, .lp-bento-card-4, .lp-bento-card-6 { grid-column: span 1; }
+  .lp-bento-card { padding: 24px; }
   /* Hero split collapses — hide preview panel to keep hero compact */
   .lp-hero-split { grid-template-columns: 1fr; gap: 0; text-align: center; }
   .lp-hero-left { align-items: center; }
@@ -1693,10 +1694,12 @@ img { display: block; max-width: 100%; }
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   overflow: hidden;
+  width: 100%;
 }
 .lp-bento-card {
   background: var(--bg); padding: 32px;
   position: relative; overflow: hidden;
+  min-width: 0;
   transition: background 0.25s, transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s;
 }
 .lp-bento-card::after {
@@ -1726,11 +1729,9 @@ img { display: block; max-width: 100%; }
   font-family: "JetBrains Mono", monospace;
   font-size: 10px; font-weight: 600; letter-spacing: 0.06em;
   padding: 3px 8px; border-radius: var(--radius);
-  background: currentColor;
-  /* Use opacity trick so bg is tinted version of text color */
   background: color-mix(in srgb, currentColor 12%, transparent);
   border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
-  white-space: nowrap;
+  word-break: break-word;
 }
 
 /* ─────────────────────────────────────────────

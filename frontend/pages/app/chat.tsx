@@ -68,8 +68,9 @@ export default function ChatPage() {
   const [streaming, setStreaming]   = useState(false);
   const [loadingOpp, setLoadingOpp] = useState(false);
   const [mobileView, setMobileView] = useState<"threads" | "chat">("threads");
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const inputRef  = useRef<HTMLTextAreaElement>(null);
+  const bottomRef  = useRef<HTMLDivElement>(null);
+  const inputRef   = useRef<HTMLTextAreaElement>(null);
+  const abortRef   = useRef<AbortController | null>(null);
   const initialized = useRef(false);
 
   const activeThread = threads.find(t => t.id === activeId) ?? null;
@@ -179,6 +180,7 @@ export default function ChatPage() {
         : t
     );
     setThreads(withUser);
+    abortRef.current = new AbortController();
     setStreaming(true);
 
     const ctx = activeThread.opp
@@ -197,7 +199,7 @@ export default function ChatPage() {
       : {};
 
     try {
-      for await (const chunk of streamOpportunityChat(nextMsgs, ctx)) {
+      for await (const chunk of streamOpportunityChat(nextMsgs, ctx, abortRef.current.signal)) {
         setThreads(prev => prev.map(t =>
           t.id === activeThread.id
             ? {
@@ -211,13 +213,16 @@ export default function ChatPage() {
             : t
         ));
       }
-    } catch {
-      setThreads(prev => prev.map(t =>
-        t.id === activeThread.id
-          ? { ...t, messages: t.messages.slice(0, -1) }
-          : t
-      ));
+    } catch (err) {
+      if ((err as Error)?.name !== "AbortError") {
+        setThreads(prev => prev.map(t =>
+          t.id === activeThread.id
+            ? { ...t, messages: t.messages.slice(0, -1) }
+            : t
+        ));
+      }
     } finally {
+      abortRef.current = null;
       setStreaming(false);
       setThreads(prev => {
         saveThreads(prev);
@@ -385,12 +390,16 @@ export default function ChatPage() {
                   />
                   <button
                     type="button"
-                    onClick={() => send(input)}
-                    disabled={!input.trim() || streaming}
+                    onClick={() => {
+                      if (streaming) { abortRef.current?.abort(); }
+                      else { send(input); }
+                    }}
+                    disabled={!streaming && !input.trim()}
                     className="btn btn-primary chat-send-btn"
+                    title={streaming ? "Stop" : "Send"}
                   >
                     {streaming
-                      ? <Loader2 size={14} style={{ animation: "spin 0.7s linear infinite" }} />
+                      ? <span style={{ width: 10, height: 10, background: "currentColor", borderRadius: 2, flexShrink: 0 }} />
                       : <Send size={14} />}
                   </button>
                 </div>

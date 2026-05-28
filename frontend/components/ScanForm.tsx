@@ -38,7 +38,7 @@ export default function ScanForm({ onSubmit, loading, defaultSkills = [], defaul
     }
   }
 
-  const disabled = loading || skills.length === 0 || !rate;
+  const disabled = loading || skills.length === 0 || !rate || parseFloat(rate) <= 0;
 
   return (
     <form

@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from supabase import create_client, Client
 from config import settings
 
@@ -138,7 +139,7 @@ def create_user_profile(user_id: str, email: str = "") -> dict:
 
 
 def update_user_profile(user_id: str, updates: dict) -> dict:
-    updates["updated_at"] = "now()"
+    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
     result = (
         get_db().table("user_profiles")
         .upsert({"user_id": user_id, **updates})

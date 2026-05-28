@@ -20,6 +20,10 @@ async function apiFetch<T>(path: string, opts: RequestInit = {}): Promise<T> {
 
   const r = await fetch(`${BASE}${path}`, { ...opts, headers });
   if (!r.ok) {
+    if (r.status === 401) {
+      localStorage.removeItem("sb_token");
+      if (typeof window !== "undefined") window.location.href = "/login";
+    }
     const err = await r.json().catch(() => ({ detail: r.statusText }));
     throw new Error((err as { detail?: string }).detail || "Request failed");
   }
@@ -94,7 +98,8 @@ export async function testSerp(q: string) {
 
 export async function* streamOpportunityChat(
   messages: ChatMessage[],
-  opportunityContext: Record<string, unknown>
+  opportunityContext: Record<string, unknown>,
+  signal?: AbortSignal
 ): AsyncGenerator<string> {
   const token = getToken();
   const r = await fetch(`${BASE}/chat/opportunity`, {
@@ -104,6 +109,7 @@ export async function* streamOpportunityChat(
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify({ messages, opportunity_context: opportunityContext }),
+    signal,
   });
 
   if (!r.ok) throw new Error("Chat request failed");

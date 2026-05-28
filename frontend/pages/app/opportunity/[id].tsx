@@ -28,7 +28,7 @@ export default function OpportunityDetail() {
   useEffect(() => {
     if (!id) return;
     const scanId = router.query.scan as string | undefined;
-    if (!scanId) { setError("Missing scan context"); setLoading(false); return; }
+    if (!scanId) { router.replace("/app/history"); return; }
     getOpportunities(scanId)
       .then(r => {
         const opp = r.opportunities.find(o => o.id === id);
