@@ -98,7 +98,7 @@
    RESET
 ───────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
 
 body {
   background: var(--bg);
@@ -1466,12 +1466,13 @@ img { display: block; max-width: 100%; }
   /* Bento collapses to 2-col */
   .lp-bento { grid-template-columns: 1fr 1fr; }
   .lp-bento-card-1, .lp-bento-card-4, .lp-bento-card-6 { grid-column: span 2; }
-  /* Hero split collapses — preview below text, max-width constrained */
-  .lp-hero-split { grid-template-columns: 1fr; gap: 32px; text-align: center; }
+  /* Hero split collapses — hide preview panel to keep hero compact */
+  .lp-hero-split { grid-template-columns: 1fr; gap: 0; text-align: center; }
   .lp-hero-left { align-items: center; }
-  .lp-hero-right { justify-content: center; }
-  .lp-hero-right .lp-preview { max-width: 560px; margin: 0 auto; }
-  .lp-pain { align-items: flex-start; text-align: left; max-width: 480px; }
+  .lp-hero-right { display: none; }
+  .lp-pain { align-items: flex-start; text-align: left; max-width: 480px; margin: 20px auto 28px; }
+  .lp-hero-ctas { justify-content: center; }
+  .lp-hero-byline { text-align: center; }
   .lp-sec { padding: 72px 0; }
 }
 
@@ -1481,10 +1482,10 @@ img { display: block; max-width: 100%; }
   .lp-btn-nav  { padding: 7px 13px; font-size: 11px; }
 
   /* Hero */
-  .lp-hero { padding: 60px 0 48px; }
-  .lp-h1 { font-size: clamp(32px, 9vw, 48px); }
-  .lp-hero-sub { font-size: 15px; }
-  .lp-hero-ctas { margin-bottom: 20px; justify-content: center; }
+  .lp-hero { padding: 56px 0 44px; }
+  .lp-h1 { font-size: clamp(30px, 9vw, 46px); }
+  .lp-hero-sub { font-size: 14px; }
+  .lp-hero-ctas { margin-bottom: 18px; justify-content: center; }
   .lp-cta-primary, .lp-cta-ghost { padding: 12px 22px; font-size: 13px; }
 
   /* Bento single col */
@@ -1492,29 +1493,29 @@ img { display: block; max-width: 100%; }
   .lp-bento-card-1, .lp-bento-card-4, .lp-bento-card-6 { grid-column: span 1; }
   .lp-bento-card { padding: 22px; }
 
-  /* Stats 3-col grid, 5th item spans full width */
-  .lp-stats-inner { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; }
-  .lp-stat { padding: 16px 0; border-right: 1px solid var(--border); border-bottom: none; }
-  .lp-stat:nth-child(3) { border-right: none; }
-  .lp-stat:nth-child(4) { border-top: 1px solid var(--border); }
-  .lp-stat:nth-child(5) { border-top: 1px solid var(--border); border-right: none; grid-column: span 2; }
+  /* Stats 2-col grid */
+  .lp-stats-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .lp-stat { padding: 14px 8px; border-right: 1px solid var(--border); border-bottom: none; }
+  .lp-stat:nth-child(2) { border-right: none; }
+  .lp-stat:nth-child(3) { border-top: 1px solid var(--border); }
+  .lp-stat:nth-child(4) { border-top: 1px solid var(--border); border-right: none; }
+  .lp-stat:nth-child(5) { border-top: 1px solid var(--border); grid-column: span 2; border-right: none; }
   .lp-stat-n { font-size: 22px; }
+  .lp-stat-l { font-size: 10px; }
 
   /* Sections */
-  .lp-sec-h2 { font-size: clamp(22px, 6vw, 32px); }
-  .lp-cta-h2 { font-size: clamp(24px, 7vw, 36px); }
-  .lp-cta-body { padding: 72px 16px; }
-
-  /* Hide ghost preview card — reduces hero height significantly */
-  .lp-mock-ghost { display: none; }
+  .lp-sec-h2 { font-size: clamp(20px, 6vw, 30px); }
+  .lp-cta-h2 { font-size: clamp(22px, 7vw, 34px); }
+  .lp-cta-body { padding: 64px 16px; }
 
   /* Sections */
-  .lp-sec { padding: 60px 0; }
-  .lp-sec-hd { margin-bottom: 36px; }
+  .lp-sec { padding: 56px 0; }
+  .lp-sec-hd { margin-bottom: 32px; }
+  .lp-sec-p { font-size: 14px; }
 
   /* Steps — single column */
   .lp-steps { grid-template-columns: 1fr; }
-  .lp-step { border-right: none !important; border-top: none; }
+  .lp-step { border-right: none !important; border-top: none; padding: 24px 20px; }
   .lp-step:not(:last-child) { border-bottom: 1px solid var(--border); }
 
   /* Features — single column */
@@ -1524,30 +1525,43 @@ img { display: block; max-width: 100%; }
   .lp-team { grid-template-columns: 1fr; }
   .lp-team-card { padding: 24px; }
 
-  /* Preview — hide the entire right-side product mock on phones */
-  .lp-hero-right { display: none; }
-
-  /* Make hero left full-width and keep it centered */
-  .lp-hero-split { grid-template-columns: 1fr !important; }
+  /* Hero left centered */
   .lp-hero-left { align-items: center; text-align: center; max-width: 100%; }
-  .lp-pain { max-width: 100%; }
+  .lp-pain { max-width: 100%; align-items: flex-start; text-align: left; margin: 16px 0 24px; }
 
   /* Footer */
-  .lp-footer-inner { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .lp-footer-inner { flex-direction: column; align-items: center; text-align: center; gap: 12px; }
+  .lp-footer-links { justify-content: center; }
 
   /* Wrap padding */
   .lp-wrap { padding: 0 16px; }
 }
 
-@media (max-width: 380px) {
-  .lp-h1 { font-size: 28px; }
-  .lp-hero { padding: 48px 0 36px; }
-  .lp-hero-ctas { flex-direction: column; align-items: stretch; gap: 10px; margin-bottom: 32px; }
+@media (max-width: 480px) {
+  /* Stack CTA buttons */
+  .lp-hero-ctas { flex-direction: column; align-items: stretch; gap: 10px; }
   .lp-cta-primary, .lp-cta-ghost { justify-content: center; }
-  .lp-stat-n { font-size: 20px; }
+
+  /* Badge text shorter on very small screens */
+  .lp-badge { font-size: 10px; padding: 4px 10px 4px 8px; }
+
+  /* Bento tighter */
+  .lp-bento-card { padding: 18px; }
+
+  /* Reduce section heading */
+  .lp-sec-h2 { font-size: clamp(18px, 5.5vw, 26px); }
+  .lp-cta-h2 { font-size: clamp(20px, 6vw, 30px); }
+}
+
+@media (max-width: 380px) {
+  .lp-h1 { font-size: 26px; }
+  .lp-hero { padding: 44px 0 32px; }
+  .lp-stat-n { font-size: 18px; }
   .lp-wrap { padding: 0 12px; }
-  .lp-cta-body { padding: 56px 12px; }
+  .lp-cta-body { padding: 52px 12px; }
   .lp-logo-text { display: none; }
+  .lp-bento-card { padding: 16px; }
+  .lp-sec { padding: 44px 0; }
 }
 
 /* ─────────────────────────────────────────────
