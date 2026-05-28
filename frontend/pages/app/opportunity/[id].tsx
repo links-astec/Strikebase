@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle, AlertTriangle, XCircle, ExternalLink, DollarSign, Users, Clock } from "lucide-react";
+import { ArrowLeft, CheckCircle, AlertTriangle, XCircle, ExternalLink, DollarSign, Users, Clock, MessageSquare } from "lucide-react";
 import AppShell from "@/components/AppShell";
 import AuthGuard from "@/components/AuthGuard";
 import StrikeScore from "@/components/StrikeScore";
@@ -63,6 +63,20 @@ export default function OpportunityDetail() {
           >
             <ArrowLeft size={13} /> Back to results
           </button>
+          {id && (
+            <button
+              className="btn btn-primary"
+              onClick={() => {
+                const scanId = router.query.scan as string | undefined;
+                const params = new URLSearchParams({ opportunity: id as string });
+                if (scanId) params.set("scan", scanId);
+                router.push(`/app/chat?${params.toString()}`);
+              }}
+              style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, marginLeft: "auto" }}
+            >
+              <MessageSquare size={13} /> Chat about this
+            </button>
+          )}
         </div>
 
         <div className="page-body">

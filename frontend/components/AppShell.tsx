@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
-  Zap, LayoutDashboard, Search, FileText, Clock,
+  Zap, LayoutDashboard, Search, FileText, Clock, MessageSquare,
   Settings, LogOut, ChevronRight, Sun, Moon, Menu, X,
 } from "lucide-react";
 import { LogoIcon } from "@/components/Logo";
@@ -15,6 +15,7 @@ const NAV = [
   { href: "/app/scan",      icon: Search,          label: "Scan" },
   { href: "/app/analyze",   icon: FileText,         label: "Analyze" },
   { href: "/app/history",   icon: Clock,            label: "History" },
+  { href: "/app/chat",      icon: MessageSquare,    label: "AI Chat" },
   { href: "/app/settings",  icon: Settings,         label: "Settings" },
 ];
 
@@ -55,7 +56,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
         <nav className="sidebar-nav">
           <p className="nav-section-label">Workspace</p>
-          {NAV.slice(0, 4).map(({ href, icon: Icon, label }) => {
+          {NAV.slice(0, 5).map(({ href, icon: Icon, label }) => {
             const active = router.pathname === href;
             return (
               <Link key={href} href={href} className={`nav-link${active ? " active" : ""}`} onClick={() => setMobileOpen(false)}>
