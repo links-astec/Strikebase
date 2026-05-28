@@ -108,6 +108,7 @@ body {
   font-weight: 400;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5 {
@@ -1465,11 +1466,13 @@ img { display: block; max-width: 100%; }
   /* Bento collapses to 2-col */
   .lp-bento { grid-template-columns: 1fr 1fr; }
   .lp-bento-card-1, .lp-bento-card-4, .lp-bento-card-6 { grid-column: span 2; }
-  /* Hero split collapses */
-  .lp-hero-split { grid-template-columns: 1fr; gap: 40px; text-align: center; }
+  /* Hero split collapses — preview below text, max-width constrained */
+  .lp-hero-split { grid-template-columns: 1fr; gap: 32px; text-align: center; }
   .lp-hero-left { align-items: center; }
   .lp-hero-right { justify-content: center; }
+  .lp-hero-right .lp-preview { max-width: 560px; margin: 0 auto; }
   .lp-pain { align-items: flex-start; text-align: left; max-width: 480px; }
+  .lp-sec { padding: 72px 0; }
 }
 
 @media (max-width: 640px) {
@@ -1521,11 +1524,13 @@ img { display: block; max-width: 100%; }
   .lp-team { grid-template-columns: 1fr; }
   .lp-team-card { padding: 24px; }
 
-  /* Preview */
-  .lp-preview { border-radius: 8px; }
-  .lp-mock-top { flex-direction: column; gap: 10px; }
-  .lp-mock-reasons { gap: 6px; }
-  .lp-mock-reason { font-size: 12px; }
+  /* Preview — hide the entire right-side product mock on phones */
+  .lp-hero-right { display: none; }
+
+  /* Make hero left full-width and keep it centered */
+  .lp-hero-split { grid-template-columns: 1fr !important; }
+  .lp-hero-left { align-items: center; text-align: center; max-width: 100%; }
+  .lp-pain { max-width: 100%; }
 
   /* Footer */
   .lp-footer-inner { flex-direction: column; align-items: flex-start; gap: 12px; }
