@@ -2,7 +2,8 @@ import { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Link from "next/link";
-import { Zap, Loader2, Eye, EyeOff, CheckCircle, AlertTriangle } from "lucide-react";
+import { Loader2, Eye, EyeOff, CheckCircle, AlertTriangle } from "lucide-react";
+import { LogoIcon } from "@/components/Logo";
 import ThemeToggle from "@/components/ThemeToggle";
 import PasswordStrength from "@/components/PasswordStrength";
 import { resetPassword } from "@/lib/api";
@@ -65,7 +66,7 @@ export default function ResetPassword() {
         <div className="auth-glow" />
         <div className="auth-card">
           <div className="auth-logo">
-            <div className="auth-logo-icon"><Zap size={18} color="#fff" /></div>
+            <LogoIcon size={40} />
             <span className="auth-logo-text" style={{ color: "var(--text-1)" }}>
               STRIKE<span style={{ color: "var(--gold)" }}>BASE</span>
             </span>

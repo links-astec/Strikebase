@@ -100,10 +100,10 @@ export default function SettingsPage() {
         </div>
 
         <div className="page-body">
-          {/* Profile hero card */}
-          <div className="settings-forms">
+
+          {/* Profile hero — full width, aligns with page header */}
           {profile && (
-            <div className="settings-profile-card">
+            <div className="settings-profile-card" style={{ marginBottom: 24 }}>
               <div className="settings-avatar-lg">
                 {(profile.display_name || "U").charAt(0).toUpperCase()}
               </div>
@@ -111,184 +111,158 @@ export default function SettingsPage() {
                 <p className="settings-profile-name">{profile.display_name || "Your Profile"}</p>
                 <p className="settings-profile-email">{profile.bio || "No bio yet"}</p>
                 <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
-                  <span className="settings-profile-badge">
-                    <Shield size={9} /> {profile.experience || "mid"}
-                  </span>
-                  {profile.hourly_rate > 0 && (
-                    <span className="settings-profile-badge">
-                      ${profile.hourly_rate}/hr
-                    </span>
-                  )}
-                  {profile.skills.length > 0 && (
-                    <span className="settings-profile-badge">
-                      {profile.skills.length} skill{profile.skills.length !== 1 ? "s" : ""}
-                    </span>
-                  )}
+                  <span className="settings-profile-badge"><Shield size={9} /> {profile.experience || "mid"}</span>
+                  {profile.hourly_rate > 0 && <span className="settings-profile-badge">${profile.hourly_rate}/hr</span>}
+                  {profile.skills.length > 0 && <span className="settings-profile-badge">{profile.skills.length} skill{profile.skills.length !== 1 ? "s" : ""}</span>}
                 </div>
               </div>
             </div>
           )}
 
-          <form onSubmit={handleSave}>
-            <div className="stack">
-              {/* Profile */}
-              <section className="card card-p stack">
-                <div className="stg-sec-hd">
-                  <div className="stg-sec-ico"><UserCircle size={16} color="var(--gold)" /></div>
-                  <div>
-                    <p className="stg-sec-title">Profile</p>
-                    <p className="stg-sec-sub">Your public identity on Strikebase</p>
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label className="input-label">Display name</label>
-                  <input type="text" value={displayName} onChange={e => setDN(e.target.value)}
-                    placeholder="Your name" className="input" />
-                </div>
-                <div className="form-group">
-                  <label className="input-label">Short bio</label>
-                  <textarea value={bio} onChange={e => setBio(e.target.value)}
-                    placeholder="e.g. Full-stack dev specializing in SaaS products..."
-                    rows={3} className="input" style={{ resize: "vertical" }} />
-                </div>
-                <div className="form-group">
-                  <label className="input-label">GitHub URL</label>
-                  <input type="url" value={github} onChange={e => setGithub(e.target.value)}
-                    placeholder="https://github.com/yourname" className="input" />
-                </div>
-              </section>
+          {/* Two-column grid — left: profile + rate, right: skills + password */}
+          <div className="col-2" style={{ alignItems: "flex-start", gap: 18 }}>
 
-              {/* Skills */}
-              <section className="card card-p stack">
-                <div className="stg-sec-hd">
-                  <div className="stg-sec-ico"><Code2 size={16} color="var(--gold)" /></div>
-                  <div>
-                    <p className="stg-sec-title">Skills</p>
-                    <p className="stg-sec-sub">Up to 15 skills used to match opportunities</p>
+            {/* LEFT column */}
+            <form onSubmit={handleSave}>
+              <div className="stack">
+                <section className="card card-p stack">
+                  <div className="stg-sec-hd">
+                    <div className="stg-sec-ico"><UserCircle size={16} color="var(--gold)" /></div>
+                    <div>
+                      <p className="stg-sec-title">Profile</p>
+                      <p className="stg-sec-sub">Your public identity on Strikebase</p>
+                    </div>
                   </div>
-                </div>
-                <SkillInput skills={skills} onChange={setSkills} max={15} />
-              </section>
-
-              {/* Rate & Level */}
-              <section className="card card-p">
-                <div className="stg-sec-hd">
-                  <div className="stg-sec-ico"><DollarSign size={16} color="var(--gold)" /></div>
-                  <div>
-                    <p className="stg-sec-title">Rate & experience</p>
-                    <p className="stg-sec-sub">Used to benchmark you against market rates</p>
-                  </div>
-                </div>
-                <div className="col-2">
                   <div className="form-group">
+                    <label className="input-label">Display name</label>
+                    <input type="text" value={displayName} onChange={e => setDN(e.target.value)}
+                      placeholder="Your name" className="input" />
+                  </div>
+                  <div className="form-group">
+                    <label className="input-label">Short bio</label>
+                    <textarea value={bio} onChange={e => setBio(e.target.value)}
+                      placeholder="e.g. Full-stack dev specializing in SaaS products..."
+                      rows={3} className="input" style={{ resize: "vertical" }} />
+                  </div>
+                  <div className="form-group">
+                    <label className="input-label">GitHub URL</label>
+                    <input type="url" value={github} onChange={e => setGithub(e.target.value)}
+                      placeholder="https://github.com/yourname" className="input" />
+                  </div>
+                </section>
+
+                <section className="card card-p">
+                  <div className="stg-sec-hd" style={{ marginBottom: 16 }}>
+                    <div className="stg-sec-ico"><DollarSign size={16} color="var(--gold)" /></div>
+                    <div>
+                      <p className="stg-sec-title">Rate & experience</p>
+                      <p className="stg-sec-sub">Benchmarks you against market rates</p>
+                    </div>
+                  </div>
+                  <div className="form-group" style={{ marginBottom: 14 }}>
                     <label className="input-label">Hourly rate (USD)</label>
-                    <input type="number" value={rate} onChange={e => setRate(e.target.value)}
-                      placeholder="45" min="1" max="999" className="input" />
+                    <div style={{ position: "relative" }}>
+                      <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", fontSize: 14, color: "var(--text-3)", fontWeight: 500 }}>$</span>
+                      <input type="number" value={rate} onChange={e => setRate(e.target.value)}
+                        placeholder="45" min="1" max="999" className="input" style={{ paddingLeft: 24 }} />
+                    </div>
                   </div>
                   <div className="form-group">
                     <label className="input-label">Experience level</label>
                     <div style={{ display: "flex", gap: 6 }}>
                       {([
-                        { value: "junior", label: "Junior",  sub: "0–2 yrs" },
-                        { value: "mid",    label: "Mid",     sub: "2–5 yrs" },
-                        { value: "senior", label: "Senior",  sub: "5+ yrs"  },
+                        { value: "junior", label: "Junior", sub: "0–2 yrs" },
+                        { value: "mid",    label: "Mid",    sub: "2–5 yrs" },
+                        { value: "senior", label: "Senior", sub: "5+ yrs"  },
                       ] as const).map(o => (
-                        <button
-                          key={o.value} type="button"
-                          onClick={() => setExp(o.value)}
-                          style={{
-                            flex: 1, padding: "9px 8px",
-                            border: `1px solid ${exp === o.value ? "var(--gold-border)" : "var(--border)"}`,
-                            borderRadius: "var(--radius)", background: exp === o.value ? "var(--gold-muted)" : "var(--bg-soft)",
-                            cursor: "pointer", transition: "all 0.15s", textAlign: "center",
-                          }}
-                        >
+                        <button key={o.value} type="button" onClick={() => setExp(o.value)}
+                          style={{ flex: 1, padding: "9px 8px", border: `1px solid ${exp === o.value ? "var(--gold-border)" : "var(--border)"}`, borderRadius: "var(--radius)", background: exp === o.value ? "var(--gold-muted)" : "var(--bg-soft)", cursor: "pointer", transition: "all 0.15s", textAlign: "center" }}>
                           <p style={{ fontSize: 12, fontWeight: 600, color: exp === o.value ? "var(--gold)" : "var(--text-2)", marginBottom: 1 }}>{o.label}</p>
                           <p style={{ fontSize: 10, color: "var(--text-3)", fontWeight: 300 }}>{o.sub}</p>
                         </button>
                       ))}
                     </div>
                   </div>
+                </section>
+
+                {error && (
+                  <div style={{ padding: "9px 12px", background: "var(--danger-bg)", border: "1px solid var(--danger-border)", borderRadius: "var(--radius)", fontSize: 12, color: "var(--danger)" }}>
+                    {error}
+                  </div>
+                )}
+
+                <button type="submit" disabled={saving} className="btn btn-primary" style={{ alignSelf: "flex-start", minWidth: 160, padding: "12px 24px", display: "flex", alignItems: "center", gap: 8 }}>
+                  {saving ? <><Loader2 size={14} style={{ animation: "spin 0.7s linear infinite" }} /> Saving...</>
+                    : saved ? <><CheckCircle size={14} /> Saved</>
+                    : "Save changes"}
+                </button>
+              </div>
+            </form>
+
+            {/* RIGHT column */}
+            <div className="stack">
+              <section className="card card-p stack">
+                <div className="stg-sec-hd">
+                  <div className="stg-sec-ico"><Code2 size={16} color="var(--gold)" /></div>
+                  <div>
+                    <p className="stg-sec-title">Skills</p>
+                    <p className="stg-sec-sub">Up to 15 skills for matching opportunities</p>
+                  </div>
                 </div>
+                <SkillInput skills={skills} onChange={setSkills} max={15} />
               </section>
 
-              {error && (
-                <div style={{ padding: "9px 12px", background: "var(--danger-bg)", border: "1px solid var(--danger-border)", borderRadius: "var(--radius)", fontSize: 12, color: "var(--danger)" }}>
-                  {error}
-                </div>
-              )}
-
-              <button type="submit" disabled={saving} className="btn btn-primary" style={{ alignSelf: "flex-start", minWidth: 160, padding: "12px 24px", display: "flex", alignItems: "center", gap: 8 }}>
-                {saving
-                  ? <><Loader2 size={14} style={{ animation: "spin 0.7s linear infinite" }} /> Saving...</>
-                  : saved
-                  ? <><CheckCircle size={14} /> Saved</>
-                  : "Save changes"}
-              </button>
+              <form onSubmit={handlePasswordChange}>
+                <section className="card card-p stack">
+                  <div className="stg-sec-hd">
+                    <div className="stg-sec-ico"><Lock size={16} color="var(--gold)" /></div>
+                    <div>
+                      <p className="stg-sec-title">Change password</p>
+                      <p className="stg-sec-sub">Update your login credentials</p>
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label className="input-label">New password</label>
+                    <div style={{ position: "relative" }}>
+                      <input type={showNew ? "text" : "password"} value={newPwd} onChange={e => setNewPwd(e.target.value)}
+                        placeholder="At least 8 characters" className="input" style={{ paddingRight: 40 }} />
+                      <button type="button" onClick={() => setShowNew(v => !v)}
+                        style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "var(--text-3)", padding: 0, display: "flex" }}>
+                        {showNew ? <EyeOff size={15} /> : <Eye size={15} />}
+                      </button>
+                    </div>
+                    <PasswordStrength password={newPwd} />
+                  </div>
+                  <div className="form-group">
+                    <label className="input-label">Confirm new password</label>
+                    <div style={{ position: "relative" }}>
+                      <input type={showCfm ? "text" : "password"} value={cfmPwd} onChange={e => setCfmPwd(e.target.value)}
+                        placeholder="Repeat your new password" className="input"
+                        style={{ paddingRight: 40, borderColor: cfmPwd && newPwd !== cfmPwd ? "var(--danger)" : undefined }} />
+                      <button type="button" onClick={() => setShowCfm(v => !v)}
+                        style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "var(--text-3)", padding: 0, display: "flex" }}>
+                        {showCfm ? <EyeOff size={15} /> : <Eye size={15} />}
+                      </button>
+                    </div>
+                    {cfmPwd && newPwd !== cfmPwd && (
+                      <p style={{ fontSize: 11, color: "var(--danger)", marginTop: 4 }}>Passwords do not match</p>
+                    )}
+                  </div>
+                  {pwdError && (
+                    <div style={{ padding: "9px 12px", background: "var(--danger-bg)", border: "1px solid var(--danger-border)", borderRadius: "var(--radius)", fontSize: 12, color: "var(--danger)" }}>
+                      {pwdError}
+                    </div>
+                  )}
+                  <button type="submit" disabled={pwdSaving || !newPwd} className="btn btn-primary" style={{ alignSelf: "flex-start", minWidth: 180, padding: "12px 24px", display: "flex", alignItems: "center", gap: 8 }}>
+                    {pwdSaving ? <><Loader2 size={14} style={{ animation: "spin 0.7s linear infinite" }} /> Updating...</>
+                      : pwdSaved ? <><CheckCircle size={14} /> Password updated</>
+                      : "Update password"}
+                  </button>
+                </section>
+              </form>
             </div>
-          </form>
 
-          {/* Change password — separate form using current session token */}
-          <form onSubmit={handlePasswordChange} style={{ marginTop: 8 }}>
-            <section className="card card-p stack">
-              <div className="stg-sec-hd">
-                <div className="stg-sec-ico"><Lock size={16} color="var(--gold)" /></div>
-                <div>
-                  <p className="stg-sec-title">Change password</p>
-                  <p className="stg-sec-sub">Update your login credentials</p>
-                </div>
-              </div>
-              <div className="form-group">
-                <label className="input-label">New password</label>
-                <div style={{ position: "relative" }}>
-                  <input
-                    type={showNew ? "text" : "password"}
-                    value={newPwd} onChange={e => setNewPwd(e.target.value)}
-                    placeholder="At least 8 characters" className="input"
-                    style={{ paddingRight: 40 }}
-                  />
-                  <button type="button" onClick={() => setShowNew(v => !v)}
-                    style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "var(--text-3)", padding: 0, display: "flex" }}>
-                    {showNew ? <EyeOff size={15} /> : <Eye size={15} />}
-                  </button>
-                </div>
-                <PasswordStrength password={newPwd} />
-              </div>
-              <div className="form-group">
-                <label className="input-label">Confirm new password</label>
-                <div style={{ position: "relative" }}>
-                  <input
-                    type={showCfm ? "text" : "password"}
-                    value={cfmPwd} onChange={e => setCfmPwd(e.target.value)}
-                    placeholder="Repeat your new password" className="input"
-                    style={{ paddingRight: 40, borderColor: cfmPwd && newPwd !== cfmPwd ? "var(--danger)" : undefined }}
-                  />
-                  <button type="button" onClick={() => setShowCfm(v => !v)}
-                    style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "var(--text-3)", padding: 0, display: "flex" }}>
-                    {showCfm ? <EyeOff size={15} /> : <Eye size={15} />}
-                  </button>
-                </div>
-                {cfmPwd && newPwd !== cfmPwd && (
-                  <p style={{ fontSize: 11, color: "var(--danger)", marginTop: 4 }}>Passwords do not match</p>
-                )}
-              </div>
-
-              {pwdError && (
-                <div style={{ padding: "9px 12px", background: "var(--danger-bg)", border: "1px solid var(--danger-border)", borderRadius: "var(--radius)", fontSize: 12, color: "var(--danger)" }}>
-                  {pwdError}
-                </div>
-              )}
-
-              <button type="submit" disabled={pwdSaving || !newPwd} className="btn btn-primary" style={{ alignSelf: "flex-start", minWidth: 180, padding: "12px 24px", display: "flex", alignItems: "center", gap: 8 }}>
-                {pwdSaving
-                  ? <><Loader2 size={14} style={{ animation: "spin 0.7s linear infinite" }} /> Updating...</>
-                  : pwdSaved
-                  ? <><CheckCircle size={14} /> Password updated</>
-                  : "Update password"}
-              </button>
-            </section>
-          </form>
-          </div>{/* /settings-forms */}
+          </div>
         </div>
       </AppShell>
     </AuthGuard>

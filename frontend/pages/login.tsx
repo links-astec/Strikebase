@@ -2,7 +2,8 @@ import { useState, FormEvent } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Link from "next/link";
-import { Zap, Loader2, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { Loader2, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { LogoIcon } from "@/components/Logo";
 import { useAuth } from "@/lib/auth";
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -43,7 +44,7 @@ export default function Login() {
         <div className="auth-glow" />
         <div className="auth-card">
           <div className="auth-logo">
-            <div className="auth-logo-icon"><Zap size={18} color="#fff" /></div>
+            <LogoIcon size={40} />
             <span className="auth-logo-text" style={{ color: "var(--text-1)" }}>
               STRIKE<span style={{ color: "var(--gold)" }}>BASE</span>
             </span>

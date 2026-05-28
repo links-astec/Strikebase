@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import { Zap, ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
+import { LogoIcon } from "@/components/Logo";
 import { useAuth } from "@/lib/auth";
 import { updateProfile } from "@/lib/api";
 import AuthGuard from "@/components/AuthGuard";
@@ -103,7 +104,7 @@ export default function Onboarding() {
         <div className="auth-glow" />
         <div className="onboard-card">
           <div className="auth-logo" style={{ marginBottom: 8 }}>
-            <div className="auth-logo-icon"><Zap size={16} color="#fff" /></div>
+            <LogoIcon size={40} />
             <span className="auth-logo-text" style={{ color: "var(--text-1)", fontSize: 16 }}>
               STRIKE<span style={{ color: "var(--gold)" }}>BASE</span>
             </span>
