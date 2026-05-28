@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
-import { Zap, Search, BarChart3, Sparkles, CheckCircle, XCircle, ArrowRight, Database, ShieldCheck, TrendingUp, Target, Globe, Clock, DollarSign } from "lucide-react";
+import { Search, BarChart3, Sparkles, CheckCircle, XCircle, ArrowRight, Database, ShieldCheck, TrendingUp, Target, Globe, Clock, DollarSign } from "lucide-react";
 import StrikeScore from "@/components/StrikeScore";
 import ThemeToggle from "@/components/ThemeToggle";
 import { LogoIcon } from "@/components/Logo";
@@ -382,8 +382,8 @@ export default function Landing() {
         <div className="lp-cta-mesh" />
         <div className="lp-cta-glow-a" />
         <div className="lp-cta-glow-b" />
-        <div className="lp-wrap" style={{ position: "relative", zIndex: 1, textAlign: "center", padding: "100px 24px" }}>
-          <div className="lp-cta-icon lp-reveal"><Zap size={22} color="#fff" /></div>
+        <div className="lp-wrap lp-cta-body">
+          <div className="lp-cta-icon lp-reveal"><LogoIcon size={40} /></div>
           <h2 className="lp-cta-h2 lp-reveal" data-delay="1">
             Ready to stop guessing?
           </h2>
@@ -403,7 +403,7 @@ export default function Landing() {
       <footer className="lp-footer">
         <div className="lp-wrap lp-footer-inner">
           <Link href="/" className="lp-logo">
-            <div className="lp-logo-icon" style={{ width: 26, height: 26 }}><Zap size={11} color="#fff" /></div>
+            <LogoIcon size={26} />
             <span className="lp-logo-text" style={{ fontSize: 13 }}>STRIKE<span className="lp-logo-accent">BASE</span></span>
           </Link>
           <p className="lp-footer-copy">© 2026 Strikebase. All rights reserved.</p>

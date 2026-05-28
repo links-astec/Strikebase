@@ -1489,15 +1489,21 @@ img { display: block; max-width: 100%; }
   .lp-bento-card-1, .lp-bento-card-4, .lp-bento-card-6 { grid-column: span 1; }
   .lp-bento-card { padding: 22px; }
 
-  /* Stats 2-col */
+  /* Stats 3-col grid, 5th item spans full width */
   .lp-stats-inner { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; }
-  .lp-stat { padding: 16px 0; border-right: 1px solid var(--border); }
-  .lp-stat:last-child { border-right: none; grid-column: span 3; border-top: 1px solid var(--border); }
-
-  /* Stats */
-  .lp-stats-inner { justify-content: space-between; gap: 12px 0; }
-  .lp-stat { min-width: 48%; }
+  .lp-stat { padding: 16px 0; border-right: 1px solid var(--border); border-bottom: none; }
+  .lp-stat:nth-child(3) { border-right: none; }
+  .lp-stat:nth-child(4) { border-top: 1px solid var(--border); }
+  .lp-stat:nth-child(5) { border-top: 1px solid var(--border); border-right: none; grid-column: span 2; }
   .lp-stat-n { font-size: 22px; }
+
+  /* Sections */
+  .lp-sec-h2 { font-size: clamp(22px, 6vw, 32px); }
+  .lp-cta-h2 { font-size: clamp(24px, 7vw, 36px); }
+  .lp-cta-body { padding: 72px 16px; }
+
+  /* Hide ghost preview card — reduces hero height significantly */
+  .lp-mock-ghost { display: none; }
 
   /* Sections */
   .lp-sec { padding: 60px 0; }
@@ -1535,6 +1541,8 @@ img { display: block; max-width: 100%; }
   .lp-cta-primary, .lp-cta-ghost { justify-content: center; }
   .lp-stat-n { font-size: 20px; }
   .lp-wrap { padding: 0 12px; }
+  .lp-cta-body { padding: 56px 12px; }
+  .lp-logo-text { display: none; }
 }
 
 /* ─────────────────────────────────────────────
@@ -1713,6 +1721,9 @@ img { display: block; max-width: 100%; }
   background: linear-gradient(135deg, #07090e 0%, #0d1233 45%, #07090e 100%);
   position: relative; overflow: hidden;
   border-top: 1px solid rgba(59,130,246,0.15);
+}
+.lp-cta-body {
+  position: relative; z-index: 1; text-align: center; padding: 100px 24px;
 }
 .lp-cta-mesh {
   position: absolute; inset: 0; pointer-events: none;
