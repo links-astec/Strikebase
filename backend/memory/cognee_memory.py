@@ -20,21 +20,23 @@ def _setup() -> bool:
     if not settings.aiml_api_key:
         return False
     try:
-        import cognee
+        import cognee  # noqa: F401
 
-        # Disable multi-user access control — we handle isolation ourselves
         os.environ.setdefault("ENABLE_BACKEND_ACCESS_CONTROL", "false")
 
-        # Point Cognee at AI/ML API via LiteLLM env vars
+        # Set env vars for LiteLLM (primary config path — works across all cognee versions)
         os.environ["OPENAI_API_KEY"]  = settings.aiml_api_key
         os.environ["OPENAI_API_BASE"] = "https://api.aimlapi.com/v1"
 
-        # Configure via cognee.config for 0.5.x
-        cognee.config.llm_api_key    = settings.aiml_api_key
-        cognee.config.llm_api_base   = "https://api.aimlapi.com/v1"
-        cognee.config.llm_model      = "openai/gpt-4o-mini"
+        # Also try cognee.config direct assignment — attribute names vary by version
+        try:
+            cognee.config.llm_api_key  = settings.aiml_api_key
+            cognee.config.llm_api_base = "https://api.aimlapi.com/v1"
+            cognee.config.llm_model    = "openai/gpt-4o-mini"
+        except AttributeError:
+            pass  # env vars above are sufficient for LiteLLM
 
-        log.info("Cognee memory initialised (AI/ML API backend, v0.5.x)")
+        log.info("Cognee memory initialised (AI/ML API backend)")
         return True
     except ImportError:
         log.warning("cognee not installed — memory features disabled")
@@ -51,11 +53,21 @@ def _is_ready() -> bool:
     return _ready
 
 
+def _extract_text(result) -> str:
+    """Extract plain text from a Cognee SearchResult regardless of version."""
+    for attr in ("answer", "value", "text", "content", "node_description", "description"):
+        val = getattr(result, attr, None)
+        if val and isinstance(val, str) and val.strip():
+            return val.strip()
+    # Last resort — str() may give a readable representation in some versions
+    return str(result)
+
+
 async def store_scan_results(scan_id: str, user_id: str, opportunities: list[dict]) -> None:
     """
     After a scan completes, persist scored opportunities into Cognee's knowledge graph.
     Runs as a detached background task — never blocks the scan response.
-    On future scans, this data is retrieved and injected into the scoring prompt.
+    On future scans, this data is retrieved via get_client_memory / get_user_scan_insights.
     """
     if not _is_ready():
         return
@@ -74,17 +86,17 @@ async def store_scan_results(scan_id: str, user_id: str, opportunities: list[dic
                 f"Title=\"{opp.get('title','')[:60]}\""
             )
 
-        text    = "\n".join(lines)
         dataset = f"user_{user_id[:8]}_scans"
+        await cognee.add("\n".join(lines), dataset_name=dataset)
 
-        await cognee.add(text, dataset_name=dataset)
-        asyncio.create_task(_run_cognify_safe(dataset))
+        # cognify builds the graph — run as separate task so it doesn't block
+        asyncio.create_task(_cognify_safe(dataset))
 
     except Exception as e:
         log.warning(f"Cognee store_scan_results failed (non-critical): {e}")
 
 
-async def _run_cognify_safe(dataset: str) -> None:
+async def _cognify_safe(dataset: str) -> None:
     try:
         import cognee
         await cognee.cognify(datasets=[dataset])
@@ -96,7 +108,7 @@ async def _run_cognify_safe(dataset: str) -> None:
 async def get_client_memory(client_id: str) -> str | None:
     """
     Query the knowledge graph for prior intelligence on a client.
-    Returns a short enrichment string injected into the Claude scoring prompt.
+    Returns a short string injected into the Claude scoring prompt.
     """
     if not _is_ready() or not client_id:
         return None
@@ -109,8 +121,9 @@ async def get_client_memory(client_id: str) -> str | None:
             query_type=SearchType.GRAPH_COMPLETION,
         )
         if results:
-            snippet = str(results[0])[:280]
-            return f"[Memory] Prior intelligence on client {client_id}: {snippet}"
+            text = _extract_text(results[0])[:300]
+            if text:
+                return f"[Memory] Prior intelligence on client {client_id}: {text}"
     except Exception as e:
         log.debug(f"Cognee client query failed (non-critical): {e}")
     return None
@@ -120,7 +133,6 @@ async def get_user_scan_insights(user_id: str) -> str | None:
     """
     Query the knowledge graph for patterns from the user's past scans.
     Returns a string injected into the scoring prompt to personalise verdicts.
-    Examples: which platforms historically score higher, which bid counts win.
     """
     if not _is_ready() or not user_id:
         return None
@@ -133,8 +145,9 @@ async def get_user_scan_insights(user_id: str) -> str | None:
             query_type=SearchType.GRAPH_COMPLETION,
         )
         if results:
-            snippet = str(results[0])[:280]
-            return f"[Memory] Patterns from this user's past scans: {snippet}"
+            text = _extract_text(results[0])[:300]
+            if text:
+                return f"[Memory] Patterns from this user's past scans: {text}"
     except Exception as e:
         log.debug(f"Cognee user query failed (non-critical): {e}")
     return None
