@@ -11,6 +11,7 @@ FREELANCER PROFILE:
 - Target rate: ${rate}/hr
 {niche_line}
 {portfolio_block}
+{user_memory_block}
 
 LISTING:
 - Title: {title}
@@ -22,6 +23,7 @@ LISTING:
 
 CLIENT PROFILE:
 {client_block}
+{client_memory_block}
 
 MARKET DATA (this week, {primary_skill}):
 - P25 winning rate: ${p25}/hr
@@ -33,6 +35,7 @@ Scoring rules:
 - An Expert in the primary required skill scores meaningfully higher than a Beginner for the same listing.
 - A specific niche that matches the listing's domain is a strong positive signal.
 - If portfolio signals are present, use them to validate skill claims and reference them in the proposal angle.
+- If memory signals are present (past scan data), use them to adjust confidence — known bad clients score lower, known patterns from the user's history increase accuracy.
 - Only cite numbers explicitly provided — never invent or estimate missing values.
 - If a field is "unknown" or "not disclosed", treat it as a red flag or neutral.
 - If the listing is missing budget, bids, AND description, score it 15–25 and verdict "skip".
@@ -70,6 +73,12 @@ def build_prompt_context(listing: dict, client: dict | None, market: dict | None
 
     portfolio_raw = user.get("portfolio_context") or ""
     portfolio_block = f"PORTFOLIO SIGNALS:\n{portfolio_raw}" if portfolio_raw else ""
+
+    user_memory_raw = user.get("user_memory") or ""
+    user_memory_block = f"PAST SCAN PATTERNS (Cognee memory):\n{user_memory_raw}" if user_memory_raw else ""
+
+    client_memory_raw = user.get("client_memory") or ""
+    client_memory_block = f"PRIOR CLIENT INTELLIGENCE (Cognee memory):\n{client_memory_raw}" if client_memory_raw else ""
 
     client = client or {}
     market = market or {}
@@ -118,6 +127,8 @@ def build_prompt_context(listing: dict, client: dict | None, market: dict | None
         "primary_skill": primary_skill,
         "niche_line": niche_line,
         "portfolio_block": portfolio_block,
+        "user_memory_block": user_memory_block,
+        "client_memory_block": client_memory_block,
         "rate": hourly,
         "title": listing.get("title", "Untitled"),
         "budget": budget,

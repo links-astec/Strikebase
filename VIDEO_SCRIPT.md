@@ -50,9 +50,13 @@ Show the loading state for 3–4 seconds. If scan takes longer, cut away to narr
 >
 > I also describe my niche in one line: fintech dashboards. That's the context that separates a generic React dev from the right candidate for this listing.
 >
-> I hit scan. FastAPI kicks off the pipeline — Bright Data's SERP API searches across five platforms live. The Web Scraper API extracts bid counts, budgets, post dates from every listing. For client profiles behind bot protection, that's Bright Data's Web Unlocker.
+> I hit scan. FastAPI kicks off the pipeline. Bright Data's SERP API searches live across five platforms. The Web Scraper API extracts bid counts, budgets, post dates from every listing. For client profiles behind bot protection, that's Bright Data's Web Unlocker.
 >
-> All of it feeds Claude AI, which scores each listing against both the market data and my specific profile. Results are cached in Supabase and surfaced here."
+> Simultaneously, Cognee queries its knowledge graph for anything it knows about these clients from my previous scans — prior disputes, hire patterns, reputation signals built up over time.
+>
+> All of it goes into Claude AI, which scores each listing against the market data, my profile, and the memory context. Results are cached in Supabase. And when the scan completes, Cognee stores the new results back into the graph — so the next scan is smarter than this one.
+>
+> For conversational follow-up — that's AI/ML API powering the chat layer."
 
 ---
 
@@ -153,7 +157,7 @@ Cut back to the scan results page — score rings visible, a GO card prominent. 
 - [ ] Slow your cursor down intentionally — fast movement reads as nervous
 - [ ] Do one full run-through before recording; know exactly where you're clicking
 - [ ] Keep the cursor away from the centre of key UI elements — let the content breathe
-- [ ] Total narration word count: ~460 words. At a relaxed 110 wpm that's ~4:10 of speaking — aim for a 4:30–4:45 final cut with pauses and screen action
+- [ ] Total narration word count: ~510 words. At a relaxed 110 wpm that's ~4:40 of speaking — aim for a 5:00 final cut with pauses and screen action. If over, trim Scene 7 (data moat) first.
 
 ---
 

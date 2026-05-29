@@ -137,13 +137,13 @@ Not just market data. Your personal win probability.
 
 **Content:**
 ```
-Live data in. Intelligence out.
+Live data in. Memory out. Intelligence compounds.
 
   ┌─────────────────────────────────────────────────────┐
   │  DATA LAYER          Bright Data                    │
   │  ① SERP API          Live search · 5 platforms      │
   │  ② Web Scraper API   Bid counts · budgets · skills  │
-  │  ③ Web Unlocker      Client profiles · disputes     │
+  │  ③ Web Unlocker      Client profiles · portfolio    │
   │  ④ MCP Server        Tools wired into the AI layer  │
   └──────────────────────┬──────────────────────────────┘
                          ↓
@@ -153,9 +153,15 @@ Live data in. Intelligence out.
   └──────────────────────┬──────────────────────────────┘
                          ↓
   ┌─────────────────────────────────────────────────────┐
-  │  AI LAYER            Claude AI                      │
+  │  AI LAYER            Claude AI  ·  AI/ML API        │
   │  Strike Score · Verdict · Reasons · Proposal angle  │
-  │  AI Chat powered by AI/ML API                       │
+  │  AI Chat — conversational Q&A on any opportunity    │
+  └──────────────────────┬──────────────────────────────┘
+                         ↓
+  ┌─────────────────────────────────────────────────────┐
+  │  MEMORY LAYER        Cognee                         │
+  │  Knowledge graph built from every completed scan    │
+  │  Client reputation · User win patterns · Learning   │
   └──────────────────────┬──────────────────────────────┘
                          ↓
   ┌─────────────────────────────────────────────────────┐
@@ -170,18 +176,18 @@ Live data in. Intelligence out.
 ```
 
 **Layout:**
-- Five horizontal layer cards stacked vertically with arrow connectors between them — reads top to bottom as a pipeline.
+- Six horizontal layer cards stacked vertically with arrow connectors — reads top to bottom as a pipeline.
 - Each layer card: dark glass panel with a colored left-border accent.
   - Data layer: Bright Data blue border
   - Backend: slate border
-  - AI layer: gold border (Claude)
+  - AI layer: gold border (Claude + AI/ML API)
+  - Memory layer: purple border (Cognee) — visually distinct, signals the learning loop
   - Storage: green border (Supabase)
   - Interface: electric blue border (Next.js)
-- Inside each card: layer label in uppercase caps (10px, letter-spaced) on the left, tech name bold beside it, short description in muted text below.
-- The connector arrows between cards glow electric blue — data flowing downward.
-- Bright Data logo badged inside the Data layer card. Claude/Anthropic badge inside the AI layer card.
-- Headline above the stack: "Live data in. Intelligence out."
-- Keep the cards compact — this is a technical credibility slide, not a feature slide. The density is intentional.
+- Add a small feedback arrow from the Memory layer back up to the AI layer — a loop arrow on the right side — to show that memory enriches future scoring. This is the visual hook that explains why the product gets smarter over time.
+- Bright Data logo in the Data layer. Cognee logo in the Memory layer.
+- Headline: "Live data in. Memory out. Intelligence compounds."
+- Keep the cards compact — this is a technical credibility slide, not a feature slide.
 
 ---
 

@@ -12,7 +12,7 @@ from agents.scraper import scrape_listing
 from agents.unlocker import get_client_profile
 from agents.portfolio import get_portfolio_context
 from ai.scorer import score_listing_async
-from memory.cognee_memory import store_scan_results
+from memory.cognee_memory import store_scan_results, get_client_memory, get_user_scan_insights
 from models.schemas import ScanRequest
 
 MAX_CONCURRENT = 8
@@ -56,7 +56,13 @@ async def _process_listing(
         except Exception:
             pass
 
-    score_data = await score_listing_async(listing, client, None, user)
+    # Enrich scoring context with Cognee memory for this specific client
+    scoring_user = dict(user)
+    client_memory = await get_client_memory(client_id)
+    if client_memory:
+        scoring_user["client_memory"] = client_memory
+
+    score_data = await score_listing_async(listing, client, None, scoring_user)
 
     db.save_opportunity({
         "id": str(uuid.uuid4()),
@@ -107,9 +113,10 @@ async def run_pipeline(scan_id: str, req: ScanRequest, user_id: str | None = Non
     try:
         db.update_scan_status(scan_id, "processing", "Searching job boards...")
         try:
-            _serp, portfolio_ctx = await asyncio.gather(
+            _serp, portfolio_ctx, user_memory = await asyncio.gather(
                 search_job_listings([s.name for s in req.skills], num_results=MAX_LISTINGS),
                 get_portfolio_context(req.github_url, req.portfolio_url),
+                get_user_scan_insights(user_id or ""),
                 return_exceptions=True,
             )
             if isinstance(_serp, RuntimeError):
@@ -135,6 +142,8 @@ async def run_pipeline(scan_id: str, req: ScanRequest, user_id: str | None = Non
         user = req.model_dump()
         if isinstance(portfolio_ctx, str) and portfolio_ctx:
             user["portfolio_context"] = portfolio_ctx
+        if isinstance(user_memory, str) and user_memory:
+            user["user_memory"] = user_memory
         sem = asyncio.Semaphore(MAX_CONCURRENT)
         progress = _ProgressTracker(total)
         listings_out: list[dict] = []
