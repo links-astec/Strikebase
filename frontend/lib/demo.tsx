@@ -12,7 +12,15 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     try {
-      setDemo(localStorage.getItem("sb_demo") === "1");
+      const urlDemo = typeof window !== "undefined" &&
+        new URLSearchParams(window.location.search).get("demo") === "true";
+      const stored = localStorage.getItem("sb_demo") === "1";
+      if (urlDemo) {
+        localStorage.setItem("sb_demo", "1");
+        setDemo(true);
+      } else {
+        setDemo(stored);
+      }
     } catch {}
   }, []);
 

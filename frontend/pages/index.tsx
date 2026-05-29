@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useRouter } from "next/router";
 import Head from "next/head";
 import Link from "next/link";
 import { Search, BarChart3, Sparkles, CheckCircle, XCircle, ArrowRight, Database, ShieldCheck, TrendingUp, Target, Globe, Clock, DollarSign } from "lucide-react";
@@ -90,6 +91,14 @@ const PAIN = [
 ];
 
 export default function Landing() {
+  const router = useRouter();
+
+  useEffect(() => {
+    if (router.query.demo === "true") {
+      router.replace("/app/scan?demo=true");
+    }
+  }, [router.query.demo]);
+
   useEffect(() => {
     const nav = document.querySelector(".lp-nav");
     const onScroll = () => nav?.classList.toggle("lp-nav-scrolled", window.scrollY > 10);

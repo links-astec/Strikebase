@@ -6,11 +6,17 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
 
+  const isDemo =
+    router.query.demo === "true" ||
+    (typeof window !== "undefined" && localStorage.getItem("sb_demo") === "1");
+
   useEffect(() => {
-    if (!loading && !user) {
+    if (!loading && !user && !isDemo) {
       router.replace(`/login?next=${encodeURIComponent(router.asPath)}`);
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, isDemo]);
+
+  if (isDemo) return <>{children}</>;
 
   if (loading) {
     return (
