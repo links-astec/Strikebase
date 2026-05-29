@@ -138,11 +138,11 @@ Hit send. Show the streaming response — let it run for 3–4 lines. The AI sho
 **[NARRATION]**
 > "Found a listing you want to dig into? Every opportunity has a chat button.
 >
-> The AI already has the full picture — the score, the bid count, the client's history, the market rates, the red flags. You don't re-explain the context. You just ask.
+> This is powered by AI/ML API — a real-time, streaming AI layer that already has the full picture loaded: the score, the bid count, the client's history, the market rates, the red flags. You don't re-explain the context. You just ask.
 >
 > I want to know whether to push the rate higher given this client's history. It looks at the data and answers directly — referencing the specific numbers from this listing, not generic advice.
 >
-> You can ask it to write a full proposal, explain a red flag, compare this listing to your usual rate, or help you decide between two jobs. It knows what it's working with."
+> You can ask it to write a full proposal, explain a red flag, compare this listing to your usual rate, or help you decide between two jobs. It knows exactly what it's working with."
 
 ---
 
