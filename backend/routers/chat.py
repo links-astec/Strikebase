@@ -8,7 +8,7 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from openai import OpenAI
+from openai import AsyncOpenAI
 from config import settings
 from middleware.auth import get_current_user
 
@@ -76,7 +76,7 @@ async def chat_opportunity(req: ChatRequest, _user=Depends(get_current_user)):
     if not req.messages:
         raise HTTPException(400, "No messages provided")
 
-    client = OpenAI(
+    client = AsyncOpenAI(
         api_key=settings.aiml_api_key,
         base_url="https://api.aimlapi.com/v1",
         timeout=30.0,
@@ -86,16 +86,16 @@ async def chat_opportunity(req: ChatRequest, _user=Depends(get_current_user)):
     messages = [{"role": "system", "content": system_prompt}]
     messages += [{"role": m.role, "content": m.content} for m in req.messages[-10:]]
 
-    def _generate():
+    async def _generate():
         try:
-            stream = client.chat.completions.create(
+            stream = await client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=messages,
                 max_tokens=600,
                 temperature=0.7,
                 stream=True,
             )
-            for chunk in stream:
+            async for chunk in stream:
                 delta = chunk.choices[0].delta.content or ""
                 if delta:
                     yield f"data: {json.dumps({'text': delta})}\n\n"
