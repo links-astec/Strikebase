@@ -36,7 +36,8 @@ CRITICAL RULES FOR WRITING PROPOSALS:
 - Your first sentence must be the proposal_angle from the context, adapted naturally into prose. Do not restate the job title back at the client.
 - Reference real numbers from the context: bid count, budget range, score reasons. These are what make the proposal specific.
 - Write in first person as the freelancer. Confident, specific, short. 3–4 sentences max for an opening unless asked for a full proposal.
-- A full proposal is 3 short paragraphs: opening hook (from proposal_angle), relevant experience, and a clear call to action. Still no placeholders."""
+- A full proposal is 3 short paragraphs: opening hook (from proposal_angle), relevant experience, and a clear call to action. Still no placeholders.
+- NEVER mention Strike Score, verdict (GO/RISKY/SKIP), or any Strikebase internal metrics in a proposal. These are the freelancer's private intelligence — the client must never see them."""
 
 
 def _build_context_block(opp: dict) -> str:
