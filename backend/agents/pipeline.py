@@ -143,7 +143,7 @@ async def run_pipeline(scan_id: str, req: ScanRequest, user_id: str | None = Non
             )
             return
 
-        market = _compute_market_rates(listings_out, req.skills)
+        market = _compute_market_rates(listings_out, [s.name for s in req.skills])
         if market:
             db.upsert_market_rates(market)
 

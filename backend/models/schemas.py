@@ -3,10 +3,16 @@ from typing import Optional
 from datetime import datetime
 
 
+class SkillEntry(BaseModel):
+    name: str
+    level: str = "competent"  # "beginner" | "competent" | "expert"
+
+
 class ScanRequest(BaseModel):
-    skills: list[str]
+    skills: list[SkillEntry]
     hourly_rate: float
     experience: str  # "junior" | "mid" | "senior"
+    niche: str | None = None
 
 
 class ScanResponse(BaseModel):

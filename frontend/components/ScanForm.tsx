@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { X, Search, Zap } from "lucide-react";
-import type { ScanRequest } from "@/lib/types";
+import type { ScanRequest, SkillEntry } from "@/lib/types";
 
 const SUGGESTIONS = [
   "React", "TypeScript", "Python", "Node.js", "Next.js",
@@ -14,35 +14,72 @@ const EXP_OPTS = [
   { value: "senior", label: "Senior",   sub: "5+ yrs"  },
 ] as const;
 
+const LEVELS: SkillEntry["level"][] = ["beginner", "competent", "expert"];
+
+const LEVEL_LABEL: Record<SkillEntry["level"], string> = {
+  beginner:  "Beg",
+  competent: "Mid",
+  expert:    "Pro",
+};
+
+const LEVEL_COLOR: Record<SkillEntry["level"], string> = {
+  beginner:  "var(--text-3)",
+  competent: "var(--text-2)",
+  expert:    "var(--gold)",
+};
+
 interface Props {
   onSubmit: (r: ScanRequest) => void;
   loading: boolean;
   defaultSkills?: string[];
   defaultRate?: number;
   defaultExp?: "junior" | "mid" | "senior";
+  defaultNiche?: string;
 }
 
-export default function ScanForm({ onSubmit, loading, defaultSkills = [], defaultRate = 0, defaultExp = "mid" }: Props) {
-  const [input, setInput] = useState("");
-  const [skills, setSkills] = useState<string[]>(defaultSkills);
+export default function ScanForm({
+  onSubmit, loading,
+  defaultSkills = [], defaultRate = 0,
+  defaultExp = "mid", defaultNiche = "",
+}: Props) {
+  const [input, setInput]   = useState("");
+  const [skills, setSkills] = useState<SkillEntry[]>(
+    defaultSkills.map(name => ({ name, level: "competent" }))
+  );
   const [rate, setRate]     = useState(defaultRate ? String(defaultRate) : "");
   const [exp, setExp]       = useState<"junior" | "mid" | "senior">(defaultExp);
+  const [niche, setNiche]   = useState(defaultNiche);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  function add(s: string) {
-    const t = s.trim();
-    if (t && !skills.includes(t) && skills.length < 8) {
-      setSkills(prev => [...prev, t]);
+  function add(name: string) {
+    const t = name.trim();
+    if (t && !skills.find(s => s.name === t) && skills.length < 8) {
+      setSkills(prev => [...prev, { name: t, level: "competent" }]);
       setInput("");
       inputRef.current?.focus();
     }
+  }
+
+  function cycleLevel(name: string) {
+    setSkills(prev => prev.map(s => {
+      if (s.name !== name) return s;
+      const next = LEVELS[(LEVELS.indexOf(s.level) + 1) % LEVELS.length];
+      return { ...s, level: next };
+    }));
+  }
+
+  function remove(name: string) {
+    setSkills(prev => prev.filter(s => s.name !== name));
   }
 
   const disabled = loading || skills.length === 0 || !rate || parseFloat(rate) <= 0;
 
   return (
     <form
-      onSubmit={e => { e.preventDefault(); if (!disabled) onSubmit({ skills, hourly_rate: parseFloat(rate), experience: exp }); }}
+      onSubmit={e => {
+        e.preventDefault();
+        if (!disabled) onSubmit({ skills, hourly_rate: parseFloat(rate), experience: exp, niche: niche.trim() || undefined });
+      }}
       className="card card-p-lg"
       style={{ maxWidth: 640 }}
     >
@@ -59,15 +96,29 @@ export default function ScanForm({ onSubmit, loading, defaultSkills = [], defaul
       <div className="form-group" style={{ marginBottom: 20 }}>
         <label className="input-label">
           Your skills
-          <span style={{ fontWeight: 300, textTransform: "none", letterSpacing: 0, color: "var(--text-3)", marginLeft: 6 }}>up to 8</span>
+          <span style={{ fontWeight: 300, textTransform: "none", letterSpacing: 0, color: "var(--text-3)", marginLeft: 6 }}>up to 8 · tap level badge to adjust</span>
         </label>
 
         {skills.length > 0 && (
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
             {skills.map(s => (
-              <span key={s} className="skill-chip" style={{ fontSize: 12, padding: "4px 12px" }}>
-                {s}
-                <button type="button" className="skill-chip-x" onClick={() => setSkills(prev => prev.filter(x => x !== s))}>
+              <span key={s.name} className="skill-chip" style={{ fontSize: 12, padding: "4px 8px 4px 12px", display: "flex", alignItems: "center", gap: 0 }}>
+                {s.name}
+                <button
+                  type="button"
+                  onClick={() => cycleLevel(s.name)}
+                  title="Click to change proficiency: Beg → Mid → Pro"
+                  style={{
+                    background: "none", border: "none", cursor: "pointer",
+                    fontSize: 9, fontWeight: 700, letterSpacing: "0.06em",
+                    textTransform: "uppercase", padding: "0 5px",
+                    color: LEVEL_COLOR[s.level],
+                    transition: "opacity 0.15s",
+                  }}
+                >
+                  {LEVEL_LABEL[s.level]}
+                </button>
+                <button type="button" className="skill-chip-x" onClick={() => remove(s.name)}>
                   <X size={10} />
                 </button>
               </span>
@@ -87,10 +138,25 @@ export default function ScanForm({ onSubmit, loading, defaultSkills = [], defaul
         </div>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginTop: 10 }}>
-          {SUGGESTIONS.filter(s => !skills.includes(s)).slice(0, 8).map(s => (
+          {SUGGESTIONS.filter(s => !skills.find(x => x.name === s)).slice(0, 8).map(s => (
             <button key={s} type="button" className="sugg-btn" onClick={() => add(s)}>+ {s}</button>
           ))}
         </div>
+      </div>
+
+      {/* Niche */}
+      <div className="form-group" style={{ marginBottom: 20 }}>
+        <label className="input-label">
+          Your niche
+          <span style={{ fontWeight: 300, textTransform: "none", letterSpacing: 0, color: "var(--text-3)", marginLeft: 6 }}>optional — personalises your score</span>
+        </label>
+        <input
+          type="text"
+          value={niche}
+          onChange={e => setNiche(e.target.value.slice(0, 100))}
+          placeholder="e.g. React dashboards for fintech startups"
+          className="input"
+        />
       </div>
 
       {/* Rate + Level */}

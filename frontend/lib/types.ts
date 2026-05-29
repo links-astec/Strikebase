@@ -69,10 +69,16 @@ export interface OpportunitiesResponse {
   market_rates?: MarketRates;
 }
 
+export interface SkillEntry {
+  name: string;
+  level: "beginner" | "competent" | "expert";
+}
+
 export interface ScanRequest {
-  skills: string[];
+  skills: SkillEntry[];
   hourly_rate: number;
   experience: "junior" | "mid" | "senior";
+  niche?: string;
 }
 
 export interface Scan {

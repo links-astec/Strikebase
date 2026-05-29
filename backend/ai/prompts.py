@@ -3,7 +3,13 @@ You analyze job listings using live scraped data and return a precise win-probab
 score with specific, data-backed reasoning.
 Respond in valid JSON only. No prose, no markdown fences, no explanation outside JSON."""
 
-USER_PROMPT = """Analyze this opportunity for a {experience} {skills} freelancer at ${rate}/hr.
+USER_PROMPT = """Analyze this opportunity for a freelancer and return their personal win probability.
+
+FREELANCER PROFILE:
+- Experience: {experience}
+- Skills: {skills_with_levels}
+- Target rate: ${rate}/hr
+{niche_line}
 
 LISTING:
 - Title: {title}
@@ -16,15 +22,19 @@ LISTING:
 CLIENT PROFILE:
 {client_block}
 
-MARKET DATA (this week, {skills}):
+MARKET DATA (this week, {primary_skill}):
 - P25 winning rate: ${p25}/hr
 - Median winning rate: ${median}/hr
 - P75 winning rate: ${p75}/hr
 
-Rules:
-- Only cite numbers that are explicitly provided above — never invent or estimate missing values.
-- If a field is "unknown" or "not disclosed", treat it as a red flag or neutral — do not assume a value.
+Scoring rules:
+- Base score on both market quality (bid count, client history, budget vs target rate) AND personal fit (skill depth match vs required skills).
+- An Expert in the primary required skill scores meaningfully higher than a Beginner for the same listing.
+- A specific niche that matches the listing's domain is a strong positive signal.
+- Only cite numbers explicitly provided — never invent or estimate missing values.
+- If a field is "unknown" or "not disclosed", treat it as a red flag or neutral.
 - If the listing is missing budget, bids, AND description, score it 15–25 and verdict "skip".
+- Proposal angle must reference the freelancer's skill level and niche if relevant.
 
 Return ONLY this JSON:
 {{
@@ -35,7 +45,7 @@ Return ONLY this JSON:
     "<specific reason with a real number from the data>"
   ],
   "red_flags": ["<flag if any, empty list if none>"],
-  "proposal_angle": "<One sentence the freelancer can paste as their literal proposal opening line to the client. Must be specific to this listing. Do NOT give meta-advice — write the actual sentence.>",
+  "proposal_angle": "<One sentence the freelancer can paste as their literal proposal opening line. Must be specific to this listing and reference their background. Do NOT give meta-advice — write the actual sentence.>",
   "verdict": "go" | "skip" | "risky"
 }}"""
 
@@ -43,7 +53,19 @@ Return ONLY this JSON:
 def build_prompt_context(listing: dict, client: dict | None, market: dict | None, user: dict) -> dict:
     from datetime import datetime, timezone
 
-    skills_str = ", ".join(user.get("skills", []))
+    raw_skills = user.get("skills", [])
+    if raw_skills and isinstance(raw_skills[0], dict):
+        skills_with_levels = ", ".join(
+            f"{s['name']} ({s['level'].capitalize()})" for s in raw_skills
+        )
+        primary_skill = raw_skills[0]["name"]
+    else:
+        skills_with_levels = ", ".join(raw_skills)
+        primary_skill = raw_skills[0] if raw_skills else "general"
+
+    niche = user.get("niche") or ""
+    niche_line = f"- Niche: {niche}" if niche else ""
+
     client = client or {}
     market = market or {}
 
@@ -87,13 +109,15 @@ def build_prompt_context(listing: dict, client: dict | None, market: dict | None
     hourly = user.get("hourly_rate", 0)
     return {
         "experience": user.get("experience", "mid"),
-        "skills": skills_str,
+        "skills_with_levels": skills_with_levels,
+        "primary_skill": primary_skill,
+        "niche_line": niche_line,
         "rate": hourly,
         "title": listing.get("title", "Untitled"),
         "budget": budget,
         "posted": posted,
         "bid_count": listing.get("bid_count") if listing.get("bid_count") is not None else "unknown",
-        "required_skills": listing.get("skills") or skills_str,
+        "required_skills": listing.get("skills") or skills_with_levels,
         "description": (listing.get("description") or "not available")[:400],
         "client_block": client_block,
         "p25": market.get("p25_rate", hourly),
