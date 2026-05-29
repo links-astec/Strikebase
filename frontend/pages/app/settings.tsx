@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
-import { Loader2, CheckCircle, Eye, EyeOff, UserCircle, Code2, DollarSign, Lock, Shield, Github, Globe } from "lucide-react";
+import { Loader2, CheckCircle, Eye, EyeOff, UserCircle, Code2, DollarSign, Lock, Shield, Link2, Globe } from "lucide-react";
 import AppShell from "@/components/AppShell";
 import AuthGuard from "@/components/AuthGuard";
 import { useAuth } from "@/lib/auth";
@@ -150,7 +150,7 @@ export default function SettingsPage() {
                   <div className="form-group">
                     <label className="input-label">GitHub</label>
                     <div style={{ position: "relative" }}>
-                      <Github size={13} style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", color: "var(--text-3)", pointerEvents: "none" }} />
+                      <Link2 size={13} style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", color: "var(--text-3)", pointerEvents: "none" }} />
                       <input type="url" value={github} onChange={e => setGithub(e.target.value)}
                         placeholder="https://github.com/yourname" className="input" style={{ paddingLeft: 34 }} />
                     </div>

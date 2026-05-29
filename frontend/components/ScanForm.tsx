@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { X, Search, Zap, Github, Globe, AlertCircle, ArrowRight } from "lucide-react";
+import { X, Search, Zap, Link2, Globe, AlertCircle, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type { ScanRequest, SkillEntry } from "@/lib/types";
 
@@ -203,7 +203,7 @@ export default function ScanForm({
         </label>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <div style={{ position: "relative" }}>
-            <Github size={13} style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", color: "var(--text-3)", pointerEvents: "none" }} />
+            <Link2 size={13} style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", color: "var(--text-3)", pointerEvents: "none" }} />
             <input
               type="url"
               value={github}
