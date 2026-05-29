@@ -1,150 +1,186 @@
 # Strikebase — Video Presentation Script
 
 **Format:** Narrated screen recording (Option A)
-**Target length:** ~4 minutes
-**Voice tone:** Calm, confident, slightly dry. Not excited-startup-guy. More: someone who knows the problem from the inside.
+**Target length:** ~5 minutes
+**Voice tone:** Calm, direct. Talking to a freelancer who has felt this pain — not pitching to a judge. Use "you" more than "I".
 
 ---
 
-## SCENE 1 — The Hook `0:00–0:20`
+## SCENE 1 — The Hook `0:00–0:25`
 
 **[SCREEN]**
-Open directly on a real Upwork search results page (Google "upwork react developer" in a browser, or use a saved screenshot full-screened). Dozens of listings. No scores. No signal. Let it sit for 2 seconds. Then hard cut to Strikebase.
+Open on a raw Upwork search results page — "react developer" search, 40+ listings visible. Let it sit for 3 seconds. No narration yet. Just the wall of listings. Then slowly scroll down to show there's no end to it.
 
 **[NARRATION]**
-> "This is what a freelancer sees. Forty-seven listings. No signal on which one is worth their time. Most will pick based on gut — and lose."
+> "You're a freelancer. You open Upwork on a Tuesday morning and you see this.
+>
+> Forty-seven listings. No signal on which ones are worth your time. No way to know which clients actually hire, which jobs already have thirty bids, or whether your rate even fits the budget.
+>
+> So you pick one that looks good. You spend an hour writing a proposal. You hear nothing.
+>
+> You do it again on Wednesday. And Thursday."
+
+*Hard cut to Strikebase — scan results page loaded, score rings visible.*
 
 ---
 
-## SCENE 2 — The Problem `0:20–0:50`
+## SCENE 2 — What Strikebase Is `0:25–0:55`
 
 **[SCREEN]**
-Slow zoom or pan on the Upwork listings still visible, or overlay pitch deck stat callouts as graphic inserts (not full slides — just the numbers).
+Hold on the Strikebase scan results page. Slowly scroll through the results — let the green GO rings and red SKIP rings register visually. Don't click anything yet.
 
 **[NARRATION]**
-> "59 million freelancers in the US alone. Win rate on most platforms: under 10%. The average proposal takes 45 to 90 minutes to write.
+> "Strikebase is a freelance bid intelligence tool. It scans every major freelance platform — Upwork, Freelancer, Guru, PeoplePerHour, and Toptal — pulls live data on every listing, and scores each one against your specific background.
 >
-> The data that would change those odds exists — bid counts, client spend history, hire rates, dispute records. It's just hidden behind bot protection and scattered across five platforms.
+> Every listing gets a Strike Score — zero to a hundred — and a verdict: GO, RISKY, or SKIP.
 >
-> And even when you find the right listing, there's a harder question: is *your specific background* competitive for this role? Knowing the market isn't enough. You need to know where you stand in it.
+> GO means bid now. SKIP means don't waste your time. RISKY means there are red flags but it might still be worth it.
 >
-> That's the problem Strikebase solves."
+> You stop guessing. You open Strikebase, see which jobs are actually worth bidding on, and only write proposals for the ones that make sense."
+
+*Pause. Let the score rings sit.*
 
 ---
 
-## SCENE 3 — The Scan `0:50–1:45`
+## SCENE 3 — The Scan Form `0:55–1:45`
 
 **[SCREEN]**
-Navigate to `strikebase.vercel.app?demo=true`. Scan form is visible.
+Click "New scan" or navigate back to the scan form. Walk through filling it in:
 
-1. Type "React" — chip appears. Tap the "Mid" badge on the chip so it cycles to "Pro" (turns gold). Pause for 1 second so viewers see the change.
-2. Type "TypeScript" — chip appears, leave it at "Mid".
+1. Type "React" — chip appears. Tap the "Mid" badge → cycles to "Pro" (turns gold). Pause 2 seconds.
+2. Type "TypeScript" — chip appears, leave at "Mid".
 3. Click the niche field, type "fintech dashboards". Pause briefly.
 4. Set rate to `$65`. Select "Senior."
-5. Pause so the full form is readable. Click **Scan for opportunities**.
+5. Pause on the completed form. Click **Scan for opportunities**.
 
-Show the loading state for 3–4 seconds. If scan takes longer, cut away to narration and cut back to results already loaded.
+Show loading state. Cut away if it takes more than 8 seconds, cut back to results.
 
 **[NARRATION]**
-> "I add my skills — and for each one I set my actual proficiency level. React, I'm an expert. I can tap the badge to change it.
+> "Before you scan, you tell Strikebase who you are.
 >
-> I also describe my niche in one line: fintech dashboards. That's the context that separates a generic React dev from the right candidate for this listing.
+> Not just your skills — your level in each one. I'm an expert in React, competent in TypeScript. That distinction matters. A listing asking for a senior React engineer scores higher for me than for someone who's just starting out.
 >
-> I hit scan. FastAPI kicks off the pipeline. Bright Data's SERP API searches live across five platforms. The Web Scraper API extracts bid counts, budgets, post dates from every listing. For client profiles behind bot protection, that's Bright Data's Web Unlocker.
+> You also describe your niche in one sentence. 'Fintech dashboards.' That one line changes every proposal angle Strikebase generates for the results.
 >
-> Simultaneously, Cognee queries its knowledge graph for anything it knows about these clients from my previous scans — prior disputes, hire patterns, reputation signals built up over time.
+> Then you hit scan.
 >
-> All of it goes into Claude AI, which scores each listing against the market data, my profile, and the memory context. Results are cached in Supabase. And when the scan completes, Cognee stores the new results back into the graph — so the next scan is smarter than this one.
+> Under the hood: Bright Data's SERP API fires a live search across all five platforms. The Web Scraper extracts bid counts, budgets, required skills, and post dates from every listing. For client profiles sitting behind bot protection — spend history, hire rate, dispute records — that's Bright Data's Web Unlocker.
 >
-> For conversational follow-up — that's AI/ML API powering the chat layer."
+> All of that goes into Claude AI, which scores each listing against both the market data and your specific profile. At the same time, Cognee — the memory layer — queries a knowledge graph built from your previous scans. If it's seen these clients before, that intelligence feeds into the score too."
 
 ---
 
-## SCENE 4 — The Results `1:35–2:20`
+## SCENE 4 — The Results `1:45–2:20`
 
 **[SCREEN]**
-Results page is now loaded. Scroll slowly down — let the score rings register. Pause on a GO card (green ring, high score). Hover or linger on a SKIP card briefly to show the contrast. Don't click anything yet.
+Results page loaded. Scroll slowly. Land on a spread of GO, RISKY, and SKIP cards. Hover briefly on:
+- A high-score GO card (green ring, 88+)
+- A SKIP card (low score, red ring)
+Show the contrast clearly. Don't click yet.
 
 **[NARRATION]**
-> "Every listing gets a Strike Score — zero to a hundred. GO, RISKY, or SKIP.
+> "The results come back in seconds.
 >
-> Not based on the title. Based on what the listing doesn't tell you.
+> Each card shows the Strike Score, the verdict, the platform, and the top reason it scored the way it did.
 >
-> How many people are already bidding. Whether this client has ever hired. What the market is paying this week for this exact skill set.
+> A high score doesn't just mean the budget is good. It means: low competition, a client who actually hires, a budget above your target rate, and your specific skills matching what the listing actually needs.
 >
-> The score is the output of that entire pipeline — one number."
+> A low score means the opposite — too many bids, a client who has never hired, a budget you'd have to negotiate hard on.
+>
+> The point is you know all of this before you open the listing, let alone write a word."
 
-*Pause. Let the score rings sit on screen for a moment.*
+*Pause on the results.*
 
 ---
 
-## SCENE 5 — Opportunity Detail `2:30–3:20`
+## SCENE 5 — Opportunity Detail `2:20–3:20`
 
 **[SCREEN]**
-Click into the highest-scored GO opportunity. The detail page loads. Walk through it deliberately — slow cursor movement:
+Click into the highest-scoring GO card. Walk through the detail page deliberately — slow cursor:
 
-1. Pause on the score ring and GO badge (2 sec)
-2. Move to the first reason line — it should reference skill match ("React (Expert) — strong match for primary requirement")
-3. Move to bid count — hover briefly
-4. Move to the client data block — spend history, hire rate, disputes
-5. Move to the proposal angle at the bottom — read the first few words aloud
+1. Land on the score ring + GO badge. Hold 2 seconds.
+2. Scroll to the "Why bid" section — first reason should reference skill match. Point to it.
+3. Move to bid count stat — hover.
+4. Move to the client block — total spent, hire rate, disputes. Read the numbers slowly.
+5. Move to market rates section.
+6. Scroll to the proposal angle. Read the full line aloud in narration.
 
 **[NARRATION]**
-> "This listing scores 91. And the score is personalised — it's not just about the market, it's about my fit for this specific role.
+> "Let's look at this one. It scores 91.
 >
-> First reason: React Expert is a strong match for the primary requirement. That's my skill level, checked against what this listing actually needs.
+> Here's why.
 >
-> Four competing bids against a platform average of 23. The client has spent $62,000, a 94% hire rate, zero disputes.
+> First: React Expert is a strong match for the primary skill requirement — that's my proficiency level, checked against what this job actually asks for. The score would be lower for someone who listed React as a beginner.
+>
+> Four competing bids. The platform average for React roles is 23. That means this job is significantly underserved — most freelancers haven't found it yet.
+>
+> The client has spent $62,000 on the platform. 94% hire rate. Zero disputes. This is someone who finds a freelancer and pays them. That's not common.
 >
 > Budget is $75 to $95 an hour — 30% above my target rate.
 >
-> And the proposal angle references my niche directly: 'I've built three fintech dashboards in React — here's what I'd approach differently for your use case.'
+> And at the bottom — the proposal angle. Strikebase writes you a literal first sentence, specific to this listing and your background:
 >
-> That's not a template. It's built from my profile, the listing, and the client's history."
+> 'I've built three fintech dashboards in React — the data visualisation complexity in your brief matches exactly what I tackled for a Series B payments startup last year.'
+>
+> That's not a template. That's built from the listing details, the client's history, and the niche I described. You paste it as your first line. That's how you stand out."
 
 ---
 
-## SCENE 6 — AI Chat `3:15–3:50`
+## SCENE 6 — AI Chat `3:20–3:55`
 
 **[SCREEN]**
-Click **"Chat about this"** button (top-right of the detail page). The chat page opens — show the three-column layout for one second so the structure registers. The opportunity context panel is visible on the left (score, verdict, bid count).
+Click "Chat about this" (top-right of detail page). The chat page opens. Show the three-column layout briefly — thread list, context panel (score + verdict + key stats visible), chat area.
 
-Click into the message input. Type: `Write me a full proposal opening for this job.`
+Type: `This client has a 94% hire rate but the budget is above market. Should I go higher in my bid?`
 
-Hit send. Show the streaming response generating — let at least 2–3 lines appear live before cutting away.
+Hit send. Show the streaming response — let it run for 3–4 lines. The AI should address the specific data points (hire rate, market rates, bid count).
 
 **[NARRATION]**
-> "Every opportunity has a chat button.
+> "Found a listing you want to dig into? Every opportunity has a chat button.
 >
-> The AI has full context — the score, the client history, the market rates, the red flags. Ask it anything.
+> The AI already has the full picture — the score, the bid count, the client's history, the market rates, the red flags. You don't re-explain the context. You just ask.
 >
-> I ask for a proposal opening. It writes one — not a template, not boilerplate. Built from the actual data we just scraped."
-
-*Let the streaming text play for a moment, then cut.*
+> I want to know whether to push the rate higher given this client's history. It looks at the data and answers directly — referencing the specific numbers from this listing, not generic advice.
+>
+> You can ask it to write a full proposal, explain a red flag, compare this listing to your usual rate, or help you decide between two jobs. It knows what it's working with."
 
 ---
 
-## SCENE 7 — The Data Moat `3:50–4:10`
+## SCENE 7 — How It's Built `3:55–4:25`
 
 **[SCREEN]**
-Cut to the pitch deck comparison slide or a clean minimal graphic. Three columns: ChatGPT, Static datasets, Strikebase. Strikebase column highlighted in electric blue. Hold for 10 seconds.
+Cut to the pipeline slide or a clean layout showing the tech stack in layers. Hold for 15–20 seconds while narrating.
 
 **[NARRATION]**
-> "This product cannot exist without live web data.
+> "A quick look at what makes this possible.
 >
-> Not a language model. Not a static dataset. Bright Data's SERP API, Web Scraper, Web Unlocker, and MCP Server — all four — wired into a single pipeline that runs every time you hit scan.
+> Bright Data powers the data layer — four tools: SERP API for live job discovery across five platforms, Web Scraper for structured listing data, Web Unlocker for client profiles behind bot protection, and MCP Server to wire all of it directly into the AI.
 >
-> The insight isn't in the listing. It's in the data the listing doesn't show you."
+> Claude AI handles the scoring — turning raw scraped data and your profile into a Strike Score, a verdict, and a proposal angle.
+>
+> Cognee is the memory layer. Every scan you run gets stored in a knowledge graph. The next time you scan, Cognee retrieves what it knows about those clients and those market conditions — so the product gets smarter with each use.
+>
+> AI/ML API powers the chat. Real-time, streaming, with full opportunity context already loaded.
+>
+> None of this works without live data. The insight isn't in the listing — it's in the data the listing doesn't show you."
 
 ---
 
-## SCENE 8 — Close `4:10–4:25`
+## SCENE 8 — Close `4:25–4:45`
 
 **[SCREEN]**
-Cut back to the scan results page — score rings visible, a GO card prominent. Let it hold. Fade the URL over the bottom: `strikebase.vercel.app · use ?demo=true`
+Cut back to the scan results page — a clean spread of GO, RISKY, and SKIP cards. Score rings visible. One high-scoring card prominent.
+
+Hold for 3 seconds, no narration. Let it breathe.
+
+Then fade URL over the bottom: `strikebase.vercel.app · use ?demo=true`
 
 **[NARRATION]**
-> "Strikebase. Stop guessing. Start winning."
+> "Strikebase doesn't make you a better writer.
+>
+> It makes sure you only write for jobs you can actually win.
+>
+> Try it — no signup needed."
 
 *Cut to black.*
 
@@ -153,11 +189,14 @@ Cut back to the scan results page — score rings visible, a GO card prominent. 
 ## Recording Checklist
 
 - [ ] Record screen at 1920×1080, 60fps if possible
-- [ ] Record narration separately in a quiet room — phone voice memo into Audacity is cleaner than a system mic
+- [ ] Record narration separately — phone voice memo into Audacity is cleaner than a system mic
+- [ ] Pace yourself. The instinct is to rush — resist it. Pause after each key stat (bid count, client spend, score).
+- [ ] Do one full run-through before recording. Know exactly what you're clicking and when.
 - [ ] Slow your cursor down intentionally — fast movement reads as nervous
-- [ ] Do one full run-through before recording; know exactly where you're clicking
-- [ ] Keep the cursor away from the centre of key UI elements — let the content breathe
-- [ ] Total narration word count: ~510 words. At a relaxed 110 wpm that's ~4:40 of speaking — aim for a 5:00 final cut with pauses and screen action. If over, trim Scene 7 (data moat) first.
+- [ ] In Scene 5, read the proposal angle out loud, word for word — that's the most powerful moment in the video
+- [ ] In Scene 3, make the level badge visible on screen when you say "expert in React" — tap it so the viewer sees it turn gold
+- [ ] If the live scan takes more than 8 seconds: cut away mid-narration and cut back to results already loaded
+- [ ] Total narration word count: ~610 words. At a relaxed 110 wpm that's ~5:30 of speaking. Cut pauses tight in editing to land at ~5:00.
 
 ---
 
