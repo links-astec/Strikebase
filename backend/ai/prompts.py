@@ -10,6 +10,7 @@ FREELANCER PROFILE:
 - Skills: {skills_with_levels}
 - Target rate: ${rate}/hr
 {niche_line}
+{portfolio_block}
 
 LISTING:
 - Title: {title}
@@ -31,6 +32,7 @@ Scoring rules:
 - Base score on both market quality (bid count, client history, budget vs target rate) AND personal fit (skill depth match vs required skills).
 - An Expert in the primary required skill scores meaningfully higher than a Beginner for the same listing.
 - A specific niche that matches the listing's domain is a strong positive signal.
+- If portfolio signals are present, use them to validate skill claims and reference them in the proposal angle.
 - Only cite numbers explicitly provided — never invent or estimate missing values.
 - If a field is "unknown" or "not disclosed", treat it as a red flag or neutral.
 - If the listing is missing budget, bids, AND description, score it 15–25 and verdict "skip".
@@ -65,6 +67,9 @@ def build_prompt_context(listing: dict, client: dict | None, market: dict | None
 
     niche = user.get("niche") or ""
     niche_line = f"- Niche: {niche}" if niche else ""
+
+    portfolio_raw = user.get("portfolio_context") or ""
+    portfolio_block = f"PORTFOLIO SIGNALS:\n{portfolio_raw}" if portfolio_raw else ""
 
     client = client or {}
     market = market or {}
@@ -112,6 +117,7 @@ def build_prompt_context(listing: dict, client: dict | None, market: dict | None
         "skills_with_levels": skills_with_levels,
         "primary_skill": primary_skill,
         "niche_line": niche_line,
+        "portfolio_block": portfolio_block,
         "rate": hourly,
         "title": listing.get("title", "Untitled"),
         "budget": budget,

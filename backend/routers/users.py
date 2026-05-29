@@ -14,6 +14,7 @@ class ProfileUpdate(BaseModel):
     hourly_rate: Optional[float] = None
     experience: Optional[str] = None
     github_url: Optional[str] = None
+    portfolio_url: Optional[str] = None
     bio: Optional[str] = None
     onboarded: Optional[bool] = None
 

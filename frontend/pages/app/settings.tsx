@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
-import { Loader2, CheckCircle, Eye, EyeOff, UserCircle, Code2, DollarSign, Lock, Shield } from "lucide-react";
+import { Loader2, CheckCircle, Eye, EyeOff, UserCircle, Code2, DollarSign, Lock, Shield, Github, Globe } from "lucide-react";
 import AppShell from "@/components/AppShell";
 import AuthGuard from "@/components/AuthGuard";
 import { useAuth } from "@/lib/auth";
@@ -15,6 +15,7 @@ export default function SettingsPage() {
   const [rate, setRate]           = useState("");
   const [exp, setExp]             = useState<"junior" | "mid" | "senior">("mid");
   const [github, setGithub]       = useState("");
+  const [portfolio, setPortfolio] = useState("");
   const [bio, setBio]             = useState("");
   const [displayName, setDN]      = useState("");
 
@@ -37,6 +38,7 @@ export default function SettingsPage() {
     setRate(profile.hourly_rate ? String(profile.hourly_rate) : "");
     setExp(profile.experience || "mid");
     setGithub(profile.github_url || "");
+    setPortfolio((profile as unknown as { portfolio_url?: string }).portfolio_url || "");
     setBio(profile.bio || "");
     setDN(profile.display_name || "");
   }, [profile]);
@@ -51,8 +53,9 @@ export default function SettingsPage() {
         skills,
         hourly_rate: parseFloat(rate) || 0,
         experience: exp,
-        github_url:  github || null,
-        bio:         bio    || null,
+        github_url:    github    || null,
+        bio:           bio       || null,
+        ...(portfolio ? { portfolio_url: portfolio } : {}),
       });
       await refreshProfile();
       setSaved(true);
@@ -145,9 +148,23 @@ export default function SettingsPage() {
                       rows={3} className="input" style={{ resize: "vertical" }} />
                   </div>
                   <div className="form-group">
-                    <label className="input-label">GitHub URL</label>
-                    <input type="url" value={github} onChange={e => setGithub(e.target.value)}
-                      placeholder="https://github.com/yourname" className="input" />
+                    <label className="input-label">GitHub</label>
+                    <div style={{ position: "relative" }}>
+                      <Github size={13} style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", color: "var(--text-3)", pointerEvents: "none" }} />
+                      <input type="url" value={github} onChange={e => setGithub(e.target.value)}
+                        placeholder="https://github.com/yourname" className="input" style={{ paddingLeft: 34 }} />
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label className="input-label">
+                      Other portfolio
+                      <span style={{ fontWeight: 300, textTransform: "none", letterSpacing: 0, color: "var(--text-3)", marginLeft: 6 }}>Behance, Dribbble, personal site…</span>
+                    </label>
+                    <div style={{ position: "relative" }}>
+                      <Globe size={13} style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", color: "var(--text-3)", pointerEvents: "none" }} />
+                      <input type="url" value={portfolio} onChange={e => setPortfolio(e.target.value)}
+                        placeholder="https://behance.net/yourname" className="input" style={{ paddingLeft: 34 }} />
+                    </div>
                   </div>
                 </section>
 

@@ -233,6 +233,7 @@ export default function ScanPage() {
                   defaultSkills={profile?.skills}
                   defaultRate={profile?.hourly_rate}
                   defaultExp={profile?.experience}
+                  defaultGithub={profile?.github_url ?? ""}
                 />
                 {error && (
                   <div style={{ marginTop: 12, padding: "10px 14px", background: "var(--danger-bg)", border: "1px solid var(--danger-border)", borderRadius: "var(--radius)", fontSize: 12, color: "var(--danger)" }}>

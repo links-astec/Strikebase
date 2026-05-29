@@ -10,6 +10,7 @@ import database as db
 from agents.serp import search_job_listings
 from agents.scraper import scrape_listing
 from agents.unlocker import get_client_profile
+from agents.portfolio import get_portfolio_context
 from ai.scorer import score_listing_async
 from memory.cognee_memory import store_scan_results
 from models.schemas import ScanRequest
@@ -106,7 +107,16 @@ async def run_pipeline(scan_id: str, req: ScanRequest, user_id: str | None = Non
     try:
         db.update_scan_status(scan_id, "processing", "Searching job boards...")
         try:
-            serp_results = await search_job_listings(req.skills, num_results=MAX_LISTINGS)
+            _serp, portfolio_ctx = await asyncio.gather(
+                search_job_listings([s.name for s in req.skills], num_results=MAX_LISTINGS),
+                get_portfolio_context(req.github_url, req.portfolio_url),
+                return_exceptions=True,
+            )
+            if isinstance(_serp, RuntimeError):
+                raise _serp
+            if isinstance(_serp, Exception):
+                raise _serp
+            serp_results = _serp
         except RuntimeError as e:
             db.update_scan_status(scan_id, "error", f"Configuration error: {e}. Check Bright Data environment variables in Render.")
             return
@@ -123,6 +133,8 @@ async def run_pipeline(scan_id: str, req: ScanRequest, user_id: str | None = Non
         )
 
         user = req.model_dump()
+        if isinstance(portfolio_ctx, str) and portfolio_ctx:
+            user["portfolio_context"] = portfolio_ctx
         sem = asyncio.Semaphore(MAX_CONCURRENT)
         progress = _ProgressTracker(total)
         listings_out: list[dict] = []

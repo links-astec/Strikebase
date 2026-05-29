@@ -79,6 +79,8 @@ export interface ScanRequest {
   hourly_rate: number;
   experience: "junior" | "mid" | "senior";
   niche?: string;
+  github_url?: string;
+  portfolio_url?: string;
 }
 
 export interface Scan {

@@ -13,6 +13,8 @@ class ScanRequest(BaseModel):
     hourly_rate: float
     experience: str  # "junior" | "mid" | "senior"
     niche: str | None = None
+    github_url: str | None = None
+    portfolio_url: str | None = None
 
 
 class ScanResponse(BaseModel):
